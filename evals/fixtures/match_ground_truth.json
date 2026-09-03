@@ -1,0 +1,6 @@
+{
+  "dataset_version": "proofclose-eval/v2",
+  "automatic_scenarios": ["unique_exact_match", "order_excess"],
+  "ambiguous_scenarios": ["duplicate_bank_candidates"],
+  "refused_scenarios": ["duplicate_bank_candidates"]
+}

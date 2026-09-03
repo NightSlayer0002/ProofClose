@@ -1,0 +1,30 @@
+.worktrees/
+.superpowers/
+docs/superpowers/
+docs/interview-kit/
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node
+node_modules/
+frontend/dist/
+frontend/playwright-report/
+frontend/test-results/
+
+# Runtime and generated state
+.env
+*.db
+*.db-shm
+*.db-wal
+uploads/
+logs/
+docs/screenshots/*.png
+
+

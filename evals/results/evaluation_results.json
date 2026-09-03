@@ -1,0 +1,1652 @@
+{
+  "manifest": {
+    "close_pack_schema_version": "proofclose-close-pack/v2",
+    "configuration_version": "2.0",
+    "dataset_seed": null,
+    "dataset_seeds": [
+      20260831,
+      20260901,
+      20260902
+    ],
+    "dataset_version": "proofclose-eval/v2",
+    "embedding_model_version": null,
+    "evaluation_mode": "deterministic_offline",
+    "git_commit": "6164aaeaa331c4e59aa7c159906330a84fdbf70c",
+    "model_name": null,
+    "model_provider": null,
+    "prompt_version": null,
+    "proof_schema_version": "proof-object/v2",
+    "records_processed": 801,
+    "rule_version": "2.0",
+    "rule_versions": {
+      "order_payment_consistency": "1.0",
+      "settlement_match": "2.0"
+    },
+    "seed_count": 3,
+    "timestamp": "2026-09-03T09:38:33.438226+00:00"
+  },
+  "metric_counts": {
+    "ambiguous_abstentions": 3,
+    "ambiguous_truth": 3,
+    "auto_match_predictions": 21,
+    "auto_match_true_positive": 21,
+    "automated_paise": 26737642,
+    "automated_settlements": 21,
+    "exception_predictions": 15,
+    "exception_true_positive": 15,
+    "exception_truth": 15,
+    "expected_paise": 46828754,
+    "false_refusal_count": 0,
+    "historical_available": 39,
+    "historical_reproduced": 39,
+    "proof_covered_subjects": 39,
+    "proof_required_subjects": 39,
+    "proof_subject_checked": 39,
+    "proof_subject_correct": 39,
+    "settlement_count": 36,
+    "tamper_detected": 3,
+    "tamper_probes": 3,
+    "unique_allocation_violation_count": 0
+  },
+  "metrics": {
+    "ambiguous_abstention_recall": 1.0,
+    "auto_match_precision": 1.0,
+    "automation_rate_by_settlement_count": 0.583333,
+    "exception_f1": 1.0,
+    "exception_precision": 1.0,
+    "exception_recall": 1.0,
+    "false_refusal_count": 0,
+    "historical_reproduction_success_rate": 1.0,
+    "money_automation_rate": 0.570966,
+    "proof_coverage": 1.0,
+    "proof_subject_accuracy": 1.0,
+    "tamper_detection_rate": 1.0,
+    "unique_allocation_violation_count": 0
+  },
+  "seed_reports": [
+    {
+      "detected_exceptions": [
+        {
+          "amount_paise": 1349836,
+          "created_at": "2026-09-03T09:38:31.954117",
+          "exception_id": "exc_88725b8a4e3a4e2eb0",
+          "exception_type": "SETTLEMENT_LEDGER_MISMATCH",
+          "proof_id": "proof_6c01fb955b74445e",
+          "run_id": "run_bf007457ffc0421d",
+          "state": "OPEN",
+          "subject_id": "setl_PC008",
+          "subject_type": "SETTLEMENT"
+        },
+        {
+          "amount_paise": 1329560,
+          "created_at": "2026-09-03T09:38:31.954117",
+          "exception_id": "exc_9de9e9e2613a452ba1",
+          "exception_type": "PAISE_RUPEE_MISMATCH",
+          "proof_id": "proof_aa67bb85a0e74abb",
+          "run_id": "run_bf007457ffc0421d",
+          "state": "OPEN",
+          "subject_id": "setl_PC005",
+          "subject_type": "SETTLEMENT"
+        },
+        {
+          "amount_paise": 1377784,
+          "created_at": "2026-09-03T09:38:31.954117",
+          "exception_id": "exc_360b086c645a499286",
+          "exception_type": "AMBIGUOUS_MATCH",
+          "proof_id": "proof_c323063a4856456b",
+          "run_id": "run_bf007457ffc0421d",
+          "state": "OPEN",
+          "subject_id": "setl_PC009",
+          "subject_type": "SETTLEMENT"
+        },
+        {
+          "amount_paise": 1127174,
+          "created_at": "2026-09-03T09:38:31.954117",
+          "exception_id": "exc_2085e4eef8064a09ba",
+          "exception_type": "MISSING_BANK_CREDIT",
+          "proof_id": "proof_bfd29daeda14460c",
+          "run_id": "run_bf007457ffc0421d",
+          "state": "OPEN",
+          "subject_id": "setl_PC012",
+          "subject_type": "SETTLEMENT"
+        },
+        {
+          "amount_paise": 63360,
+          "created_at": "2026-09-03T09:38:31.954117",
+          "exception_id": "exc_61359d1b154c4f818e",
+          "exception_type": "UNEXPECTED_MULTIPLE_SETTLED_PAYMENTS",
+          "proof_id": "proof_b4207da5b37d4dca",
+          "run_id": "run_bf007457ffc0421d",
+          "state": "OPEN",
+          "subject_id": "order_PC0061",
+          "subject_type": "ORDER"
+        }
+      ],
+      "manifest": {
+        "close_pack_schema_version": "proofclose-close-pack/v2",
+        "configuration_version": "2.0",
+        "dataset_seed": 20260831,
+        "dataset_version": "proofclose-eval/v2",
+        "embedding_model_version": null,
+        "evaluation_mode": "deterministic_offline",
+        "git_commit": "6164aaeaa331c4e59aa7c159906330a84fdbf70c",
+        "model_name": null,
+        "model_provider": null,
+        "prompt_version": null,
+        "proof_schema_version": "proof-object/v2",
+        "records_processed": 267,
+        "rule_version": "2.0",
+        "rule_versions": {
+          "order_payment_consistency": "1.0",
+          "settlement_match": "2.0"
+        },
+        "timestamp": "2026-09-03T09:38:32.122295+00:00"
+      },
+      "metric_counts": {
+        "ambiguous_abstentions": 1,
+        "ambiguous_truth": 1,
+        "auto_match_predictions": 7,
+        "auto_match_true_positive": 7,
+        "automated_paise": 8933554,
+        "automated_settlements": 7,
+        "exception_predictions": 5,
+        "exception_true_positive": 5,
+        "exception_truth": 5,
+        "expected_paise": 15424315,
+        "false_refusal_count": 0,
+        "historical_available": 13,
+        "historical_reproduced": 13,
+        "proof_covered_subjects": 13,
+        "proof_required_subjects": 13,
+        "proof_subject_checked": 13,
+        "proof_subject_correct": 13,
+        "settlement_count": 12,
+        "tamper_detected": 1,
+        "tamper_probes": 1,
+        "unique_allocation_violation_count": 0
+      },
+      "metrics": {
+        "ambiguous_abstention_recall": 1.0,
+        "auto_match_precision": 1.0,
+        "automation_rate_by_settlement_count": 0.583333,
+        "exception_f1": 1.0,
+        "exception_precision": 1.0,
+        "exception_recall": 1.0,
+        "false_refusal_count": 0,
+        "historical_reproduction_success_rate": 1.0,
+        "money_automation_rate": 0.579186,
+        "proof_coverage": 1.0,
+        "proof_subject_accuracy": 1.0,
+        "tamper_detection_rate": 1.0,
+        "unique_allocation_violation_count": 0
+      },
+      "predictions": [
+        {
+          "bank_ref": "bank_PC001",
+          "decision": "AUTO_VERIFIED",
+          "difference_paise": 0,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 1,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": null,
+          "expected_paise": 1429433,
+          "observed_paise": 1429433,
+          "proof_id": "proof_1c096526e8f84f42",
+          "reasons": [
+            "UTR exact",
+            "Amount exact",
+            "Settlement reconstruction consistent",
+            "Unique bank candidate"
+          ],
+          "settlement_id": "setl_PC001",
+          "utr": "HDFC2608PC00001"
+        },
+        {
+          "bank_ref": "bank_PC002",
+          "decision": "AUTO_VERIFIED",
+          "difference_paise": 0,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 1,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": null,
+          "expected_paise": 1396690,
+          "observed_paise": 1396690,
+          "proof_id": "proof_3de6c4c41793402b",
+          "reasons": [
+            "UTR exact",
+            "Amount exact",
+            "Settlement reconstruction consistent",
+            "Unique bank candidate"
+          ],
+          "settlement_id": "setl_PC002",
+          "utr": "HDFC2608PC00002"
+        },
+        {
+          "bank_ref": "bank_PC003",
+          "decision": "AUTO_VERIFIED",
+          "difference_paise": 0,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 1,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": null,
+          "expected_paise": 1092080,
+          "observed_paise": 1092080,
+          "proof_id": "proof_49ed9bf20973470d",
+          "reasons": [
+            "UTR exact",
+            "Amount exact",
+            "Settlement reconstruction consistent",
+            "Unique bank candidate"
+          ],
+          "settlement_id": "setl_PC003",
+          "utr": "HDFC2608PC00003"
+        },
+        {
+          "bank_ref": null,
+          "decision": "PENDING",
+          "difference_paise": null,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": false,
+            "candidate_count": 0,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": false,
+            "utr_exact": false
+          },
+          "exception_type": null,
+          "expected_paise": 1306407,
+          "observed_paise": null,
+          "proof_id": "proof_97b79a42a0d642d5",
+          "reasons": [
+            "Settlement is inside the configured bank posting window"
+          ],
+          "settlement_id": "setl_PC004",
+          "utr": "HDFC2608PC00004"
+        },
+        {
+          "bank_ref": null,
+          "decision": "REVIEW_REQUIRED",
+          "difference_paise": null,
+          "evidence": {
+            "amount_delta_paise": -131626440,
+            "amount_exact": false,
+            "candidate_count": 0,
+            "settlement_ledger_consistent": false,
+            "temporal_consistency": false,
+            "utr_exact": false
+          },
+          "exception_type": "PAISE_RUPEE_MISMATCH",
+          "expected_paise": 1329560,
+          "observed_paise": null,
+          "proof_id": "proof_aa67bb85a0e74abb",
+          "reasons": [
+            "Settlement and reconstructed ledger differ by an exact x100 unit ratio"
+          ],
+          "settlement_id": "setl_PC005",
+          "utr": "HDFC2608PC00005"
+        },
+        {
+          "bank_ref": "bank_PC006",
+          "decision": "AUTO_VERIFIED",
+          "difference_paise": 0,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 1,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": null,
+          "expected_paise": 1025575,
+          "observed_paise": 1025575,
+          "proof_id": "proof_eede5a803db649df",
+          "reasons": [
+            "UTR exact",
+            "Amount exact",
+            "Settlement reconstruction consistent",
+            "Unique bank candidate"
+          ],
+          "settlement_id": "setl_PC006",
+          "utr": "HDFC2608PC00006"
+        },
+        {
+          "bank_ref": "bank_PC007",
+          "decision": "AUTO_VERIFIED",
+          "difference_paise": 0,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 1,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": null,
+          "expected_paise": 1431351,
+          "observed_paise": 1431351,
+          "proof_id": "proof_c07780982aff4f58",
+          "reasons": [
+            "UTR exact",
+            "Amount exact",
+            "Settlement reconstruction consistent",
+            "Unique bank candidate"
+          ],
+          "settlement_id": "setl_PC007",
+          "utr": "HDFC2608PC00007"
+        },
+        {
+          "bank_ref": null,
+          "decision": "REVIEW_REQUIRED",
+          "difference_paise": null,
+          "evidence": {
+            "amount_delta_paise": -500,
+            "amount_exact": false,
+            "candidate_count": 0,
+            "settlement_ledger_consistent": false,
+            "temporal_consistency": false,
+            "utr_exact": false
+          },
+          "exception_type": "SETTLEMENT_LEDGER_MISMATCH",
+          "expected_paise": 1349836,
+          "observed_paise": null,
+          "proof_id": "proof_6c01fb955b74445e",
+          "reasons": [
+            "Reconstructed Recon ledger differs from the Settlement entity"
+          ],
+          "settlement_id": "setl_PC008",
+          "utr": "HDFC2608PC00008"
+        },
+        {
+          "bank_ref": null,
+          "decision": "REFUSED",
+          "difference_paise": null,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 2,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": "AMBIGUOUS_MATCH",
+          "expected_paise": 1377784,
+          "observed_paise": null,
+          "proof_id": "proof_c323063a4856456b",
+          "reasons": [
+            "Same-UTR bank evidence is ambiguous across candidate rows or claimants"
+          ],
+          "settlement_id": "setl_PC009",
+          "utr": "HDFC2608PC00009"
+        },
+        {
+          "bank_ref": "bank_PC010",
+          "decision": "AUTO_VERIFIED",
+          "difference_paise": 0,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 1,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": null,
+          "expected_paise": 1257087,
+          "observed_paise": 1257087,
+          "proof_id": "proof_387b4b3fdd874bed",
+          "reasons": [
+            "UTR exact",
+            "Amount exact",
+            "Settlement reconstruction consistent",
+            "Unique bank candidate"
+          ],
+          "settlement_id": "setl_PC010",
+          "utr": "HDFC2608PC00010"
+        },
+        {
+          "bank_ref": "bank_PC011",
+          "decision": "AUTO_VERIFIED",
+          "difference_paise": 0,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 1,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": null,
+          "expected_paise": 1301338,
+          "observed_paise": 1301338,
+          "proof_id": "proof_973c71a64d834f0a",
+          "reasons": [
+            "UTR exact",
+            "Amount exact",
+            "Settlement reconstruction consistent",
+            "Unique bank candidate"
+          ],
+          "settlement_id": "setl_PC011",
+          "utr": "HDFC2608PC00011"
+        },
+        {
+          "bank_ref": null,
+          "decision": "UNRESOLVED",
+          "difference_paise": null,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": false,
+            "candidate_count": 0,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": false,
+            "utr_exact": false
+          },
+          "exception_type": "MISSING_BANK_CREDIT",
+          "expected_paise": 1127174,
+          "observed_paise": null,
+          "proof_id": "proof_bfd29daeda14460c",
+          "reasons": [
+            "Processed settlement is outside the bank posting window",
+            "No supported bank candidate"
+          ],
+          "settlement_id": "setl_PC012",
+          "utr": "HDFC2608PC00012"
+        }
+      ],
+      "proof_reproduction": {
+        "available_attempts": 13,
+        "reproduced": 13,
+        "unavailable_version_probe": {
+          "failure_type": "RULE_IMPLEMENTATION_UNAVAILABLE",
+          "status": "FAILED"
+        }
+      },
+      "run": {
+        "configuration_version": "2.0",
+        "created_at": "2026-09-03T09:38:31.925474",
+        "expected_paise": 15424315,
+        "explained_paise": 8933554,
+        "records_processed": 267,
+        "rule_version": "2.0",
+        "run_id": "run_bf007457ffc0421d",
+        "source_snapshot_id": "snapshot_2556dbd5c5e11010ec72",
+        "state": "SUCCESS",
+        "timings": {
+          "database_ms": 7,
+          "matching_ms": 0,
+          "normalization_ms": 2,
+          "persistence_ms": 15,
+          "proof_generation_ms": 10,
+          "settlement_build_ms": 0
+        },
+        "total_ms": 40,
+        "unresolved_paise": 6490761
+      },
+      "scenario_assignment": {
+        "boundary_scenarios": [
+          "shared_bank_row",
+          "utr_mismatch",
+          "amount_mismatch",
+          "time_mismatch",
+          "single_amount_only_candidate",
+          "multiple_amount_only_candidates",
+          "future_timestamp",
+          "non_processable_status",
+          "currency_mismatch",
+          "proof_mutation",
+          "unavailable_v1_rule"
+        ],
+        "seed": 20260831,
+        "settlements": [
+          {
+            "logical_index": 1,
+            "scenario": "unique_exact_match",
+            "settlement_id": "setl_PC002",
+            "utr": "HDFC2608PC00002"
+          },
+          {
+            "logical_index": 2,
+            "scenario": "unique_exact_match",
+            "settlement_id": "setl_PC007",
+            "utr": "HDFC2608PC00007"
+          },
+          {
+            "logical_index": 3,
+            "scenario": "unique_exact_match",
+            "settlement_id": "setl_PC003",
+            "utr": "HDFC2608PC00003"
+          },
+          {
+            "logical_index": 4,
+            "scenario": "unique_exact_match",
+            "settlement_id": "setl_PC010",
+            "utr": "HDFC2608PC00010"
+          },
+          {
+            "logical_index": 5,
+            "scenario": "unique_exact_match",
+            "settlement_id": "setl_PC011",
+            "utr": "HDFC2608PC00011"
+          },
+          {
+            "logical_index": 6,
+            "scenario": "unique_exact_match",
+            "settlement_id": "setl_PC001",
+            "utr": "HDFC2608PC00001"
+          },
+          {
+            "logical_index": 7,
+            "scenario": "order_excess",
+            "settlement_id": "setl_PC006",
+            "utr": "HDFC2608PC00006"
+          },
+          {
+            "logical_index": 8,
+            "scenario": "settlement_ledger_mismatch",
+            "settlement_id": "setl_PC008",
+            "utr": "HDFC2608PC00008"
+          },
+          {
+            "logical_index": 9,
+            "scenario": "paise_rupee_mismatch",
+            "settlement_id": "setl_PC005",
+            "utr": "HDFC2608PC00005"
+          },
+          {
+            "logical_index": 10,
+            "scenario": "duplicate_bank_candidates",
+            "settlement_id": "setl_PC009",
+            "utr": "HDFC2608PC00009"
+          },
+          {
+            "logical_index": 11,
+            "scenario": "missing_bank_credit",
+            "settlement_id": "setl_PC012",
+            "utr": "HDFC2608PC00012"
+          },
+          {
+            "logical_index": 12,
+            "scenario": "pending",
+            "settlement_id": "setl_PC004",
+            "utr": "HDFC2608PC00004"
+          }
+        ]
+      },
+      "tamper_probe": {
+        "detected": 1,
+        "probes": 1
+      }
+    },
+    {
+      "detected_exceptions": [
+        {
+          "amount_paise": 1387237,
+          "created_at": "2026-09-03T09:38:32.599892",
+          "exception_id": "exc_5cfbde1c81d14d96a2",
+          "exception_type": "SETTLEMENT_LEDGER_MISMATCH",
+          "proof_id": "proof_735f808c80ba49e3",
+          "run_id": "run_abd7ee99c1ad460c",
+          "state": "OPEN",
+          "subject_id": "setl_PC005",
+          "subject_type": "SETTLEMENT"
+        },
+        {
+          "amount_paise": 1228317,
+          "created_at": "2026-09-03T09:38:32.599892",
+          "exception_id": "exc_d3dd3c90f9f34b8bb5",
+          "exception_type": "PAISE_RUPEE_MISMATCH",
+          "proof_id": "proof_a51e35f1144d467f",
+          "run_id": "run_abd7ee99c1ad460c",
+          "state": "OPEN",
+          "subject_id": "setl_PC010",
+          "subject_type": "SETTLEMENT"
+        },
+        {
+          "amount_paise": 1569995,
+          "created_at": "2026-09-03T09:38:32.599892",
+          "exception_id": "exc_0e47891819b746ada8",
+          "exception_type": "AMBIGUOUS_MATCH",
+          "proof_id": "proof_e967c2955cb2451d",
+          "run_id": "run_abd7ee99c1ad460c",
+          "state": "OPEN",
+          "subject_id": "setl_PC009",
+          "subject_type": "SETTLEMENT"
+        },
+        {
+          "amount_paise": 1382953,
+          "created_at": "2026-09-03T09:38:32.599892",
+          "exception_id": "exc_d469061319584c9ba6",
+          "exception_type": "MISSING_BANK_CREDIT",
+          "proof_id": "proof_4cb59a27a33741c2",
+          "run_id": "run_abd7ee99c1ad460c",
+          "state": "OPEN",
+          "subject_id": "setl_PC001",
+          "subject_type": "SETTLEMENT"
+        },
+        {
+          "amount_paise": 48701,
+          "created_at": "2026-09-03T09:38:32.599892",
+          "exception_id": "exc_6b2db48e6c69451b95",
+          "exception_type": "UNEXPECTED_MULTIPLE_SETTLED_PAYMENTS",
+          "proof_id": "proof_18ae077b12c746c2",
+          "run_id": "run_abd7ee99c1ad460c",
+          "state": "OPEN",
+          "subject_id": "order_PC0061",
+          "subject_type": "ORDER"
+        }
+      ],
+      "manifest": {
+        "close_pack_schema_version": "proofclose-close-pack/v2",
+        "configuration_version": "2.0",
+        "dataset_seed": 20260901,
+        "dataset_version": "proofclose-eval/v2",
+        "embedding_model_version": null,
+        "evaluation_mode": "deterministic_offline",
+        "git_commit": "6164aaeaa331c4e59aa7c159906330a84fdbf70c",
+        "model_name": null,
+        "model_provider": null,
+        "prompt_version": null,
+        "proof_schema_version": "proof-object/v2",
+        "records_processed": 267,
+        "rule_version": "2.0",
+        "rule_versions": {
+          "order_payment_consistency": "1.0",
+          "settlement_match": "2.0"
+        },
+        "timestamp": "2026-09-03T09:38:32.748871+00:00"
+      },
+      "metric_counts": {
+        "ambiguous_abstentions": 1,
+        "ambiguous_truth": 1,
+        "auto_match_predictions": 7,
+        "auto_match_true_positive": 7,
+        "automated_paise": 8787238,
+        "automated_settlements": 7,
+        "exception_predictions": 5,
+        "exception_true_positive": 5,
+        "exception_truth": 5,
+        "expected_paise": 15919296,
+        "false_refusal_count": 0,
+        "historical_available": 13,
+        "historical_reproduced": 13,
+        "proof_covered_subjects": 13,
+        "proof_required_subjects": 13,
+        "proof_subject_checked": 13,
+        "proof_subject_correct": 13,
+        "settlement_count": 12,
+        "tamper_detected": 1,
+        "tamper_probes": 1,
+        "unique_allocation_violation_count": 0
+      },
+      "metrics": {
+        "ambiguous_abstention_recall": 1.0,
+        "auto_match_precision": 1.0,
+        "automation_rate_by_settlement_count": 0.583333,
+        "exception_f1": 1.0,
+        "exception_precision": 1.0,
+        "exception_recall": 1.0,
+        "false_refusal_count": 0,
+        "historical_reproduction_success_rate": 1.0,
+        "money_automation_rate": 0.551987,
+        "proof_coverage": 1.0,
+        "proof_subject_accuracy": 1.0,
+        "tamper_detection_rate": 1.0,
+        "unique_allocation_violation_count": 0
+      },
+      "predictions": [
+        {
+          "bank_ref": null,
+          "decision": "UNRESOLVED",
+          "difference_paise": null,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": false,
+            "candidate_count": 0,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": false,
+            "utr_exact": false
+          },
+          "exception_type": "MISSING_BANK_CREDIT",
+          "expected_paise": 1382953,
+          "observed_paise": null,
+          "proof_id": "proof_4cb59a27a33741c2",
+          "reasons": [
+            "Processed settlement is outside the bank posting window",
+            "No supported bank candidate"
+          ],
+          "settlement_id": "setl_PC001",
+          "utr": "HDFC2608PC00001"
+        },
+        {
+          "bank_ref": "bank_PC002",
+          "decision": "AUTO_VERIFIED",
+          "difference_paise": 0,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 1,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": null,
+          "expected_paise": 1321340,
+          "observed_paise": 1321340,
+          "proof_id": "proof_aaa96a7e076c42f4",
+          "reasons": [
+            "UTR exact",
+            "Amount exact",
+            "Settlement reconstruction consistent",
+            "Unique bank candidate"
+          ],
+          "settlement_id": "setl_PC002",
+          "utr": "HDFC2608PC00002"
+        },
+        {
+          "bank_ref": "bank_PC003",
+          "decision": "AUTO_VERIFIED",
+          "difference_paise": 0,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 1,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": null,
+          "expected_paise": 1096541,
+          "observed_paise": 1096541,
+          "proof_id": "proof_318fc801608945d9",
+          "reasons": [
+            "UTR exact",
+            "Amount exact",
+            "Settlement reconstruction consistent",
+            "Unique bank candidate"
+          ],
+          "settlement_id": "setl_PC003",
+          "utr": "HDFC2608PC00003"
+        },
+        {
+          "bank_ref": "bank_PC004",
+          "decision": "AUTO_VERIFIED",
+          "difference_paise": 0,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 1,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": null,
+          "expected_paise": 1318130,
+          "observed_paise": 1318130,
+          "proof_id": "proof_c4f569106c984d7d",
+          "reasons": [
+            "UTR exact",
+            "Amount exact",
+            "Settlement reconstruction consistent",
+            "Unique bank candidate"
+          ],
+          "settlement_id": "setl_PC004",
+          "utr": "HDFC2608PC00004"
+        },
+        {
+          "bank_ref": null,
+          "decision": "REVIEW_REQUIRED",
+          "difference_paise": null,
+          "evidence": {
+            "amount_delta_paise": -500,
+            "amount_exact": false,
+            "candidate_count": 0,
+            "settlement_ledger_consistent": false,
+            "temporal_consistency": false,
+            "utr_exact": false
+          },
+          "exception_type": "SETTLEMENT_LEDGER_MISMATCH",
+          "expected_paise": 1387237,
+          "observed_paise": null,
+          "proof_id": "proof_735f808c80ba49e3",
+          "reasons": [
+            "Reconstructed Recon ledger differs from the Settlement entity"
+          ],
+          "settlement_id": "setl_PC005",
+          "utr": "HDFC2608PC00005"
+        },
+        {
+          "bank_ref": "bank_PC006",
+          "decision": "AUTO_VERIFIED",
+          "difference_paise": 0,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 1,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": null,
+          "expected_paise": 1217768,
+          "observed_paise": 1217768,
+          "proof_id": "proof_baa2d23e55db452c",
+          "reasons": [
+            "UTR exact",
+            "Amount exact",
+            "Settlement reconstruction consistent",
+            "Unique bank candidate"
+          ],
+          "settlement_id": "setl_PC006",
+          "utr": "HDFC2608PC00006"
+        },
+        {
+          "bank_ref": "bank_PC007",
+          "decision": "AUTO_VERIFIED",
+          "difference_paise": 0,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 1,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": null,
+          "expected_paise": 1378469,
+          "observed_paise": 1378469,
+          "proof_id": "proof_43f34e9cc1bc4f0c",
+          "reasons": [
+            "UTR exact",
+            "Amount exact",
+            "Settlement reconstruction consistent",
+            "Unique bank candidate"
+          ],
+          "settlement_id": "setl_PC007",
+          "utr": "HDFC2608PC00007"
+        },
+        {
+          "bank_ref": null,
+          "decision": "PENDING",
+          "difference_paise": null,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": false,
+            "candidate_count": 0,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": false,
+            "utr_exact": false
+          },
+          "exception_type": null,
+          "expected_paise": 1563556,
+          "observed_paise": null,
+          "proof_id": "proof_180efe655a714ae6",
+          "reasons": [
+            "Settlement is inside the configured bank posting window"
+          ],
+          "settlement_id": "setl_PC008",
+          "utr": "HDFC2608PC00008"
+        },
+        {
+          "bank_ref": null,
+          "decision": "REFUSED",
+          "difference_paise": null,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 2,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": "AMBIGUOUS_MATCH",
+          "expected_paise": 1569995,
+          "observed_paise": null,
+          "proof_id": "proof_e967c2955cb2451d",
+          "reasons": [
+            "Same-UTR bank evidence is ambiguous across candidate rows or claimants"
+          ],
+          "settlement_id": "setl_PC009",
+          "utr": "HDFC2608PC00009"
+        },
+        {
+          "bank_ref": null,
+          "decision": "REVIEW_REQUIRED",
+          "difference_paise": null,
+          "evidence": {
+            "amount_delta_paise": -121603383,
+            "amount_exact": false,
+            "candidate_count": 0,
+            "settlement_ledger_consistent": false,
+            "temporal_consistency": false,
+            "utr_exact": false
+          },
+          "exception_type": "PAISE_RUPEE_MISMATCH",
+          "expected_paise": 1228317,
+          "observed_paise": null,
+          "proof_id": "proof_a51e35f1144d467f",
+          "reasons": [
+            "Settlement and reconstructed ledger differ by an exact x100 unit ratio"
+          ],
+          "settlement_id": "setl_PC010",
+          "utr": "HDFC2608PC00010"
+        },
+        {
+          "bank_ref": "bank_PC011",
+          "decision": "AUTO_VERIFIED",
+          "difference_paise": 0,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 1,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": null,
+          "expected_paise": 1340246,
+          "observed_paise": 1340246,
+          "proof_id": "proof_abac7f0c05ce4652",
+          "reasons": [
+            "UTR exact",
+            "Amount exact",
+            "Settlement reconstruction consistent",
+            "Unique bank candidate"
+          ],
+          "settlement_id": "setl_PC011",
+          "utr": "HDFC2608PC00011"
+        },
+        {
+          "bank_ref": "bank_PC012",
+          "decision": "AUTO_VERIFIED",
+          "difference_paise": 0,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 1,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": null,
+          "expected_paise": 1114744,
+          "observed_paise": 1114744,
+          "proof_id": "proof_ae207c914740413a",
+          "reasons": [
+            "UTR exact",
+            "Amount exact",
+            "Settlement reconstruction consistent",
+            "Unique bank candidate"
+          ],
+          "settlement_id": "setl_PC012",
+          "utr": "HDFC2608PC00012"
+        }
+      ],
+      "proof_reproduction": {
+        "available_attempts": 13,
+        "reproduced": 13,
+        "unavailable_version_probe": {
+          "failure_type": "RULE_IMPLEMENTATION_UNAVAILABLE",
+          "status": "FAILED"
+        }
+      },
+      "run": {
+        "configuration_version": "2.0",
+        "created_at": "2026-09-03T09:38:32.580191",
+        "expected_paise": 15919296,
+        "explained_paise": 8787238,
+        "records_processed": 267,
+        "rule_version": "2.0",
+        "run_id": "run_abd7ee99c1ad460c",
+        "source_snapshot_id": "snapshot_30c918316acd490ac095",
+        "state": "SUCCESS",
+        "timings": {
+          "database_ms": 8,
+          "matching_ms": 0,
+          "normalization_ms": 1,
+          "persistence_ms": 9,
+          "proof_generation_ms": 9,
+          "settlement_build_ms": 0
+        },
+        "total_ms": 32,
+        "unresolved_paise": 7132058
+      },
+      "scenario_assignment": {
+        "boundary_scenarios": [
+          "shared_bank_row",
+          "utr_mismatch",
+          "amount_mismatch",
+          "time_mismatch",
+          "single_amount_only_candidate",
+          "multiple_amount_only_candidates",
+          "future_timestamp",
+          "non_processable_status",
+          "currency_mismatch",
+          "proof_mutation",
+          "unavailable_v1_rule"
+        ],
+        "seed": 20260901,
+        "settlements": [
+          {
+            "logical_index": 1,
+            "scenario": "unique_exact_match",
+            "settlement_id": "setl_PC011",
+            "utr": "HDFC2608PC00011"
+          },
+          {
+            "logical_index": 2,
+            "scenario": "unique_exact_match",
+            "settlement_id": "setl_PC006",
+            "utr": "HDFC2608PC00006"
+          },
+          {
+            "logical_index": 3,
+            "scenario": "unique_exact_match",
+            "settlement_id": "setl_PC004",
+            "utr": "HDFC2608PC00004"
+          },
+          {
+            "logical_index": 4,
+            "scenario": "unique_exact_match",
+            "settlement_id": "setl_PC002",
+            "utr": "HDFC2608PC00002"
+          },
+          {
+            "logical_index": 5,
+            "scenario": "unique_exact_match",
+            "settlement_id": "setl_PC007",
+            "utr": "HDFC2608PC00007"
+          },
+          {
+            "logical_index": 6,
+            "scenario": "unique_exact_match",
+            "settlement_id": "setl_PC012",
+            "utr": "HDFC2608PC00012"
+          },
+          {
+            "logical_index": 7,
+            "scenario": "order_excess",
+            "settlement_id": "setl_PC003",
+            "utr": "HDFC2608PC00003"
+          },
+          {
+            "logical_index": 8,
+            "scenario": "settlement_ledger_mismatch",
+            "settlement_id": "setl_PC005",
+            "utr": "HDFC2608PC00005"
+          },
+          {
+            "logical_index": 9,
+            "scenario": "paise_rupee_mismatch",
+            "settlement_id": "setl_PC010",
+            "utr": "HDFC2608PC00010"
+          },
+          {
+            "logical_index": 10,
+            "scenario": "duplicate_bank_candidates",
+            "settlement_id": "setl_PC009",
+            "utr": "HDFC2608PC00009"
+          },
+          {
+            "logical_index": 11,
+            "scenario": "missing_bank_credit",
+            "settlement_id": "setl_PC001",
+            "utr": "HDFC2608PC00001"
+          },
+          {
+            "logical_index": 12,
+            "scenario": "pending",
+            "settlement_id": "setl_PC008",
+            "utr": "HDFC2608PC00008"
+          }
+        ]
+      },
+      "tamper_probe": {
+        "detected": 1,
+        "probes": 1
+      }
+    },
+    {
+      "detected_exceptions": [
+        {
+          "amount_paise": 1474643,
+          "created_at": "2026-09-03T09:38:33.279394",
+          "exception_id": "exc_c290e5da66884fc5b9",
+          "exception_type": "SETTLEMENT_LEDGER_MISMATCH",
+          "proof_id": "proof_7aa2f61dfb2d48b2",
+          "run_id": "run_d81fdc5368594d5c",
+          "state": "OPEN",
+          "subject_id": "setl_PC002",
+          "subject_type": "SETTLEMENT"
+        },
+        {
+          "amount_paise": 1066657,
+          "created_at": "2026-09-03T09:38:33.279394",
+          "exception_id": "exc_18de15b265d344cd9d",
+          "exception_type": "PAISE_RUPEE_MISMATCH",
+          "proof_id": "proof_bb51be0004524770",
+          "run_id": "run_d81fdc5368594d5c",
+          "state": "OPEN",
+          "subject_id": "setl_PC001",
+          "subject_type": "SETTLEMENT"
+        },
+        {
+          "amount_paise": 1230646,
+          "created_at": "2026-09-03T09:38:33.279394",
+          "exception_id": "exc_82ccce9a5211432b89",
+          "exception_type": "AMBIGUOUS_MATCH",
+          "proof_id": "proof_c30e1a26b3784d65",
+          "run_id": "run_d81fdc5368594d5c",
+          "state": "OPEN",
+          "subject_id": "setl_PC006",
+          "subject_type": "SETTLEMENT"
+        },
+        {
+          "amount_paise": 1350073,
+          "created_at": "2026-09-03T09:38:33.279394",
+          "exception_id": "exc_25c5b714260b4fb0b3",
+          "exception_type": "MISSING_BANK_CREDIT",
+          "proof_id": "proof_ada31b16c1fb4680",
+          "run_id": "run_d81fdc5368594d5c",
+          "state": "OPEN",
+          "subject_id": "setl_PC010",
+          "subject_type": "SETTLEMENT"
+        },
+        {
+          "amount_paise": 25959,
+          "created_at": "2026-09-03T09:38:33.279394",
+          "exception_id": "exc_acaaddacf4db463898",
+          "exception_type": "UNEXPECTED_MULTIPLE_SETTLED_PAYMENTS",
+          "proof_id": "proof_8732ddeee8974dc3",
+          "run_id": "run_d81fdc5368594d5c",
+          "state": "OPEN",
+          "subject_id": "order_PC0061",
+          "subject_type": "ORDER"
+        }
+      ],
+      "manifest": {
+        "close_pack_schema_version": "proofclose-close-pack/v2",
+        "configuration_version": "2.0",
+        "dataset_seed": 20260902,
+        "dataset_version": "proofclose-eval/v2",
+        "embedding_model_version": null,
+        "evaluation_mode": "deterministic_offline",
+        "git_commit": "6164aaeaa331c4e59aa7c159906330a84fdbf70c",
+        "model_name": null,
+        "model_provider": null,
+        "prompt_version": null,
+        "proof_schema_version": "proof-object/v2",
+        "records_processed": 267,
+        "rule_version": "2.0",
+        "rule_versions": {
+          "order_payment_consistency": "1.0",
+          "settlement_match": "2.0"
+        },
+        "timestamp": "2026-09-03T09:38:33.406499+00:00"
+      },
+      "metric_counts": {
+        "ambiguous_abstentions": 1,
+        "ambiguous_truth": 1,
+        "auto_match_predictions": 7,
+        "auto_match_true_positive": 7,
+        "automated_paise": 9016850,
+        "automated_settlements": 7,
+        "exception_predictions": 5,
+        "exception_true_positive": 5,
+        "exception_truth": 5,
+        "expected_paise": 15485143,
+        "false_refusal_count": 0,
+        "historical_available": 13,
+        "historical_reproduced": 13,
+        "proof_covered_subjects": 13,
+        "proof_required_subjects": 13,
+        "proof_subject_checked": 13,
+        "proof_subject_correct": 13,
+        "settlement_count": 12,
+        "tamper_detected": 1,
+        "tamper_probes": 1,
+        "unique_allocation_violation_count": 0
+      },
+      "metrics": {
+        "ambiguous_abstention_recall": 1.0,
+        "auto_match_precision": 1.0,
+        "automation_rate_by_settlement_count": 0.583333,
+        "exception_f1": 1.0,
+        "exception_precision": 1.0,
+        "exception_recall": 1.0,
+        "false_refusal_count": 0,
+        "historical_reproduction_success_rate": 1.0,
+        "money_automation_rate": 0.58229,
+        "proof_coverage": 1.0,
+        "proof_subject_accuracy": 1.0,
+        "tamper_detection_rate": 1.0,
+        "unique_allocation_violation_count": 0
+      },
+      "predictions": [
+        {
+          "bank_ref": null,
+          "decision": "REVIEW_REQUIRED",
+          "difference_paise": null,
+          "evidence": {
+            "amount_delta_paise": -105599043,
+            "amount_exact": false,
+            "candidate_count": 0,
+            "settlement_ledger_consistent": false,
+            "temporal_consistency": false,
+            "utr_exact": false
+          },
+          "exception_type": "PAISE_RUPEE_MISMATCH",
+          "expected_paise": 1066657,
+          "observed_paise": null,
+          "proof_id": "proof_bb51be0004524770",
+          "reasons": [
+            "Settlement and reconstructed ledger differ by an exact x100 unit ratio"
+          ],
+          "settlement_id": "setl_PC001",
+          "utr": "HDFC2608PC00001"
+        },
+        {
+          "bank_ref": null,
+          "decision": "REVIEW_REQUIRED",
+          "difference_paise": null,
+          "evidence": {
+            "amount_delta_paise": -500,
+            "amount_exact": false,
+            "candidate_count": 0,
+            "settlement_ledger_consistent": false,
+            "temporal_consistency": false,
+            "utr_exact": false
+          },
+          "exception_type": "SETTLEMENT_LEDGER_MISMATCH",
+          "expected_paise": 1474643,
+          "observed_paise": null,
+          "proof_id": "proof_7aa2f61dfb2d48b2",
+          "reasons": [
+            "Reconstructed Recon ledger differs from the Settlement entity"
+          ],
+          "settlement_id": "setl_PC002",
+          "utr": "HDFC2608PC00002"
+        },
+        {
+          "bank_ref": "bank_PC003",
+          "decision": "AUTO_VERIFIED",
+          "difference_paise": 0,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 1,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": null,
+          "expected_paise": 1128444,
+          "observed_paise": 1128444,
+          "proof_id": "proof_14c23965c4a44f7d",
+          "reasons": [
+            "UTR exact",
+            "Amount exact",
+            "Settlement reconstruction consistent",
+            "Unique bank candidate"
+          ],
+          "settlement_id": "setl_PC003",
+          "utr": "HDFC2608PC00003"
+        },
+        {
+          "bank_ref": "bank_PC004",
+          "decision": "AUTO_VERIFIED",
+          "difference_paise": 0,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 1,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": null,
+          "expected_paise": 1216535,
+          "observed_paise": 1216535,
+          "proof_id": "proof_bdf52c4efdbc48ff",
+          "reasons": [
+            "UTR exact",
+            "Amount exact",
+            "Settlement reconstruction consistent",
+            "Unique bank candidate"
+          ],
+          "settlement_id": "setl_PC004",
+          "utr": "HDFC2608PC00004"
+        },
+        {
+          "bank_ref": null,
+          "decision": "PENDING",
+          "difference_paise": null,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": false,
+            "candidate_count": 0,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": false,
+            "utr_exact": false
+          },
+          "exception_type": null,
+          "expected_paise": 1346274,
+          "observed_paise": null,
+          "proof_id": "proof_5979ee16e92b4e50",
+          "reasons": [
+            "Settlement is inside the configured bank posting window"
+          ],
+          "settlement_id": "setl_PC005",
+          "utr": "HDFC2608PC00005"
+        },
+        {
+          "bank_ref": null,
+          "decision": "REFUSED",
+          "difference_paise": null,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 2,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": "AMBIGUOUS_MATCH",
+          "expected_paise": 1230646,
+          "observed_paise": null,
+          "proof_id": "proof_c30e1a26b3784d65",
+          "reasons": [
+            "Same-UTR bank evidence is ambiguous across candidate rows or claimants"
+          ],
+          "settlement_id": "setl_PC006",
+          "utr": "HDFC2608PC00006"
+        },
+        {
+          "bank_ref": "bank_PC007",
+          "decision": "AUTO_VERIFIED",
+          "difference_paise": 0,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 1,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": null,
+          "expected_paise": 846653,
+          "observed_paise": 846653,
+          "proof_id": "proof_b4ea3be53f3d4592",
+          "reasons": [
+            "UTR exact",
+            "Amount exact",
+            "Settlement reconstruction consistent",
+            "Unique bank candidate"
+          ],
+          "settlement_id": "setl_PC007",
+          "utr": "HDFC2608PC00007"
+        },
+        {
+          "bank_ref": "bank_PC008",
+          "decision": "AUTO_VERIFIED",
+          "difference_paise": 0,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 1,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": null,
+          "expected_paise": 1639043,
+          "observed_paise": 1639043,
+          "proof_id": "proof_757a653203004dfc",
+          "reasons": [
+            "UTR exact",
+            "Amount exact",
+            "Settlement reconstruction consistent",
+            "Unique bank candidate"
+          ],
+          "settlement_id": "setl_PC008",
+          "utr": "HDFC2608PC00008"
+        },
+        {
+          "bank_ref": "bank_PC009",
+          "decision": "AUTO_VERIFIED",
+          "difference_paise": 0,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 1,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": null,
+          "expected_paise": 1590134,
+          "observed_paise": 1590134,
+          "proof_id": "proof_cdb074601f5440b0",
+          "reasons": [
+            "UTR exact",
+            "Amount exact",
+            "Settlement reconstruction consistent",
+            "Unique bank candidate"
+          ],
+          "settlement_id": "setl_PC009",
+          "utr": "HDFC2608PC00009"
+        },
+        {
+          "bank_ref": null,
+          "decision": "UNRESOLVED",
+          "difference_paise": null,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": false,
+            "candidate_count": 0,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": false,
+            "utr_exact": false
+          },
+          "exception_type": "MISSING_BANK_CREDIT",
+          "expected_paise": 1350073,
+          "observed_paise": null,
+          "proof_id": "proof_ada31b16c1fb4680",
+          "reasons": [
+            "Processed settlement is outside the bank posting window",
+            "No supported bank candidate"
+          ],
+          "settlement_id": "setl_PC010",
+          "utr": "HDFC2608PC00010"
+        },
+        {
+          "bank_ref": "bank_PC011",
+          "decision": "AUTO_VERIFIED",
+          "difference_paise": 0,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 1,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": null,
+          "expected_paise": 1214695,
+          "observed_paise": 1214695,
+          "proof_id": "proof_b139092402624c09",
+          "reasons": [
+            "UTR exact",
+            "Amount exact",
+            "Settlement reconstruction consistent",
+            "Unique bank candidate"
+          ],
+          "settlement_id": "setl_PC011",
+          "utr": "HDFC2608PC00011"
+        },
+        {
+          "bank_ref": "bank_PC012",
+          "decision": "AUTO_VERIFIED",
+          "difference_paise": 0,
+          "evidence": {
+            "amount_delta_paise": 0,
+            "amount_exact": true,
+            "candidate_count": 1,
+            "settlement_ledger_consistent": true,
+            "temporal_consistency": true,
+            "utr_exact": true
+          },
+          "exception_type": null,
+          "expected_paise": 1381346,
+          "observed_paise": 1381346,
+          "proof_id": "proof_d968dfc1a74044ba",
+          "reasons": [
+            "UTR exact",
+            "Amount exact",
+            "Settlement reconstruction consistent",
+            "Unique bank candidate"
+          ],
+          "settlement_id": "setl_PC012",
+          "utr": "HDFC2608PC00012"
+        }
+      ],
+      "proof_reproduction": {
+        "available_attempts": 13,
+        "reproduced": 13,
+        "unavailable_version_probe": {
+          "failure_type": "RULE_IMPLEMENTATION_UNAVAILABLE",
+          "status": "FAILED"
+        }
+      },
+      "run": {
+        "configuration_version": "2.0",
+        "created_at": "2026-09-03T09:38:33.247612",
+        "expected_paise": 15485143,
+        "explained_paise": 9016850,
+        "records_processed": 267,
+        "rule_version": "2.0",
+        "run_id": "run_d81fdc5368594d5c",
+        "source_snapshot_id": "snapshot_c9595325a26daa6abce8",
+        "state": "SUCCESS",
+        "timings": {
+          "database_ms": 7,
+          "matching_ms": 0,
+          "normalization_ms": 1,
+          "persistence_ms": 9,
+          "proof_generation_ms": 10,
+          "settlement_build_ms": 0
+        },
+        "total_ms": 33,
+        "unresolved_paise": 6468293
+      },
+      "scenario_assignment": {
+        "boundary_scenarios": [
+          "shared_bank_row",
+          "utr_mismatch",
+          "amount_mismatch",
+          "time_mismatch",
+          "single_amount_only_candidate",
+          "multiple_amount_only_candidates",
+          "future_timestamp",
+          "non_processable_status",
+          "currency_mismatch",
+          "proof_mutation",
+          "unavailable_v1_rule"
+        ],
+        "seed": 20260902,
+        "settlements": [
+          {
+            "logical_index": 1,
+            "scenario": "unique_exact_match",
+            "settlement_id": "setl_PC004",
+            "utr": "HDFC2608PC00004"
+          },
+          {
+            "logical_index": 2,
+            "scenario": "unique_exact_match",
+            "settlement_id": "setl_PC008",
+            "utr": "HDFC2608PC00008"
+          },
+          {
+            "logical_index": 3,
+            "scenario": "unique_exact_match",
+            "settlement_id": "setl_PC011",
+            "utr": "HDFC2608PC00011"
+          },
+          {
+            "logical_index": 4,
+            "scenario": "unique_exact_match",
+            "settlement_id": "setl_PC009",
+            "utr": "HDFC2608PC00009"
+          },
+          {
+            "logical_index": 5,
+            "scenario": "unique_exact_match",
+            "settlement_id": "setl_PC003",
+            "utr": "HDFC2608PC00003"
+          },
+          {
+            "logical_index": 6,
+            "scenario": "unique_exact_match",
+            "settlement_id": "setl_PC012",
+            "utr": "HDFC2608PC00012"
+          },
+          {
+            "logical_index": 7,
+            "scenario": "order_excess",
+            "settlement_id": "setl_PC007",
+            "utr": "HDFC2608PC00007"
+          },
+          {
+            "logical_index": 8,
+            "scenario": "settlement_ledger_mismatch",
+            "settlement_id": "setl_PC002",
+            "utr": "HDFC2608PC00002"
+          },
+          {
+            "logical_index": 9,
+            "scenario": "paise_rupee_mismatch",
+            "settlement_id": "setl_PC001",
+            "utr": "HDFC2608PC00001"
+          },
+          {
+            "logical_index": 10,
+            "scenario": "duplicate_bank_candidates",
+            "settlement_id": "setl_PC006",
+            "utr": "HDFC2608PC00006"
+          },
+          {
+            "logical_index": 11,
+            "scenario": "missing_bank_credit",
+            "settlement_id": "setl_PC010",
+            "utr": "HDFC2608PC00010"
+          },
+          {
+            "logical_index": 12,
+            "scenario": "pending",
+            "settlement_id": "setl_PC005",
+            "utr": "HDFC2608PC00005"
+          }
+        ]
+      },
+      "tamper_probe": {
+        "detected": 1,
+        "probes": 1
+      }
+    }
+  ]
+}

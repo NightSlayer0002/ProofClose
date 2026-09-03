@@ -1,0 +1,14 @@
+metric,value
+auto_match_precision,1.0
+automation_rate_by_settlement_count,0.583333
+money_automation_rate,0.570966
+exception_precision,1.0
+exception_recall,1.0
+ambiguous_abstention_recall,1.0
+proof_coverage,1.0
+proof_subject_accuracy,1.0
+historical_reproduction_success_rate,1.0
+tamper_detection_rate,1.0
+exception_f1,1.0
+false_refusal_count,0
+unique_allocation_violation_count,0

@@ -1,0 +1,26 @@
+{
+  "close_pack_schema_version": "proofclose-close-pack/v2",
+  "configuration_version": "2.0",
+  "dataset_seed": null,
+  "dataset_seeds": [
+    20260831,
+    20260901,
+    20260902
+  ],
+  "dataset_version": "proofclose-eval/v2",
+  "embedding_model_version": null,
+  "evaluation_mode": "deterministic_offline",
+  "git_commit": "6164aaeaa331c4e59aa7c159906330a84fdbf70c",
+  "model_name": null,
+  "model_provider": null,
+  "prompt_version": null,
+  "proof_schema_version": "proof-object/v2",
+  "records_processed": 801,
+  "rule_version": "2.0",
+  "rule_versions": {
+    "order_payment_consistency": "1.0",
+    "settlement_match": "2.0"
+  },
+  "seed_count": 3,
+  "timestamp": "2026-09-03T09:38:33.438226+00:00"
+}

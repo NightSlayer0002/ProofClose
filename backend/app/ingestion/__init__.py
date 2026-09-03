@@ -1,0 +1,2 @@
+"""Bounded, idempotent evidence ingestion."""
+

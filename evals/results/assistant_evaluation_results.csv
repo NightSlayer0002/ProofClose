@@ -1,0 +1,9 @@
+metric,value
+tool_selection_accuracy,1.0
+grounded_answer_accuracy,1.0
+guidance_action_suitability,1.0
+false_refusal_rate,0.0
+adversarial_refusal_rate,1.0
+unsupported_claim_count,0
+provider_latency_p50_ms,unavailable
+provider_latency_p95_ms,unavailable

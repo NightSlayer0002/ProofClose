@@ -1,0 +1,120 @@
+# ProofClose
+
+ProofClose is an evidence-first settlement reconciliation workspace for Razorpay merchants. It turns four ordinary CSV exports into an immutable source snapshot, reconstructs settlements in integer paise, matches bank credits conservatively, and creates a versioned proof for every result.
+
+The rule of the product is simple:
+
+> AI proposes. Code computes. Evidence proves. Policy decides. Humans control exceptions.
+
+The complete demo is deterministic and works offline. AI credentials are optional and never control arithmetic, matching, reviews, or close approval. The docked Hybrid Evidence Copilot can talk naturally about concepts, but every statement about the current run is freshly fetched through allowlisted read-only tools. Conversation history helps wording; it is never a source of financial truth.
+
+```text
+merchant + Razorpay + bank CSVs
+              |
+       validate and hash
+              |
+     immutable snapshot
+              |
+   deterministic L0/L1/L2 rules
+              |
+       versioned proofs
+       /      |       \
+exceptions  investigate  close policy
+```
+
+## Why this use case matters
+
+Finance teams often spend close day asking three questions: did every payment reach the right settlement, did every settlement reach the bank, and can we prove the answer later? A spreadsheet can calculate totals, but it rarely preserves the exact inputs, rules, and operator decisions that produced an answer. ProofClose makes that evidence the primary product.
+
+An LLM is deliberately not the matcher. A language model can produce plausible but non-repeatable answers, while reconciliation requires exact paise arithmetic, explicit predicates, and safe refusal. ProofClose lets optional AI make evidence easier to ask about; it never lets prose become financial authority.
+
+## Five-minute local demo
+
+Prerequisites: Python 3.12 and Node.js 20 or newer.
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+Set-Location frontend
+npm.cmd install
+Set-Location ..
+```
+
+Start the API:
+
+```powershell
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000
+```
+
+In a second terminal, start the UI:
+
+```powershell
+Set-Location frontend
+npm.cmd run dev -- --host 127.0.0.1
+```
+
+Open `http://127.0.0.1:5173`. The UI loads 267 seeded rows through the same ingestion path as an uploaded file and creates a real run. No account or API key is required.
+
+## What to show a reviewer
+
+1. Reconciliation: inspect the settlement table and open a proof.
+2. In the proof drawer, compare **Reproduce historical proof** with **Evaluate with current rules**. They are separate operations.
+3. Exceptions: show an ambiguous bank match that refuses to guess, plus the planted ledger, missing-credit, multiple-payment, and paise/rupee anomalies.
+4. Evidence Copilot: click **Ask assistant** on two different settlements and notice the visible context divider and separate thread for each one. Ask a general question such as “What is a UTR?”, then ask “How much is unresolved in this run?” The first is general guidance; the second must fetch fresh canonical evidence. Ask “What should I do?” on an exception to see verified facts separated from server-owned read-only guidance.
+5. Close: see why unresolved evidence blocks normal close and how reviewed exceptions remain auditable.
+6. Diagnostics: inspect measured stage timings, truthful configured/reachable provider states, actual call/token counts, and `unavailable` cost when no versioned pricing configuration exists.
+
+## Trust invariants
+
+- Authoritative money is stored and computed as integer paise; floats are rejected.
+- Exact UTR and amount only auto-match when there is exactly one bank candidate.
+- Raw inputs are hashed, normalized fields retain provenance, and runs bind to immutable snapshots.
+- Historical reproduction requires the exact original rule implementation. If it is missing, the operation explicitly returns `RULE_IMPLEMENTATION_UNAVAILABLE`; it never substitutes today's rule.
+- Current-rule re-evaluation creates a new linked proof and never edits history.
+- `X-Tenant-ID` and `X-Actor-ID` are demo context only. They are not authentication, and production mode rejects them.
+- Prompt-like text in uploaded narration is untrusted data and cannot change deterministic decisions.
+- The assistant has four visible outcomes: `Verified from evidence`, `Verified + guidance`, `General guidance`, and `Unable to verify`.
+- General model prose is allowed only for non-current educational/product help. Current amounts, counts, statuses, identifiers, dates, rules, and configurations require a successful relevant tool result from that request.
+- Uploaded narration, raw source text, credentials, provider bodies, hidden prompts, and internal tool instructions are excluded from general-model context. Unsafe output falls back deterministically.
+- The assistant has no review, approval, mutation, SQL, or money-movement tool. Recommended actions are server-owned instructions, not executed actions.
+
+A concrete refusal is planted in `setl_PC010`: two bank rows share the exact UTR and amount. ProofClose records two candidates and returns `AMBIGUOUS_MATCH` / `REFUSED` instead of selecting one.
+
+## Quality commands
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest backend/tests -q
+.\.venv\Scripts\python.exe scripts\generate_demo.py
+.\.venv\Scripts\python.exe -m evals.runner --seeds 20260831 20260901 20260902 --output evals/results
+.\.venv\Scripts\python.exe -m evals.assistant_runner --mode offline --output evals/results
+.\.venv\Scripts\python.exe scripts\scan_secrets.py
+Set-Location frontend
+npm.cmd test -- --run
+npm.cmd run lint
+npm.cmd run typecheck
+npm.cmd run build
+```
+
+## Repository map
+
+- `backend/app/domain`: money and immutable domain contracts
+- `backend/app/ingestion`, `normalization`: safe input handling and field provenance
+- `backend/app/reconciliation`: deterministic Level 0/1/2 rules
+- `backend/app/proofs`: fingerprints, version registry, reproduction, and re-evaluation
+- `backend/app/investigations`: typed hybrid routing, general-help isolation, allowlisted read-only finance tools, and server-owned guidance
+- `backend/app/review`, `close`: human actions, audit, and close policy
+- `evals`: seeded ground truth and measured evaluation
+- `frontend`: the finance-operations interface
+- `docs/interview-kit`: beginner-friendly explanations and interview practice
+
+For the full byte-to-close explanation and interview preparation, start with `docs/interview-kit/10_COMPLETE_START_TO_FINISH_GUIDE.txt`.
+
+Read [ARCHITECTURE.md](ARCHITECTURE.md), [EVALUATION.md](EVALUATION.md), [SECURITY.md](SECURITY.md), and [LIMITATIONS.md](LIMITATIONS.md) before presenting.
+
+## Prior-work and provenance note
+
+The navigation-plus-drill-down idea was informed by the author's earlier local GreenMind project. ProofClose was implemented as a separate repository for this problem; it does not copy GreenMind credentials or wholesale code, and no other Buildathon submission was used. Synthetic financial records are generated by `scripts/generate_demo.py`; field lineage is described in `docs/PROVENANCE.md`.
+
+## Demo identity warning
+
+The local demo uses fixed tenant and actor context so judges can run it without signup. These headers do not verify a person. A production deployment must replace the dependency in `backend/app/api/context.py` with signed identity claims and role checks. Setting `PROOFCLOSE_ENV=production` causes demo identity headers to be rejected.
