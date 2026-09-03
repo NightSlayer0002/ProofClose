@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent }
 import { AlertTriangle, Check, Copy, Flag, History, RefreshCw, X } from 'lucide-react'
 
 import { formatINR } from '../app/formatters'
-import type { Proof } from '../app/types'
+import type { Evidence, Proof } from '../app/types'
 import { StatusLabel } from './StatusLabel'
 import { Tooltip } from './Tooltip'
 
@@ -12,6 +12,8 @@ interface Props {
   onClose: () => void
   onAction: (action: 'reproduce' | 'reevaluate') => void
 }
+
+const isSettlementEvidence = (evidence: Proof['evidence']): evidence is Evidence => 'candidate_count' in evidence
 
 export function ProofDrawer({ proof, busyAction, onClose, onAction }: Props) {
   const layer = useRef<HTMLDivElement>(null)
@@ -64,12 +66,23 @@ export function ProofDrawer({ proof, busyAction, onClose, onAction }: Props) {
     }
   }
 
-  const checks = [
-    ['UTR exact', proof.evidence.utr_exact],
-    ['Amount exact', proof.evidence.amount_exact],
-    ['Settlement reconstruction', proof.evidence.settlement_ledger_consistent],
-    ['Unique bank candidate', proof.evidence.candidate_count === 1],
-  ] as const
+  const settlementEvidence = isSettlementEvidence(proof.evidence)
+  const settlementInput = proof.evidence_inputs.settlement
+  const checks: ReadonlyArray<readonly [string, boolean]> = isSettlementEvidence(proof.evidence)
+    ? [
+        ['UTR exact', proof.evidence.utr_exact],
+        ['Amount exact', proof.evidence.amount_exact],
+        ['Settlement reconstruction', proof.evidence.settlement_ledger_consistent],
+        ['Unique bank candidate', proof.evidence.candidate_count === 1],
+      ]
+    : [
+        ['Payment rows present', proof.evidence.payment_row_count > 0],
+        ['Expected order payment', proof.evidence.settled_payment_paise === proof.evidence.expected_order_payment_paise],
+        ['No excess settled payment', proof.evidence.excess_payment_paise === 0],
+      ]
+  const evidenceCount = isSettlementEvidence(proof.evidence)
+    ? proof.evidence.candidate_count
+    : proof.evidence.payment_row_count
 
   return (
     <div ref={layer} className="drawer-layer" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
@@ -85,16 +98,16 @@ export function ProofDrawer({ proof, busyAction, onClose, onAction }: Props) {
 
         <section className="proof-section evidence-pair">
           <div>
-            <span className="section-kicker">Settlement</span>
-            <code>{proof.inputs.settlement?.settlement_id ?? 'Snapshot calculation'}</code>
+            <span className="section-kicker">{proof.subject.subject_type === 'ORDER' ? 'Order' : 'Settlement'}</span>
+            <code>{proof.subject.subject_id}</code>
             <dl><dt>Expected credit</dt><dd>{formatINR(proof.result.expected_paise)}</dd></dl>
-            <dl><dt>Settlement UTR</dt><dd><code>{proof.inputs.settlement?.utr ?? 'Unavailable'}</code></dd></dl>
+            <dl><dt>Settlement UTR</dt><dd><code>{settlementInput?.utr ?? 'Not applicable'}</code></dd></dl>
           </div>
           <div>
             <span className="section-kicker">Bank</span>
             <code>{proof.source_rows.find((row) => row.table === 'bank_statement')?.id ?? 'No supported row'}</code>
             <dl><dt>Observed credit</dt><dd>{proof.result.observed_paise == null ? '—' : formatINR(proof.result.observed_paise)}</dd></dl>
-            <dl><dt>Candidate count</dt><dd>{proof.evidence.candidate_count}</dd></dl>
+            <dl><dt>{settlementEvidence ? 'Candidate count' : 'Payment row count'}</dt><dd>{evidenceCount}</dd></dl>
           </div>
         </section>
 
@@ -119,8 +132,9 @@ export function ProofDrawer({ proof, busyAction, onClose, onAction }: Props) {
         <section className="proof-section version-grid">
           <div><span>Source snapshot</span><code>{proof.source_snapshot_id}</code></div>
           <div><span>Rule</span><code>{proof.rule_name}@{proof.rule_version}</code></div>
-          <div><span>Configuration</span><code>{proof.configuration_version}</code></div>
-          <div><span>Fingerprint</span><code title={proof.proof_fingerprint}>{proof.proof_fingerprint.slice(0, 24)}…</code></div>
+          <div><span>Configuration</span><code>{proof.configuration.version}</code></div>
+          <div><span>Decision fingerprint</span><code title={proof.decision_fingerprint}>{proof.decision_fingerprint.slice(0, 24)}…</code></div>
+          <div><span>Artifact fingerprint</span><code title={proof.artifact_fingerprint}>{proof.artifact_fingerprint.slice(0, 24)}…</code></div>
         </section>
 
         <section className="proof-section proof-operations">

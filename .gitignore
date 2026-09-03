@@ -25,6 +25,7 @@ frontend/test-results/
 *.db-wal
 uploads/
 logs/
-docs/screenshots/*.png
+docs/screenshots/investigate.png
+docs/screenshots/reconciliation-narrow.png
 
 

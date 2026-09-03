@@ -6,16 +6,19 @@ import { ProofDrawer } from '../components/ProofDrawer'
 import type { Proof } from '../app/types'
 
 const proof: Proof = {
+  schema_version: 'proof-object/v2',
   proof_id: 'proof_123',
   tenant_id: 'demo_merchant',
   run_id: 'run_123',
   source_snapshot_id: 'snapshot_123',
   status: 'AUTO_VERIFIED',
   source_rows: [{ table: 'bank_statement', id: 'raw_bank_1', raw_hash: 'sha256:abc' }],
+  subject: { subject_type: 'SETTLEMENT', subject_id: 'setl_1' },
   rule_name: 'settlement_match',
   rule_version: '1.0',
-  configuration_version: '1.0',
-  inputs: { settlement: { settlement_id: 'setl_1', utr: 'UTR1' } },
+  configuration: { version: '1.0', values: { pending_hours: 3 } },
+  evidence_inputs: { settlement: { settlement_id: 'setl_1', utr: 'UTR1' } },
+  evaluated_at: '2026-08-26T12:00:00Z',
   formula: 'sum(credit_paise) - sum(debit_paise)',
   result: { expected_paise: 475000, observed_paise: 475000, delta_paise: 0 },
   evidence: {
@@ -31,7 +34,8 @@ const proof: Proof = {
   classification: 'calculated',
   exception_type: null,
   unresolved_reason: null,
-  proof_fingerprint: 'sha256:def',
+  decision_fingerprint: 'sha256:decision',
+  artifact_fingerprint: 'sha256:artifact',
   supersedes_proof_id: null,
   created_at: '2026-08-26T12:00:00Z',
 }
@@ -46,6 +50,8 @@ describe('ProofDrawer', () => {
     expect(screen.getByText('Current-rule re-evaluation')).toBeVisible()
     expect(screen.getByRole('button', { name: /reproduce historical proof/i })).toBeVisible()
     expect(screen.getByRole('button', { name: /evaluate with current rules/i })).toBeVisible()
+    expect(screen.getByText('Decision fingerprint')).toBeVisible()
+    expect(screen.getByText('Artifact fingerprint')).toBeVisible()
   })
 
   it('closes with Escape', async () => {

@@ -259,7 +259,7 @@ def test_persisted_proof_can_be_reproduced_after_application_restart(tmp_path) -
     settings = Settings(PROOFCLOSE_ENV="demo", PROOFCLOSE_DATA_DIR=tmp_path)
     first_app = create_app(settings)
     with TestClient(first_app) as first_client:
-        first_client.post("/api/demo/reset")
+        first_client.post("/api/demo/seed")
         run = first_client.post("/api/runs", json={}).json()
         proof_id = first_client.get(f"/api/runs/{run['run_id']}/settlements").json()["items"][0]["proof_id"]
     first_app.state.database.dispose()
@@ -294,7 +294,7 @@ def test_persisted_order_proof_can_be_reproduced_after_application_restart(tmp_p
     settings = Settings(PROOFCLOSE_ENV="demo", PROOFCLOSE_DATA_DIR=tmp_path)
     first_app = create_app(settings)
     with TestClient(first_app) as first_client:
-        first_client.post("/api/demo/reset")
+        first_client.post("/api/demo/seed")
         run = first_client.post("/api/runs", json={}).json()
         order_item = next(
             item
@@ -322,7 +322,7 @@ def test_tampered_persisted_proof_fetch_is_sanitized_and_not_cached(tmp_path) ->
     settings = Settings(PROOFCLOSE_ENV="demo", PROOFCLOSE_DATA_DIR=tmp_path)
     app = create_app(settings)
     with TestClient(app, raise_server_exceptions=False) as client:
-        client.post("/api/demo/reset")
+        client.post("/api/demo/seed")
         run = client.post("/api/runs", json={}).json()
         proof_id = client.get(f"/api/runs/{run['run_id']}/settlements").json()["items"][0]["proof_id"]
         with app.state.database.session() as session:

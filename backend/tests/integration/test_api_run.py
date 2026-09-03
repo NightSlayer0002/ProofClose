@@ -45,7 +45,7 @@ def upload_snapshot(
 def test_demo_initializer_uses_ingestion_and_builds_snapshot(tmp_path) -> None:
     """A shortcut with precomputed decisions would not create accepted source evidence."""
     with make_client(tmp_path) as client:
-        response = client.post("/api/demo/reset")
+        response = client.post("/api/demo/seed")
         assert response.status_code == 200
         payload = response.json()
         assert payload["identity_mode"] == "INSECURE_DEMO_CONTEXT"
@@ -59,7 +59,7 @@ def test_demo_initializer_uses_ingestion_and_builds_snapshot(tmp_path) -> None:
 def test_demo_run_builds_live_verified_refused_pending_and_unresolved_results(tmp_path) -> None:
     """The vertical slice must exercise policy branches from current ingested rows."""
     with make_client(tmp_path) as client:
-        client.post("/api/demo/reset")
+        client.post("/api/demo/seed")
         response = client.post("/api/runs", json={})
         assert response.status_code == 200
         run = response.json()
@@ -76,7 +76,7 @@ def test_demo_run_builds_live_verified_refused_pending_and_unresolved_results(tm
 def test_run_summary_is_derived_from_rows(tmp_path) -> None:
     """A hardcoded summary would diverge from persisted settlement decisions."""
     with make_client(tmp_path) as client:
-        client.post("/api/demo/reset")
+        client.post("/api/demo/seed")
         run = client.post("/api/runs", json={}).json()
         rows = client.get(f"/api/runs/{run['run_id']}/settlements").json()["items"]
         expected = sum(row["expected_paise"] for row in rows)
@@ -89,7 +89,7 @@ def test_run_summary_is_derived_from_rows(tmp_path) -> None:
 def test_demo_run_uses_current_v2_rule_configuration_and_policy_keys(tmp_path) -> None:
     """The active run must persist the v2 rule/config identity and never serialize the legacy policy key."""
     with make_client(tmp_path) as client:
-        client.post("/api/demo/reset")
+        client.post("/api/demo/seed")
         response = client.post("/api/runs", json={})
         assert response.status_code == 200
         run = response.json()
@@ -116,7 +116,7 @@ def test_demo_run_uses_current_v2_rule_configuration_and_policy_keys(tmp_path) -
 def test_order_excess_creates_a_dedicated_order_proof_without_bank_or_settlement_rows(tmp_path) -> None:
     """Order overpayment must stay separate from settlement lineage and unresolved close money."""
     with make_client(tmp_path) as client:
-        client.post("/api/demo/reset")
+        client.post("/api/demo/seed")
         run = client.post("/api/runs", json={}).json()
         rows = client.get(f"/api/runs/{run['run_id']}/settlements").json()["items"]
         exceptions = client.get(f"/api/exceptions?run_id={run['run_id']}").json()["items"]
@@ -141,7 +141,7 @@ def test_order_excess_creates_a_dedicated_order_proof_without_bank_or_settlement
 def test_ambiguous_settlement_proof_lists_all_candidates_and_no_unrelated_bank_rows(tmp_path) -> None:
     """Ambiguous settlement lineage must cite every credible bank candidate and nothing else."""
     with make_client(tmp_path) as client:
-        client.post("/api/demo/reset")
+        client.post("/api/demo/seed")
         run = client.post("/api/runs", json={}).json()
         rows = client.get(f"/api/runs/{run['run_id']}/settlements").json()["items"]
         ambiguous = next(row for row in rows if row["settlement_id"] == "setl_PC010")
@@ -161,7 +161,7 @@ def test_ambiguous_settlement_proof_lists_all_candidates_and_no_unrelated_bank_r
 def test_every_close_blocking_non_automatic_settlement_has_a_review_item_or_system_blocker(tmp_path) -> None:
     """No blocking settlement should be invisible to the review and close layers."""
     with make_client(tmp_path) as client:
-        client.post("/api/demo/reset")
+        client.post("/api/demo/seed")
         run = client.post("/api/runs", json={}).json()
         rows = client.get(f"/api/runs/{run['run_id']}/settlements").json()["items"]
         exceptions = client.get(f"/api/exceptions?run_id={run['run_id']}").json()["items"]
@@ -319,7 +319,7 @@ def test_usage_is_observed_and_unsupported_narration_falls_back_to_canonical_fac
         assistant_provider=_UnsupportedNarrationProvider(),
     )
     with TestClient(app) as client:
-        client.post("/api/demo/reset")
+        client.post("/api/demo/seed")
         run = client.post("/api/runs", json={}).json()
         answer = client.post(
             "/api/investigations/query",
@@ -347,7 +347,7 @@ def test_direct_supported_question_makes_zero_provider_calls(tmp_path) -> None:
         assistant_provider=provider,
     )
     with TestClient(app) as client:
-        client.post("/api/demo/reset")
+        client.post("/api/demo/seed")
         run = client.post("/api/runs", json={}).json()
         answer = client.post(
             "/api/investigations/query",
@@ -368,7 +368,7 @@ def test_provider_refusal_is_safe_and_does_not_execute_or_narrate(tmp_path) -> N
         assistant_provider=provider,
     )
     with TestClient(app) as client:
-        client.post("/api/demo/reset")
+        client.post("/api/demo/seed")
         run = client.post("/api/runs", json={}).json()
         answer = client.post(
             "/api/investigations/query",
@@ -406,7 +406,7 @@ def test_failed_http_attempt_then_denied_retry_is_observed_without_extra_request
     )
     app.state.investigations.budget = ProviderCallBudget(limit=1)
     with TestClient(app) as client:
-        client.post("/api/demo/reset")
+        client.post("/api/demo/seed")
         run = client.post("/api/runs", json={}).json()
         answer_response = client.post(
             "/api/investigations/query",
@@ -434,7 +434,7 @@ def test_planning_budget_exhaustion_makes_zero_provider_calls_and_is_observed(tm
     )
     app.state.investigations.budget = ProviderCallBudget(limit=0)
     with TestClient(app) as client:
-        client.post("/api/demo/reset")
+        client.post("/api/demo/seed")
         run = client.post("/api/runs", json={}).json()
         answer = client.post(
             "/api/investigations/query",
@@ -456,7 +456,7 @@ def test_narration_budget_exhaustion_makes_no_extra_provider_call_and_is_observe
     )
     app.state.investigations.budget = ProviderCallBudget(limit=1)
     with TestClient(app) as client:
-        client.post("/api/demo/reset")
+        client.post("/api/demo/seed")
         run = client.post("/api/runs", json={}).json()
         answer = client.post(
             "/api/investigations/query",
@@ -502,7 +502,7 @@ def test_rejected_provider_output_still_records_observed_usage(tmp_path) -> None
         assistant_provider=provider,
     )
     with TestClient(app) as client:
-        client.post("/api/demo/reset")
+        client.post("/api/demo/seed")
         run = client.post("/api/runs", json={}).json()
         answer = client.post(
             "/api/investigations/query",
@@ -522,7 +522,7 @@ def test_snapshot_endpoint_freezes_selected_accepted_sources(tmp_path) -> None:
     """Reviewers can create an explicit snapshot instead of relying on demo-only state."""
     app = create_app(Settings(PROOFCLOSE_ENV="demo", PROOFCLOSE_DATA_DIR=tmp_path))
     with TestClient(app) as client:
-        demo = client.post("/api/demo/reset").json()
+        demo = client.post("/api/demo/seed").json()
         response = client.post("/api/snapshots", json={"source_ids": demo["source_ids"]})
     app.state.database.dispose()
     app.state.observability.dispose()
@@ -535,7 +535,7 @@ def test_uploaded_settlement_without_recon_evidence_creates_partial_system_resul
     """Incomplete cross-source evidence must be durable and explicit rather than a server crash."""
     app = create_app(Settings(PROOFCLOSE_ENV="demo", PROOFCLOSE_DATA_DIR=tmp_path))
     with TestClient(app, raise_server_exceptions=False) as client:
-        demo = client.post("/api/demo/reset").json()
+        demo = client.post("/api/demo/seed").json()
         sources = client.get("/api/sources").json()["items"]
         retained = [item["source_id"] for item in sources if item["source_type"] != "settlements"]
         orphan_csv = (
@@ -569,7 +569,7 @@ def test_unexpected_run_failure_is_persisted_as_failed(tmp_path, monkeypatch) ->
     """A stage crash must leave a durable failed run instead of disappearing behind HTTP 500."""
     app = create_app(Settings(PROOFCLOSE_ENV="demo", PROOFCLOSE_DATA_DIR=tmp_path))
     with TestClient(app, raise_server_exceptions=False) as client:
-        client.post("/api/demo/reset")
+        client.post("/api/demo/seed")
 
         def fail_proof_creation(*_args, **_kwargs):
             raise RuntimeError("simulated proof stage failure")

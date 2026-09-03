@@ -7,7 +7,7 @@
 3. Use **Reproduce historical proof**. A missing versioned rule or fingerprint mismatch is a reproducibility incident.
 4. Inspect source hashes and provenance. Compare with the original exported files outside the application.
 5. If policy changed, use **Evaluate with current rules** to create a linked comparison. Never call that historical reproduction.
-6. Challenge the match or leave the exception unresolved with a reason so the audit trail preserves human control.
+6. Challenge the match or record an unresolved review disposition with a reason. The review is then complete, while the immutable proof and discrepancy remain visible.
 7. Contain the affected rule version and runs; do not silently recalculate unrelated history.
 8. Correct by releasing a new versioned rule, creating a new run, and documenting impact. Preserve the original artifact.
 

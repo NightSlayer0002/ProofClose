@@ -28,6 +28,7 @@ afterEach(cleanup)
 
 beforeEach(() => {
   vi.clearAllMocks()
+  window.history.replaceState({}, '', '/workspace')
   const run = {
     run_id: 'run_saved',
     state: 'SUCCESS',
@@ -64,7 +65,10 @@ beforeEach(() => {
   apiMock.close.mockResolvedValue({
     run_id: 'run_saved', state: 'READY', reconciled_paise: 100, unresolved_paise: 0,
     auto_verified_count: 1, manually_reviewed_count: 0, blocking_exceptions: 0,
-    exception_count: 0, source_snapshot_id: 'snapshot_saved', rule_version: '1.0',
+    unreviewable_blockers: 0, exception_count: 0, settlement_exception_count: 0,
+    review_item_count: 0, total_close_blockers: 0, system_error_blockers: 0,
+    integrity_blockers: 0, source_snapshot_id: 'snapshot_saved', rule_version: '1.0',
+    configuration_version: '1.0',
   })
   apiMock.diagnostics.mockResolvedValue({
     run, timeline: [], slowest_stage: { stage: 'none', duration_ms: 0 }, llm_calls: 0,
@@ -81,6 +85,19 @@ beforeEach(() => {
     detail: 'Freshly checked.', recommended_actions: [], technical_details: { route: 'DIRECT_TOOL' },
     citations: { proof_ids: [], source_rows: [], support_scope: 'AGGREGATE' }, supporting_record_count: 0, run_record_count: 2,
   })
+})
+
+it('renders the public provenance landing page without initializing financial data', async () => {
+  window.history.replaceState({}, '', '/')
+
+  render(<App />)
+
+  expect(screen.getByRole('heading', { name: 'Close every settlement with proof.' })).toBeVisible()
+  expect(screen.getByText('Evidence moves. Proof stays.')).toBeVisible()
+  expect(screen.getAllByRole('link', { name: 'Open evidence workspace' })[0]).toHaveAttribute('href', '/workspace')
+  expect(apiMock.health).not.toHaveBeenCalled()
+  expect(apiMock.sources).not.toHaveBeenCalled()
+  expect(apiMock.latestRun).not.toHaveBeenCalled()
 })
 
 it('reuses persisted evidence and the latest run instead of resetting on mount', async () => {
@@ -178,7 +195,7 @@ it('discards an old-run assistant response that finishes after a rerun', async (
     resolveInvestigation({
       status: 'ANSWERED', route: 'DIRECT_TOOL', tool_name: 'close_blockers', question: 'Old run question',
       explained_paise: 10, unresolved_paise: 90, canonical: { run_id: 'run_saved' }, narration: null,
-      narration_status: 'not_requested', lines: [], proof_ids: ['proof_old'], source_record_count: 1,
+      narration_status: 'not_requested', lines: [], proof_ids: ['proof_old'],
       calculation_count: 1, unsupported_factual_claims: 0,
       provider: { configuration_status: 'not_configured', reachability_status: 'not_probed' },
       estimated_cost: 'unavailable', message: 'Old-run answer must never reappear',

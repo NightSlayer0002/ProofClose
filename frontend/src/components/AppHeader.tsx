@@ -7,6 +7,7 @@ interface Props {
   active: Page
   identityMode: string
   running: boolean
+  onHome: () => void
   onNavigate: (page: Page) => void
   onRun: () => void
 }
@@ -18,10 +19,10 @@ const primary: Array<{ id: Page; label: string }> = [
   { id: 'close', label: 'Close' },
 ]
 
-export function AppHeader({ active, identityMode, running, onNavigate, onRun }: Props) {
+export function AppHeader({ active, identityMode, running, onHome, onNavigate, onRun }: Props) {
   return (
     <header className="app-header">
-      <button className="brand" onClick={() => onNavigate('reconciliation')} aria-label="ProofClose home">
+      <button className="brand" onClick={onHome} aria-label="ProofClose home">
         <span className="brand-mark"><ShieldCheck aria-hidden="true" size={17} /></span>
         <span className="brand-name">ProofClose</span>
       </button>

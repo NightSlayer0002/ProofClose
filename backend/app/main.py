@@ -69,7 +69,7 @@ def create_app(settings: Settings | None = None, assistant_provider: AssistantPr
             max_retries=settings.llm_max_retries,
         )
     investigations = InvestigationService(
-        FinanceTools(run_service, review_service, proof_service),
+        FinanceTools(run_service, review_service, proof_service, close_service),
         provider=provider,
         observability=observability,
         budget=ProviderCallBudget(settings.provider_call_budget),

@@ -14,6 +14,23 @@ CSV evidence
 
 This ordering is deliberate. Workflow features consume proofs; they do not invent financial facts independently.
 
+## Finance and close vocabulary
+
+The persisted API field names remain stable, but the product uses precise human labels:
+
+| Product label | Stored/derived value | Meaning |
+|---|---|---|
+| Expected settlement amount | `expected_paise` | Sum expected to reach the bank for settlement subjects in the run. |
+| Auto-verified amount | `explained_paise` | Expected amount belonging to settlements the deterministic rules marked `AUTO_VERIFIED`. |
+| Not auto-verified amount | `unresolved_paise` | `expected_paise - explained_paise`; human review does not reduce it or turn it into an automatically verified amount. |
+| Auto-verification coverage | `explained_paise / expected_paise` | Share of expected settlement money automatically verified. |
+| Settlement exceptions | distinct settlement subjects with an exception | Settlement-level affected subjects, not all review rows. |
+| Review items | persisted order/settlement exception rows | One settlement can create more than one review item. |
+| Open review items | review rows with state `OPEN` | Items still awaiting a human disposition. `LEFT_UNRESOLVED` is reviewed, not open. |
+| Total close blockers | open review items + unreviewable results + system errors + integrity failures | The authoritative count used by close policy. |
+
+These quantities are intentionally not interchangeable. In particular, summing review-item amounts can double-count one settlement, so it is never presented as the run's not-auto-verified amount.
+
 ## Boundaries
 
 | Module | Owns | Must not own |
@@ -57,6 +74,8 @@ question
 ```
 
 Current amounts, counts, statuses, IDs, dates, rule versions, and configuration versions are privileged facts. They cannot come from chat history or model memory. A verified label requires a successful, relevant canonical tool result in the same request. Threads are keyed by run and selected context, so switching settlements changes both the visible divider and the conversation state without sending an AI request. The assistant remains read-only; workflow state belongs to review and close services.
+
+`close_blockers` reuses `CloseService.get_state`; it does not infer a second blocker definition. Assistant citations separately report the records that directly support an answer and the total number of records in the run.
 
 ## Scale path
 

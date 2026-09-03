@@ -22,7 +22,7 @@ interface Props {
 
 const runStarters = [
   "What prevents today's close?",
-  "What is today's unresolved amount?",
+  "What amount is not auto-verified today?",
   'Show pending settlements',
   'Explain the exception breakdown',
 ]
@@ -53,7 +53,7 @@ function contextPresentation(context: AssistantContext) {
     kind: 'Current close',
     id: null,
     title: 'Investigating the current close',
-    description: 'Ask about close blockers, unresolved money, exceptions, or how ProofClose works.',
+    description: 'Ask about close blockers, not-auto-verified money, exceptions, or how ProofClose works.',
     starters: runStarters,
   }
 }
@@ -197,7 +197,7 @@ export function EvidenceAssistant({
               <div className="assistant-response-header"><span className="assistant-author">PROOFCLOSE</span><span className={`assistant-answer-label mode-${report.answer_mode.toLowerCase()}`}>{report.answer_label}</span></div>
               <section className="assistant-primary-answer" aria-label={report.answer_mode === 'GENERAL_HELP' ? 'Assistant answer' : 'Verified facts'}>
                 <p style={{ whiteSpace: 'pre-line' }}>{report.message}</p>
-                {report.status === 'ANSWERED' && (report.explained_paise !== null || report.unresolved_paise !== null) && <dl>{report.explained_paise !== null && <div><dt>Explained</dt><dd>{formatINR(report.explained_paise)}</dd></div>}{report.unresolved_paise !== null && <div><dt>Unresolved</dt><dd>{formatINR(report.unresolved_paise)}</dd></div>}</dl>}
+                {report.status === 'ANSWERED' && (report.explained_paise !== null || report.unresolved_paise !== null) && <dl>{report.explained_paise !== null && <div><dt>Auto-verified amount</dt><dd>{formatINR(report.explained_paise)}</dd></div>}{report.unresolved_paise !== null && <div><dt>Not auto-verified amount</dt><dd>{formatINR(report.unresolved_paise)}</dd></div>}</dl>}
               </section>
               {report.detail && <p className="assistant-detail" style={{ whiteSpace: 'pre-line' }}>{report.detail}</p>}
               {report.narration && <section className="assistant-additional"><span>Additional context</span><p style={{ whiteSpace: 'pre-line' }}>{report.narration}</p></section>}

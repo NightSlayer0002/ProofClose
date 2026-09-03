@@ -20,10 +20,17 @@ const run: RunSummary = {
 }
 
 describe('SummaryStrip', () => {
-  it('derives the coverage treatment from explained and expected money', () => {
+  it('names automatic verification separately from exceptions and review workflow', () => {
     render(<SummaryStrip run={run} rows={[]} />)
 
+    expect(screen.getByText('Expected settlement amount')).toBeVisible()
+    expect(screen.getByText('Auto-verified amount')).toBeVisible()
+    expect(screen.getByText('Auto-verification coverage')).toBeVisible()
+    expect(screen.getByText('Settlement exceptions')).toBeVisible()
+    expect(screen.getByText('Refused matches')).toBeVisible()
     expect(screen.getByText('57.9%')).toBeVisible()
-    expect(screen.getByRole('progressbar', { name: 'Explained money coverage' })).toHaveAttribute('aria-valuenow', '57.9')
+    expect(screen.getByRole('progressbar', { name: 'Auto-verification money coverage' })).toHaveAttribute('aria-valuenow', '57.9')
+    expect(screen.queryByText(/^Explained$/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/^Coverage$/)).not.toBeInTheDocument()
   })
 })

@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+from app.close.service import CloseService
 from app.investigations.contracts import AssistantCitations, ToolSelection
 from app.proofs.service import ProofService
 from app.review.service import ReviewService
@@ -7,10 +8,17 @@ from app.runs.service import RunService
 
 
 class FinanceTools:
-    def __init__(self, runs: RunService, reviews: ReviewService, proofs: ProofService | None = None) -> None:
+    def __init__(
+        self,
+        runs: RunService,
+        reviews: ReviewService,
+        proofs: ProofService | None = None,
+        close: CloseService | None = None,
+    ) -> None:
         self.runs = runs
         self.reviews = reviews
         self.proofs = proofs
+        self.close = close
 
     def execute(self, tenant_id: str, selection: ToolSelection) -> dict:
         dispatch = {
@@ -58,6 +66,7 @@ class FinanceTools:
                 "expected_paise": run["expected_paise"],
                 "explained_paise": run["explained_paise"],
                 "unresolved_paise": run["unresolved_paise"],
+                "not_auto_verified_paise": run["unresolved_paise"],
             },
             "lines": [],
             "proof_ids": [],
@@ -69,6 +78,9 @@ class FinanceTools:
 
     def close_blockers(self, tenant_id: str, run_id: str) -> dict:
         run, run_record_count = self._run_context(tenant_id, run_id)
+        if self.close is None:
+            raise RuntimeError("close service is unavailable")
+        close_state = self.close.get_state(tenant_id, run_id)
         rows = self.runs.list_results(tenant_id, run_id)
         blocking = [row for row in rows if row["decision"] not in {"AUTO_VERIFIED", "PENDING"}]
         used_rows = [*blocking, *[row for row in rows if row["decision"] == "PENDING"]]
@@ -81,8 +93,20 @@ class FinanceTools:
                 "expected_paise": run["expected_paise"],
                 "explained_paise": run["explained_paise"],
                 "unresolved_paise": run["unresolved_paise"],
-                "blocking_count": len(blocking),
+                "not_auto_verified_paise": run["unresolved_paise"],
+                # blocking_count is kept as a compatibility alias. Public copy uses
+                # the precise total_close_blockers vocabulary below.
+                "blocking_count": close_state["total_close_blockers"],
+                "settlement_exception_count": close_state["settlement_exception_count"],
+                "review_item_count": close_state["review_item_count"],
+                "open_review_item_count": (
+                    close_state["review_item_count"] - close_state["manually_reviewed_count"]
+                ),
+                "total_close_blockers": close_state["total_close_blockers"],
                 "pending_count": sum(row["decision"] == "PENDING" for row in rows),
+                "unreviewable_blockers": close_state["unreviewable_blockers"],
+                "system_error_blockers": close_state["system_error_blockers"],
+                "integrity_blockers": close_state["integrity_blockers"],
             },
             "lines": [*blocking, *[row for row in rows if row["decision"] == "PENDING"]],
             "proof_ids": proof_ids,
@@ -225,7 +249,7 @@ class FinanceTools:
         facts = {
             "title": "ProofClose workflow",
             "steps": ["Source CSVs", "Immutable snapshot", "Deterministic reconciliation", "Versioned proofs", "Human review", "Close policy"],
-            "authority_boundary": "AI proposes; code computes; evidence proves; policy decides; humans control exceptions.",
+            "authority_boundary": "AI proposes; code computes; evidence proves; policy decides; humans control review and close.",
         }
         return {
             "facts": facts,

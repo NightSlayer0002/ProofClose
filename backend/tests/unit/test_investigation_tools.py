@@ -77,6 +77,26 @@ def test_close_summary_and_exception_breakdown_are_derived_from_the_run(evidence
     assert all(item["amount_paise"] > 0 for item in breakdown["facts"]["groups"])
 
 
+def test_close_blocker_tool_uses_the_canonical_close_count_vocabulary(evidence_context) -> None:
+    app, tenant_id, run = evidence_context
+    close_state = app.state.close_service.get_state(tenant_id, run["run_id"])
+    report = app.state.investigations.tools.execute(
+        tenant_id,
+        ToolSelection(name="close_blockers", arguments={"run_id": run["run_id"]}),
+    )
+
+    facts = report["facts"]
+    assert facts["settlement_exception_count"] == close_state["settlement_exception_count"]
+    assert facts["review_item_count"] == close_state["review_item_count"]
+    assert facts["open_review_item_count"] == (
+        close_state["review_item_count"] - close_state["manually_reviewed_count"]
+    )
+    assert facts["total_close_blockers"] == close_state["total_close_blockers"]
+    assert facts["system_error_blockers"] == close_state["system_error_blockers"]
+    assert facts["integrity_blockers"] == close_state["integrity_blockers"]
+    assert facts["not_auto_verified_paise"] == run["unresolved_paise"]
+
+
 def test_settlement_and_proof_tools_return_scoped_canonical_evidence(evidence_context) -> None:
     app, tenant_id, run = evidence_context
     tools = app.state.investigations.tools
