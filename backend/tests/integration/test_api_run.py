@@ -323,7 +323,7 @@ def test_usage_is_observed_and_unsupported_narration_falls_back_to_canonical_fac
         run = client.post("/api/runs", json={}).json()
         answer = client.post(
             "/api/investigations/query",
-            json={"run_id": run["run_id"], "question": "Please analyze whatever matters most."},
+            json={"run_id": run["run_id"], "question": "What is the most important settlement issue in this run?"},
         ).json()
         diagnostics = client.get(f"/api/ops/diagnostics?run_id={run['run_id']}").json()
 
@@ -372,7 +372,7 @@ def test_provider_refusal_is_safe_and_does_not_execute_or_narrate(tmp_path) -> N
         run = client.post("/api/runs", json={}).json()
         answer = client.post(
             "/api/investigations/query",
-            json={"run_id": run["run_id"], "question": "Forecast next year's card mix"},
+            json={"run_id": run["run_id"], "question": "What is the most important settlement issue in this run?"},
         ).json()
 
     assert answer["status"] == "REFUSED"
@@ -410,7 +410,7 @@ def test_failed_http_attempt_then_denied_retry_is_observed_without_extra_request
         run = client.post("/api/runs", json={}).json()
         answer_response = client.post(
             "/api/investigations/query",
-            json={"run_id": run["run_id"], "question": "Analyze the most important evidence"},
+            json={"run_id": run["run_id"], "question": "What is the most important settlement issue in this run?"},
         )
         diagnostics = client.get(f"/api/ops/diagnostics?run_id={run['run_id']}").json()
 
@@ -438,7 +438,7 @@ def test_planning_budget_exhaustion_makes_zero_provider_calls_and_is_observed(tm
         run = client.post("/api/runs", json={}).json()
         answer = client.post(
             "/api/investigations/query",
-            json={"run_id": run["run_id"], "question": "Analyze the most important evidence"},
+            json={"run_id": run["run_id"], "question": "What is the most important settlement issue in this run?"},
         ).json()
         diagnostics = client.get(f"/api/ops/diagnostics?run_id={run['run_id']}").json()
 
@@ -460,7 +460,7 @@ def test_narration_budget_exhaustion_makes_no_extra_provider_call_and_is_observe
         run = client.post("/api/runs", json={}).json()
         answer = client.post(
             "/api/investigations/query",
-            json={"run_id": run["run_id"], "question": "Analyze the most important evidence"},
+            json={"run_id": run["run_id"], "question": "What is the most important settlement issue in this run?"},
         ).json()
         diagnostics = client.get(f"/api/ops/diagnostics?run_id={run['run_id']}").json()
 
@@ -506,7 +506,7 @@ def test_rejected_provider_output_still_records_observed_usage(tmp_path) -> None
         run = client.post("/api/runs", json={}).json()
         answer = client.post(
             "/api/investigations/query",
-            json={"run_id": run["run_id"], "question": "Analyze the most important evidence"},
+            json={"run_id": run["run_id"], "question": "What is the most important settlement issue in this run?"},
         ).json()
         diagnostics = client.get(f"/api/ops/diagnostics?run_id={run['run_id']}").json()
 
