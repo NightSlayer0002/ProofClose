@@ -1,0 +1,2 @@
+"""ProofClose backend package."""
+

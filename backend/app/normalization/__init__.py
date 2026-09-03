@@ -1,0 +1,2 @@
+"""Versioned source normalization."""
+

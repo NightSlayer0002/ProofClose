@@ -1,0 +1,16 @@
+{
+  "dataset_version": "proofclose-eval/v2",
+  "settlement_exception_by_scenario": {
+    "settlement_ledger_mismatch": "SETTLEMENT_LEDGER_MISMATCH",
+    "paise_rupee_mismatch": "PAISE_RUPEE_MISMATCH",
+    "duplicate_bank_candidates": "AMBIGUOUS_MATCH",
+    "missing_bank_credit": "MISSING_BANK_CREDIT"
+  },
+  "fixed_subject_exceptions": [
+    {
+      "subject_type": "ORDER",
+      "subject_id": "order_PC0061",
+      "exception_type": "UNEXPECTED_MULTIPLE_SETTLED_PAYMENTS"
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+"""Approval-gated daily close."""
+
