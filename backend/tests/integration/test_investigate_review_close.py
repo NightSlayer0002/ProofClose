@@ -19,7 +19,7 @@ def initialized_client(tmp_path: Path, pending_hours: int = 3) -> TestClient:
     )
     client = TestClient(app)
     client.__enter__()
-    client.post("/api/demo/reset")
+    client.post("/api/demo/seed")
     run = client.post("/api/runs", json={}).json()
     client.run_id = run["run_id"]
     return client
@@ -183,11 +183,11 @@ def test_service_rescopes_planner_run_before_finance_tool_execution(tmp_path) ->
     )
     app = create_app(Settings(PROOFCLOSE_ENV="demo", PROOFCLOSE_DATA_DIR=tmp_path), assistant_provider=provider)
     with TestClient(app) as client:
-        client.post("/api/demo/reset")
+        client.post("/api/demo/seed")
         run = client.post("/api/runs", json={}).json()
         answer = client.post(
             "/api/investigations/query",
-            json={"run_id": run["run_id"], "question": "Analyze the most important evidence"},
+            json={"run_id": run["run_id"], "question": "What is the most important settlement issue in this run?"},
         ).json()
     assert answer["route"] == "PLANNER_TOOL"
     assert answer["canonical"]["run_id"] == run["run_id"]
@@ -203,11 +203,11 @@ def test_service_rejects_planner_extra_tenant_argument_before_finance_tools(tmp_
     )
     app = create_app(Settings(PROOFCLOSE_ENV="demo", PROOFCLOSE_DATA_DIR=tmp_path), assistant_provider=provider)
     with TestClient(app) as client:
-        client.post("/api/demo/reset")
+        client.post("/api/demo/seed")
         run = client.post("/api/runs", json={}).json()
         response = client.post(
             "/api/investigations/query",
-            json={"run_id": run["run_id"], "question": "Analyze the most important evidence"},
+            json={"run_id": run["run_id"], "question": "What is the most important settlement issue in this run?"},
         )
     assert response.status_code == 200
     assert response.json()["status"] == "REFUSED"

@@ -4,9 +4,34 @@ ProofClose is an evidence-first settlement reconciliation workspace for Razorpay
 
 The rule of the product is simple:
 
-> AI proposes. Code computes. Evidence proves. Policy decides. Humans control exceptions.
+> AI proposes. Code computes. Evidence proves. Policy decides. Humans control review and close.
 
 The complete demo is deterministic and works offline. AI credentials are optional and never control arithmetic, matching, reviews, or close approval. The docked Hybrid Evidence Copilot can talk naturally about concepts, but every statement about the current run is freshly fetched through allowlisted read-only tools. Conversation history helps wording; it is never a source of financial truth.
+
+## Razorpay Buildathon Track 04 fit
+
+The [AI Finance Controller track](https://razorpay.com/buildathon/) asks builders to close a finance-operations loop across more than 50 synthetic records, measure matching, and report the exceptions the system does not resolve. ProofClose completes that loop across merchant orders, Razorpay reconciliation rows, settlement entities, and bank credits:
+
+```text
+ingest -> freeze evidence -> reconcile -> refuse ambiguity -> review -> approve -> export Close Pack
+```
+
+This is not a chat wrapper around a spreadsheet. Deterministic code owns money and matching; every result gets a tamper-evident Proof Object; a human owns exception disposition and final close approval; the assistant is a read-only evidence interface.
+
+The checked-in offline evaluation processes 801 synthetic source rows across three seeds:
+
+| Measured result | Checked-in result |
+|---|---:|
+| Automatic matches correct | 21 / 21 (1.000000 precision) |
+| Settlements auto-verified | 21 / 36 (0.583333) |
+| Expected money auto-verified | ₹2,67,376.42 / ₹4,68,287.54 (0.570966) |
+| Expected exceptions detected | 15 / 15 (precision, recall, F1 = 1.000000) |
+| Ambiguous cases safely refused | 3 / 3 (1.000000 recall) |
+| Required subjects with valid proofs | 39 / 39 |
+| Tamper probes detected | 3 / 3 |
+| False refusals / duplicate automatic bank allocations | 0 / 0 |
+
+These numbers are synthetic regression evidence, not production accuracy or throughput claims. The complete predictions and honest exception lists are in `evals/results/evaluation_results.json`.
 
 ```text
 merchant + Razorpay + bank CSVs
@@ -53,16 +78,17 @@ Set-Location frontend
 npm.cmd run dev -- --host 127.0.0.1
 ```
 
-Open `http://127.0.0.1:5173`. The UI loads 267 seeded rows through the same ingestion path as an uploaded file and creates a real run. No account or API key is required.
+Open `http://127.0.0.1:5173` for the provenance-first landing page, then choose **Open evidence workspace**. The operational UI at `/workspace` loads 267 seeded source rows through the same ingestion path as an uploaded file and creates a real run. No account or API key is required.
 
 ## What to show a reviewer
 
-1. Reconciliation: inspect the settlement table and open a proof.
-2. In the proof drawer, compare **Reproduce historical proof** with **Evaluate with current rules**. They are separate operations.
-3. Exceptions: show an ambiguous bank match that refuses to guess, plus the planted ledger, missing-credit, multiple-payment, and paise/rupee anomalies.
-4. Evidence Copilot: click **Ask assistant** on two different settlements and notice the visible context divider and separate thread for each one. Ask a general question such as “What is a UTR?”, then ask “How much is unresolved in this run?” The first is general guidance; the second must fetch fresh canonical evidence. Ask “What should I do?” on an exception to see verified facts separated from server-owned read-only guidance.
-5. Close: see why unresolved evidence blocks normal close and how reviewed exceptions remain auditable.
-6. Diagnostics: inspect measured stage timings, truthful configured/reachable provider states, actual call/token counts, and `unavailable` cost when no versioned pricing configuration exists.
+1. Landing: follow the visible chain from source records to a frozen snapshot, a versioned Proof Object, and human close.
+2. Reconciliation: inspect the settlement table and open a proof.
+3. In the proof drawer, compare **Reproduce historical proof** with **Evaluate with current rules**. They are separate operations.
+4. Exceptions: show an ambiguous bank match that refuses to guess, plus the planted ledger, missing-credit, multiple-payment, and paise/rupee anomalies. Point out that a settlement exception, a review item, and a total close blocker are deliberately different counts.
+5. Evidence Copilot: click **Ask assistant** on two different settlements and notice the visible context divider and separate thread for each one. Ask a general question such as “What is a UTR?”, then ask “What amount is not auto-verified in this run?” The first is general guidance; the second must fetch fresh canonical evidence. Ask “What should I do?” on an exception to see verified facts separated from server-owned read-only guidance.
+6. Close: distinguish the **Not auto-verified amount** from **Total close blockers**, then show how reviewed exceptions remain auditable.
+7. Diagnostics: inspect measured stage timings, truthful configured/reachable provider states, actual call/token counts, and `unavailable` cost when no versioned pricing configuration exists.
 
 ## Trust invariants
 
@@ -78,6 +104,16 @@ Open `http://127.0.0.1:5173`. The UI loads 267 seeded rows through the same inge
 - Uploaded narration, raw source text, credentials, provider bodies, hidden prompts, and internal tool instructions are excluded from general-model context. Unsafe output falls back deterministically.
 - The assistant has no review, approval, mutation, SQL, or money-movement tool. Recommended actions are server-owned instructions, not executed actions.
 
+## Failure recovery, not happy-path theatre
+
+- Duplicate exact UTR-and-amount candidates are refused instead of guessed.
+- Missing or late bank credits become pending or reviewable according to the versioned timing configuration.
+- Invalid uploads are rejected or quarantined before they can enter a snapshot.
+- A missing historical rule implementation returns `RULE_IMPLEMENTATION_UNAVAILABLE`; current code is never silently substituted.
+- Proof or Close Pack mutation fails integrity verification.
+- Repeating close approval is idempotent; it returns the same immutable pack instead of producing a second close.
+- Provider outage changes only optional narration. Deterministic evidence, review, and close keep working offline.
+
 A concrete refusal is planted in `setl_PC010`: two bank rows share the exact UTR and amount. ProofClose records two candidates and returns `AMBIGUOUS_MATCH` / `REFUSED` instead of selecting one.
 
 ## Quality commands
@@ -88,12 +124,15 @@ A concrete refusal is planted in `setl_PC010`: two bank rows share the exact UTR
 .\.venv\Scripts\python.exe -m evals.runner --seeds 20260831 20260901 20260902 --output evals/results
 .\.venv\Scripts\python.exe -m evals.assistant_runner --mode offline --output evals/results
 .\.venv\Scripts\python.exe scripts\scan_secrets.py
+.\.venv\Scripts\python.exe scripts\verify_screenshots.py
 Set-Location frontend
 npm.cmd test -- --run
 npm.cmd run lint
 npm.cmd run typecheck
 npm.cmd run build
 ```
+
+The fixed browser review (`npm.cmd run e2e`, with the backend and frontend running) regenerates the checked-in images in `docs/screenshots`. `scripts/verify_screenshots.py` fails when any required review image is missing or empty, including after a fresh clone.
 
 ## Repository map
 
@@ -104,10 +143,7 @@ npm.cmd run build
 - `backend/app/investigations`: typed hybrid routing, general-help isolation, allowlisted read-only finance tools, and server-owned guidance
 - `backend/app/review`, `close`: human actions, audit, and close policy
 - `evals`: seeded ground truth and measured evaluation
-- `frontend`: the finance-operations interface
-- `docs/interview-kit`: beginner-friendly explanations and interview practice
-
-For the full byte-to-close explanation and interview preparation, start with `docs/interview-kit/10_COMPLETE_START_TO_FINISH_GUIDE.txt`.
+- `frontend`: the public provenance landing page and finance-operations workspace
 
 Read [ARCHITECTURE.md](ARCHITECTURE.md), [EVALUATION.md](EVALUATION.md), [SECURITY.md](SECURITY.md), and [LIMITATIONS.md](LIMITATIONS.md) before presenting.
 

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { api } from './api'
-import { pageForPath, pathForPage } from './routing'
+import { isWorkspacePath, pageForPath, pathForPage } from './routing'
 import type { AssistantContext, AssistantContextType, AssistantThread, CloseState, ConversationTurn, Diagnostics, ExceptionItem, Page, Proof, ReconciliationRow, RunSummary } from './types'
 import { AppHeader } from '../components/AppHeader'
 import { EvidenceAssistant } from '../components/EvidenceAssistant'
@@ -11,6 +11,7 @@ import { ClosePage } from '../pages/ClosePage'
 import { DiagnosticsPage } from '../pages/DiagnosticsPage'
 import { ExceptionsPage } from '../pages/ExceptionsPage'
 import { InvestigatePage } from '../pages/InvestigatePage'
+import { LandingPage } from '../pages/LandingPage'
 import { ReconciliationPage } from '../pages/ReconciliationPage'
 
 function contextType(context: AssistantContext): AssistantContextType {
@@ -35,8 +36,14 @@ function conversationHistory(thread?: AssistantThread): ConversationTurn[] {
     .slice(-6)
 }
 
-export default function App() {
-  const [page, setPage] = useState<Page>(() => pageForPath(window.location.pathname))
+interface WorkspaceAppProps {
+  pathname: string
+  onHome: () => void
+  onPathChange: (path: string) => void
+}
+
+function WorkspaceApp({ pathname, onHome, onPathChange }: WorkspaceAppProps) {
+  const page = pageForPath(pathname)
   const [run, setRun] = useState<RunSummary | null>(null)
   const [rows, setRows] = useState<ReconciliationRow[]>([])
   const [exceptions, setExceptions] = useState<ExceptionItem[]>([])
@@ -102,16 +109,8 @@ export default function App() {
 
   useEffect(() => { void initialize() }, [initialize])
 
-  useEffect(() => {
-    const onPopState = () => setPage(pageForPath(window.location.pathname))
-    window.addEventListener('popstate', onPopState)
-    return () => window.removeEventListener('popstate', onPopState)
-  }, [])
-
   const navigate = (nextPage: Page) => {
-    const path = pathForPage(nextPage)
-    if (window.location.pathname !== path) window.history.pushState({}, '', path)
-    setPage(nextPage)
+    onPathChange(pathForPage(nextPage))
   }
 
   const rerun = async () => {
@@ -232,7 +231,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <AppHeader active={page} identityMode="INSECURE_DEMO_CONTEXT" running={running} onNavigate={navigate} onRun={() => void rerun()} />
+      <AppHeader active={page} identityMode="INSECURE_DEMO_CONTEXT" running={running} onHome={onHome} onNavigate={navigate} onRun={() => void rerun()} />
       {error && <div className="toast error-toast" role="alert"><span>{error}</span><button onClick={() => setError(null)}>Dismiss</button></div>}
       {message && <div className="toast" role="status"><span>{message}</span><button onClick={() => setMessage('')}>Dismiss</button></div>}
       {workspacePage && <WorkspaceLayout assistantOpen={assistantOpen} onOpenAssistant={() => setAssistantOpen(true)} onCloseAssistant={() => setAssistantOpen(false)} assistant={(modal) => assistant(false, modal)}>{workspacePage}</WorkspaceLayout>}
@@ -241,4 +240,26 @@ export default function App() {
       {proof && <ProofDrawer proof={proof} busyAction={proofAction} onClose={() => setProof(null)} onAction={(action) => void actOnProof(action)} />}
     </div>
   )
+}
+
+export default function App() {
+  const [pathname, setPathname] = useState(() => window.location.pathname)
+
+  useEffect(() => {
+    const onPopState = () => setPathname(window.location.pathname)
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
+  }, [])
+
+  const navigatePath = useCallback((path: string) => {
+    if (window.location.pathname !== path) window.history.pushState({}, '', path)
+    setPathname(path)
+    window.scrollTo?.({ top: 0, behavior: 'smooth' })
+  }, [])
+
+  if (!isWorkspacePath(pathname)) {
+    return <LandingPage onOpenWorkspace={() => navigatePath('/workspace')} />
+  }
+
+  return <WorkspaceApp pathname={pathname} onHome={() => navigatePath('/')} onPathChange={navigatePath} />
 }

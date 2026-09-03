@@ -8,6 +8,8 @@ ProofClose has two deliberately separate offline evaluations: deterministic reco
 
 The checked-in run uses seeds `20260831`, `20260901`, and `20260902`, processes 801 synthetic rows in total, and identifies itself as `deterministic_offline`.
 
+This directly exercises the Buildathon finance-loop requirement with 267 source rows per seed—well above the 50-record minimum—while retaining the full exception list rather than showing one cherry-picked match.
+
 | Metric | Definition | Checked-in result |
 |---|---|---:|
 | Auto-match precision | Correct automatic matches / all automatic matches | 1.000000 |

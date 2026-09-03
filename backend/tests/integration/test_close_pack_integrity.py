@@ -195,7 +195,7 @@ def test_review_rejects_control_only_reason_and_repeated_transition(tmp_path) ->
             json={"action": "APPROVE", "reason": "\u200b\u200b\u200b\u200b\u200b\u200b"},
         )
         assert bad.status_code == 422
-        assert bad.json()["detail"]["code"] == "INVALID_REVIEW"
+        assert bad.json()["detail"]["code"] == "INVALID_REQUEST"
         first = client.post(
             f"/api/exceptions/{exception['exception_id']}/review",
             json={"action": "APPROVE", "reason": "Visible operator reason"},
@@ -229,8 +229,8 @@ def test_control_only_close_reason_is_rejected(tmp_path, reason: str) -> None:
     client = initialized_client(tmp_path)
     try:
         response = client.post("/api/close/approve", json={"run_id": client.run_id, "reason": reason})
-        assert response.status_code == 409
-        assert response.json()["detail"]["code"] == "CLOSE_POLICY_BLOCKED"
+        assert response.status_code == 422
+        assert response.json()["detail"]["code"] == "INVALID_REQUEST"
     finally:
         client.__exit__(None, None, None)
 

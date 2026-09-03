@@ -53,22 +53,36 @@ const expectDisjoint = async (first: Locator, second: Locator) => {
   expect(overlap).toBe(false)
 }
 
+const openFirstCitedProof = async (page: Page) => {
+  await page.getByText('Sources', { exact: true }).last().click()
+  await page.getByRole('button', { name: /^Open proof proof_/ }).first().click()
+}
+
 test('fixed evidence-first browser review', async ({ page }) => {
   await mockEvidenceMode(page)
   await page.goto('/')
+  await expect(page.getByRole('heading', { name: 'Close every settlement with proof.' })).toBeVisible()
+  await expect(page.getByLabel('Source records flow through a frozen snapshot and versioned rules into an immutable proof')).toBeVisible()
+  await expect(page.getByText('Measured on synthetic evidence—not marketed as production accuracy.')).toBeVisible()
+  await expectContained(page)
+  await screenshot(page, 'landing')
+
+  await page.getByRole('link', { name: 'Open evidence workspace' }).first().click()
+  await expect(page).toHaveURL(/\/workspace$/)
   await expect(page.getByRole('heading', { name: 'Settlement reconciliation' })).toBeVisible()
   await expect(page.getByText('Demo context—not authentication')).toBeVisible()
   await expect(page.getByRole('table')).toContainText('setl_PC010')
   await expect(page.getByRole('complementary', { name: 'Evidence Assistant' })).toBeVisible()
-  await expect(page.getByText('Evidence mode')).toBeVisible()
-  const askButtonHeight = await page.getByRole('button', { name: 'Ask', exact: true }).evaluate((element) => element.getBoundingClientRect().height)
+  await expect(page.getByText('Fresh evidence for current financial facts')).toBeVisible()
+  const askButtonHeight = await page.getByRole('button', { name: 'Send message' }).evaluate((element) => element.getBoundingClientRect().height)
   expect(askButtonHeight).toBeLessThanOrEqual(44)
   await screenshot(page, 'reconciliation')
 
   await page.getByRole('button', { name: "What prevents today's close?" }).click()
-  await expect(page.getByRole('region', { name: 'Canonical evidence' })).toBeVisible()
-  await expect(page.getByText('0 unsupported claims')).toBeVisible()
-  await page.getByRole('button', { name: /^Open proof proof_/ }).first().click()
+  await expect(page.getByRole('region', { name: 'Verified facts' })).toBeVisible()
+  await page.getByText('Technical details', { exact: true }).last().click()
+  await expect(page.locator('.assistant-technical-content').last()).toContainText('"unsupported_factual_claims": 0')
+  await openFirstCitedProof(page)
   await expect(page.getByRole('dialog', { name: 'Financial proof' })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Reproduce historical proof' })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Evaluate with current rules' })).toBeVisible()
@@ -115,21 +129,25 @@ test('fixed evidence-first browser review', async ({ page }) => {
       body: JSON.stringify({
         status: 'REFUSED', route: 'REFUSE', tool_name: null, question: 'Forecast next quarter',
         explained_paise: null, unresolved_paise: null, canonical: {}, narration: null,
-        narration_status: 'provider_unavailable', lines: [], proof_ids: [], source_record_count: 0,
+        narration_status: 'provider_unavailable', lines: [], proof_ids: [],
+        citations: { proof_ids: [], source_rows: [], support_scope: 'DIRECT' },
+        supporting_record_count: 0, run_record_count: 267,
         calculation_count: 0, unsupported_factual_claims: 0, estimated_cost: 'unavailable',
         provider: { configuration_status: 'configured', reachability_status: 'unreachable', failure_category: 'connection' },
         message: 'The configured AI planner was unavailable or unsafe. Deterministic evidence remains unchanged.',
+        answer_mode: 'UNABLE_TO_VERIFY', answer_label: 'Unable to verify', detail: null,
+        recommended_actions: [], technical_details: {},
       }),
     })
   })
   await page.getByLabel('Ask Evidence Assistant').fill('Forecast next quarter')
-  await page.getByRole('button', { name: 'Ask' }).click()
-  await expect(page.getByText('Safe refusal')).toBeVisible()
+  await page.getByRole('button', { name: 'Send message' }).click()
+  await expect(page.getByText('Unable to verify')).toBeVisible()
   await expect(page.getByText('Deterministic evidence remains unchanged.')).toBeVisible()
 
   await page.getByRole('button', { name: 'Close', exact: true }).click()
   await expect(page.getByRole('heading', { name: 'Daily close' })).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Approve close with exceptions' })).toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Approve close with reviewed exceptions' })).toBeDisabled()
   await screenshot(page, 'close')
 
   await page.getByRole('button', { name: 'Diagnostics' }).click()
@@ -144,6 +162,11 @@ for (const viewport of viewports) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height })
     await mockEvidenceMode(page)
     await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Close every settlement with proof.' })).toBeVisible()
+    await expectContained(page)
+    if (viewport.name === 'mobile') await screenshot(page, 'landing-mobile')
+
+    await page.goto('/workspace')
     await expect(page.getByRole('heading', { name: 'Settlement reconciliation' })).toBeVisible()
     await expect(page.getByText('Demo context—not authentication')).toBeVisible()
     await expectContained(page)
@@ -181,8 +204,8 @@ for (const viewport of viewports) {
       await page.getByRole('button', { name: 'Prove it' }).first().click()
     } else {
       await page.getByRole('button', { name: "What prevents today's close?" }).click()
-      await expect(page.getByRole('region', { name: 'Canonical evidence' })).toBeVisible()
-      await page.getByRole('button', { name: /^Open proof proof_/ }).first().click()
+      await expect(page.getByRole('region', { name: 'Verified facts' })).toBeVisible()
+      await openFirstCitedProof(page)
     }
     await expect(page.getByRole('dialog', { name: 'Financial proof' })).toBeVisible()
     expect(await page.locator('.app-header').evaluate((element) => (element as HTMLElement).inert)).toBe(true)
@@ -198,7 +221,7 @@ for (const viewport of viewports) {
 test('200 percent zoom equivalent keeps the modal assistant usable', async ({ page }) => {
   await page.setViewportSize({ width: 640, height: 400 })
   await mockEvidenceMode(page)
-  await page.goto('/')
+  await page.goto('/workspace')
   await expect(page.getByText('Demo context—not authentication')).toBeVisible()
   await page.getByRole('button', { name: 'Open Evidence Assistant' }).click()
   await expect(page.getByRole('dialog', { name: 'Evidence Assistant' })).toBeVisible()
@@ -217,7 +240,7 @@ test('failure toast clears the sticky header at mobile width', async ({ page }) 
     }
     await route.continue()
   })
-  await page.goto('/')
+  await page.goto('/workspace')
   await page.getByRole('button', { name: 'Run reconciliation' }).click()
   const toast = page.getByRole('alert')
   await expect(toast).toContainText('Run failed safely')
@@ -234,7 +257,7 @@ test('failure toast clears the sticky header at mobile width', async ({ page }) 
 test('reduced motion keeps proof content immediate and stationary', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await mockEvidenceMode(page)
-  await page.goto('/')
+  await page.goto('/workspace')
   await page.getByRole('button', { name: 'Prove it' }).first().click()
   const motion = await page.locator('.proof-drawer').evaluate((element) => {
     const style = getComputedStyle(element)

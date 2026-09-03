@@ -7,11 +7,11 @@ export function SummaryStrip({ run, rows }: { run: RunSummary; rows: Reconciliat
   const coverage = run.expected_paise ? (run.explained_paise / run.expected_paise) * 100 : 0
   const boundedCoverage = Math.min(100, Math.max(0, coverage))
   const items = [
-    { label: 'Expected', value: formatINR(run.expected_paise) },
-    { label: 'Explained', value: formatINR(run.explained_paise) },
-    { label: 'Coverage', value: `${coverage.toFixed(1)}%`, coverage: true },
-    { label: 'Exceptions', value: String(exceptions) },
-    { label: 'Refused', value: String(refused) },
+    { label: 'Expected settlement amount', value: formatINR(run.expected_paise) },
+    { label: 'Auto-verified amount', value: formatINR(run.explained_paise) },
+    { label: 'Auto-verification coverage', value: `${coverage.toFixed(1)}%`, coverage: true },
+    { label: 'Settlement exceptions', value: String(exceptions) },
+    { label: 'Refused matches', value: String(refused) },
   ]
   return (
     <dl className="summary-strip">
@@ -23,7 +23,7 @@ export function SummaryStrip({ run, rows }: { run: RunSummary; rows: Reconciliat
             <span
               className="coverage-track"
               role="progressbar"
-              aria-label="Explained money coverage"
+              aria-label="Auto-verification money coverage"
               aria-valuemin={0}
               aria-valuemax={100}
               aria-valuenow={Number(coverage.toFixed(1))}

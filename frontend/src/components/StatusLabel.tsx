@@ -10,7 +10,7 @@ const config = {
   PENDING: { state: 'pending', Icon: Clock3 },
   SYSTEM_ERROR: { state: 'error', Icon: CircleX },
   OPEN: { state: 'review', Icon: TriangleAlert },
-  LEFT_UNRESOLVED: { state: 'unresolved', Icon: CircleDashed },
+  LEFT_UNRESOLVED: { state: 'unresolved', Icon: CircleDashed, label: 'Reviewed unresolved' },
   APPROVED: { state: 'verified', Icon: CircleCheck },
   REJECTED: { state: 'refused', Icon: CircleX },
 } as const
@@ -20,8 +20,7 @@ export function StatusLabel({ value }: { value: string }) {
   return (
     <span className="status-label" data-state={item.state}>
       <item.Icon aria-hidden="true" size={13} strokeWidth={2} />
-      {sentenceCase(value)}
+      {'label' in item ? item.label : sentenceCase(value)}
     </span>
   )
 }
-

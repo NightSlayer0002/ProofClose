@@ -75,12 +75,22 @@ def _deterministic_message(tool_name: str, canonical: dict) -> str:
         return "I can explain ProofClose, reconciliation, UTRs, integer paise, evidence, proofs, exceptions, and close readiness."
     if tool_name == "unable_to_verify":
         return "I can help with ProofClose operations, but I cannot verify or perform that request."
-    if tool_name == "close_blockers" and isinstance(canonical.get("blocking_count"), int):
-        blockers = canonical["blocking_count"]
+    if tool_name == "close_blockers" and isinstance(
+        canonical.get("total_close_blockers", canonical.get("blocking_count")), int
+    ):
+        blockers = canonical.get("total_close_blockers", canonical.get("blocking_count"))
+        open_reviews = canonical.get("open_review_item_count")
         pending = canonical.get("pending_count", 0)
         unresolved = canonical.get("unresolved_paise")
-        amount = f" {format_inr_paise(unresolved)} remains unresolved." if isinstance(unresolved, int) and not isinstance(unresolved, bool) else ""
-        return f"{blockers} close blockers and {pending} pending settlements remain in the verified run.{amount}"
+        parts = [f"{blockers} total close blocker{'s' if blockers != 1 else ''}"]
+        if isinstance(open_reviews, int) and not isinstance(open_reviews, bool):
+            parts.append(f"{open_reviews} open review item{'s' if open_reviews != 1 else ''}")
+        if isinstance(pending, int) and not isinstance(pending, bool):
+            parts.append(f"{pending} pending settlement{'s' if pending != 1 else ''}")
+        message = ", ".join(parts) + " remain in the verified run."
+        if isinstance(unresolved, int) and not isinstance(unresolved, bool):
+            message += f" {format_inr_paise(unresolved)} is not auto-verified."
+        return message
     if tool_name == "exception_breakdown" and isinstance(canonical.get("groups"), list):
         groups = [group for group in canonical["groups"] if isinstance(group, dict)]
         count = sum(group.get("count", 0) for group in groups if isinstance(group.get("count"), int))
@@ -102,13 +112,13 @@ def _deterministic_message(tool_name: str, canonical: dict) -> str:
             difference_text = format_inr_paise(difference)
             if isinstance(observed, int):
                 return f"This settlement expects {expected_text}; the verified bank credit is {format_inr_paise(observed)}, a difference of {difference_text}. Decision: {decision}."
-            return f"No verified bank credit is linked to this settlement. Expected: {expected_text}; unresolved difference: {difference_text}. Decision: {decision}."
+            return f"No verified bank credit is linked to this settlement. Expected: {expected_text}; not-auto-verified difference: {difference_text}. Decision: {decision}."
         if canonical.get("status"):
             return f"The verified proof status is {canonical['status']}."
     if "unresolved_paise" in canonical and tool_name == "close_summary":
-        return f"{format_inr_paise(canonical['unresolved_paise'])} is currently unresolved in the verified run."
+        return f"{format_inr_paise(canonical['unresolved_paise'])} is not auto-verified in the current run."
     if "unresolved_paise" in canonical and tool_name == "close_blockers":
-        return f"{format_inr_paise(canonical['unresolved_paise'])} is currently unresolved in the verified evidence."
+        return f"{format_inr_paise(canonical['unresolved_paise'])} is not auto-verified in the current run."
     if tool_name == "proof_explanation":
         proof_id = canonical.get("proof_id", "the selected proof")
         rule = canonical.get("rule_name")
@@ -116,7 +126,7 @@ def _deterministic_message(tool_name: str, canonical: dict) -> str:
         return f"{proof_id} records the verified decision using {rule}@{version}. Its formula and evidence are shown below."
     messages = {
         "close_summary": "The current run summary is calculated from persisted reconciliation results.",
-        "close_blockers": "These unresolved and pending items determine whether the current close can proceed.",
+        "close_blockers": "Open review items, unreviewable results, system errors, and integrity failures determine whether the current close can proceed.",
         "settlement_lookup": "This settlement decision comes from the displayed evidence predicates and versioned proof.",
         "exception_breakdown": "Exceptions are grouped by their persisted exception type.",
         "pending_settlements": "These settlements remain inside the configured bank-credit timing window.",
@@ -385,7 +395,7 @@ class InvestigationService:
                     provider=self.provider_status(),
                     message=(
                         "Evidence mode could not map that question to an approved tool. "
-                        "Ask about unresolved money, close blockers, pending settlements, exceptions, a selected settlement, or a proof."
+                        "Ask about not-auto-verified money, close blockers, pending settlements, exceptions, a selected settlement, or a proof."
                     ),
                     answer_mode="UNABLE_TO_VERIFY",
                     answer_label=ANSWER_LABELS["UNABLE_TO_VERIFY"],

@@ -12,7 +12,7 @@ _PLAYBOOKS: dict[str, tuple[RecommendedAction, ...]] = {
     "AMBIGUOUS_MATCH": (
         RecommendedAction(code="COMPARE_CANDIDATES", label="Compare the candidates", detail="Review each bank candidate and identify the single supported credit, if one exists."),
         RecommendedAction(code="CONFIRM_UTR", label="Confirm the UTR", detail="Match the UTR and amount against the original bank evidence."),
-        RecommendedAction(code="RECORD_HUMAN_REVIEW", label="Record human review", detail="Leave the item unresolved when no unique candidate can be established."),
+        RecommendedAction(code="RECORD_HUMAN_REVIEW", label="Record human review", detail="When no unique candidate can be established, record an unresolved disposition. This marks the review complete and does not change the proof."),
     ),
     "UTR_MISMATCH": (
         RecommendedAction(code="CONFIRM_UTR", label="Confirm the UTR", detail="Check the merchant UTR against the bank reference without changing the source record."),
@@ -22,7 +22,7 @@ _PLAYBOOKS: dict[str, tuple[RecommendedAction, ...]] = {
     "SETTLEMENT_BANK_AMOUNT_MISMATCH": (
         RecommendedAction(code="COMPARE_AMOUNTS", label="Compare the amounts", detail="Compare the integer-paise values in the settlement and bank records."),
         RecommendedAction(code="CHECK_FEES_OR_ADJUSTMENTS", label="Check adjustments", detail="Look for a documented fee or adjustment in the source evidence."),
-        RecommendedAction(code="RECORD_HUMAN_REVIEW", label="Record human review", detail="Keep the item open until the amount difference is explained."),
+        RecommendedAction(code="RECORD_HUMAN_REVIEW", label="Record human review", detail="If the amount difference cannot be explained, record an unresolved disposition. This marks the review complete and does not change the proof."),
     ),
     "BANK_TIMING_INCONSISTENCY": (
         RecommendedAction(code="CHECK_POSTING_WINDOW", label="Check posting timing", detail="Confirm whether the bank credit is inside the configured timing window."),
@@ -42,7 +42,7 @@ _PLAYBOOKS: dict[str, tuple[RecommendedAction, ...]] = {
     "ORDER_EXCESS": (
         RecommendedAction(code="CHECK_ORDER_PAYMENTS", label="Check order payments", detail="Review all payments allocated to the order and the exact excess amount."),
         RecommendedAction(code="TRACE_PAYMENT_PROOF", label="Trace payment proof", detail="Open the order proof and verify its payment evidence."),
-        RecommendedAction(code="RECORD_HUMAN_REVIEW", label="Record human review", detail="Keep the excess exception for an operator decision."),
+        RecommendedAction(code="RECORD_HUMAN_REVIEW", label="Record human review", detail="Record the operator's disposition. The review becomes complete and does not change the proof."),
     ),
     "OPEN_REVIEW": (
         RecommendedAction(code="OPEN_REVIEW_ITEM", label="Open the review item", detail="Review the persisted exception and its proof before deciding."),
@@ -52,7 +52,7 @@ _PLAYBOOKS: dict[str, tuple[RecommendedAction, ...]] = {
     "PAISE_RUPEE_MISMATCH": (
         RecommendedAction(code="CHECK_CURRENCY_UNIT", label="Check the currency unit", detail="Confirm that the source amount is recorded in the configured integer-paise unit."),
         RecommendedAction(code="TRACE_SOURCE_LINEAGE", label="Trace source lineage", detail="Open the proof sources and verify the original amount fields."),
-        RecommendedAction(code="RECORD_HUMAN_REVIEW", label="Record human review", detail="Keep the mismatch open until the unit conversion is explained."),
+        RecommendedAction(code="RECORD_HUMAN_REVIEW", label="Record human review", detail="If the unit conversion cannot be explained, record an unresolved disposition. This marks the review complete and does not change the proof."),
     ),
     "MANUAL_BANK_MATCH_REQUIRED": (
         RecommendedAction(code="COMPARE_CANDIDATES", label="Compare the candidates", detail="Review the bank candidates and select one only when the evidence is unique."),
@@ -62,7 +62,7 @@ _PLAYBOOKS: dict[str, tuple[RecommendedAction, ...]] = {
     "UNEXPECTED_MULTIPLE_SETTLED_PAYMENTS": (
         RecommendedAction(code="CHECK_ORDER_PAYMENTS", label="Check order payments", detail="Review all settled payments allocated to the order."),
         RecommendedAction(code="TRACE_PAYMENT_PROOF", label="Trace payment proof", detail="Open the order proof and verify each payment source."),
-        RecommendedAction(code="RECORD_HUMAN_REVIEW", label="Record human review", detail="Keep the duplicate payment exception for an operator decision."),
+        RecommendedAction(code="RECORD_HUMAN_REVIEW", label="Record human review", detail="Record the operator's disposition. The review becomes complete and does not change the proof."),
     ),
     "NON_PROCESSABLE_SETTLEMENT_STATUS": (
         RecommendedAction(code="CHECK_SETTLEMENT_STATUS", label="Check settlement status", detail="Confirm the source status and whether this settlement can be processed."),

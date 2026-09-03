@@ -17,6 +17,13 @@ export interface Evidence {
   amount_delta_paise: number
 }
 
+export interface OrderEvidence {
+  payment_row_count: number
+  settled_payment_paise: number
+  expected_order_payment_paise: number
+  excess_payment_paise: number
+}
+
 export interface RunSummary {
   run_id: string
   state: string
@@ -53,25 +60,29 @@ export interface SourceReference {
 }
 
 export interface Proof {
+  schema_version: 'proof-object/v2'
   proof_id: string
   tenant_id: string
   run_id: string
   source_snapshot_id: string
   status: Decision
   source_rows: SourceReference[]
+  subject: { subject_type: 'SETTLEMENT' | 'ORDER'; subject_id: string }
   rule_name: string
   rule_version: string
-  configuration_version: string
-  inputs: Record<string, unknown> & { settlement?: { settlement_id?: string; utr?: string } }
+  configuration: { version: string; values: Record<string, number> }
+  evidence_inputs: Record<string, unknown> & { settlement?: { settlement_id?: string; utr?: string } }
+  evaluated_at: string
   formula: string
   result: { expected_paise: number; observed_paise: number | null; delta_paise: number | null }
-  evidence: Evidence
+  evidence: Evidence | OrderEvidence
   decision_score: number
   decision_reasons: string[]
   classification: string
   exception_type: string | null
   unresolved_reason: string | null
-  proof_fingerprint: string
+  decision_fingerprint: string
+  artifact_fingerprint: string
   supersedes_proof_id: string | null
   created_at: string
 }
@@ -175,9 +186,16 @@ export interface CloseState {
   auto_verified_count: number
   manually_reviewed_count: number
   blocking_exceptions: number
+  unreviewable_blockers: number
   exception_count: number
+  settlement_exception_count: number
+  review_item_count: number
+  total_close_blockers: number
+  system_error_blockers: number
+  integrity_blockers: number
   source_snapshot_id: string
   rule_version: string
+  configuration_version: string
 }
 
 export interface Diagnostics {

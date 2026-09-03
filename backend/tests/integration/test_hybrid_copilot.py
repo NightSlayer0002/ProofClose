@@ -248,13 +248,40 @@ def test_null_credit_answer_leads_with_expected_and_unresolved_inr() -> None:
 @pytest.mark.parametrize(
     ("tool_name", "facts", "prefix"),
     [
-        ("close_blockers", {"blocking_count": 3, "pending_count": 2, "unresolved_paise": 400}, "3 close blockers"),
+        ("close_blockers", {"blocking_count": 3, "pending_count": 2, "unresolved_paise": 400}, "3 total close blockers"),
         ("exception_breakdown", {"groups": [{"count": 2, "amount_paise": 350}]}, "2 exceptions"),
         ("pending_settlements", {"pending_count": 2, "pending_paise": 125000}, "2 pending settlements"),
     ],
 )
 def test_aggregate_answers_lead_with_requested_counts_and_amounts(tool_name: str, facts: dict, prefix: str) -> None:
     assert prefix in _deterministic_message(tool_name, facts)
+
+
+def test_run_residual_money_is_named_not_auto_verified_in_assistant_copy() -> None:
+    summary = _deterministic_message("close_summary", {"unresolved_paise": 475000})
+    blockers = _deterministic_message(
+        "close_blockers",
+        {
+            "total_close_blockers": 4,
+            "open_review_item_count": 3,
+            "pending_count": 1,
+            "unresolved_paise": 475000,
+        },
+    )
+
+    assert summary == "₹4,750.00 is not auto-verified in the current run."
+    assert "4 total close blockers" in blockers
+    assert "3 open review items" in blockers
+    assert "1 pending settlement" in blockers
+    assert "₹4,750.00 is not auto-verified" in blockers
+    assert "currently unresolved" not in f"{summary} {blockers}".lower()
+
+
+def test_guidance_explains_that_left_unresolved_is_a_completed_review_disposition() -> None:
+    actions = guidance_for({"decision": "AMBIGUOUS_MATCH", "candidate_count": 2})
+    disposition = next(action for action in actions if action.code == "RECORD_HUMAN_REVIEW")
+    assert "review complete" in disposition.detail.lower()
+    assert "does not change the proof" in disposition.detail.lower()
 
 
 def test_assistant_has_no_write_tool_path() -> None:

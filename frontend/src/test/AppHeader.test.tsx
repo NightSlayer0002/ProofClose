@@ -10,6 +10,7 @@ describe('AppHeader', () => {
         active="reconciliation"
         identityMode="INSECURE_DEMO_CONTEXT"
         running={false}
+        onHome={vi.fn()}
         onNavigate={vi.fn()}
         onRun={vi.fn()}
       />,

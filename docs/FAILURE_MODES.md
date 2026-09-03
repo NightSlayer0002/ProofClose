@@ -8,7 +8,7 @@
 | Settlement ledger disagreement | Do not bank-match as verified | `SETTLEMENT_LEDGER_MISMATCH` |
 | Two exact UTR/amount bank rows | Refuse to choose | `AMBIGUOUS_MATCH`, candidate count 2 |
 | Missing bank row inside pending window | Wait without accusing a miss | `PENDING` |
-| Missing bank row after window | Surface unresolved money | `MISSING_BANK_CREDIT` |
+| Missing bank row after window | Keep the settlement amount not auto-verified and create a review item | `MISSING_BANK_CREDIT` |
 | Original rule code missing | Do not use current code for history | `RULE_IMPLEMENTATION_UNAVAILABLE` |
 | Proof fingerprint differs on reproduction | Preserve both fingerprints and distrust reproduction | proof reproducibility failure event |
 | Optional AI unavailable | Keep reconciliation and current-fact tools working; use deterministic general explanations where supported | provider state plus honest fallback |
