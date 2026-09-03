@@ -10,7 +10,7 @@
   "dataset_version": "proofclose-eval/v2",
   "embedding_model_version": null,
   "evaluation_mode": "deterministic_offline",
-  "git_commit": "6164aaeaa331c4e59aa7c159906330a84fdbf70c",
+  "git_commit": "a8aabab259f79e9c2299e93299e1512b4bbacb73",
   "model_name": null,
   "model_provider": null,
   "prompt_version": null,
@@ -22,5 +22,5 @@
     "settlement_match": "2.0"
   },
   "seed_count": 3,
-  "timestamp": "2026-09-03T09:38:33.438226+00:00"
+  "timestamp": "2026-09-03T18:41:52.048930+00:00"
 }

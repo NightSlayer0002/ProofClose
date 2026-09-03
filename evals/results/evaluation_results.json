@@ -11,7 +11,7 @@
     "dataset_version": "proofclose-eval/v2",
     "embedding_model_version": null,
     "evaluation_mode": "deterministic_offline",
-    "git_commit": "6164aaeaa331c4e59aa7c159906330a84fdbf70c",
+    "git_commit": "a8aabab259f79e9c2299e93299e1512b4bbacb73",
     "model_name": null,
     "model_provider": null,
     "prompt_version": null,
@@ -23,7 +23,7 @@
       "settlement_match": "2.0"
     },
     "seed_count": 3,
-    "timestamp": "2026-09-03T09:38:33.438226+00:00"
+    "timestamp": "2026-09-03T18:41:52.048930+00:00"
   },
   "metric_counts": {
     "ambiguous_abstentions": 3,
@@ -68,55 +68,55 @@
       "detected_exceptions": [
         {
           "amount_paise": 1349836,
-          "created_at": "2026-09-03T09:38:31.954117",
-          "exception_id": "exc_88725b8a4e3a4e2eb0",
+          "created_at": "2026-09-03T18:41:50.518838",
+          "exception_id": "exc_978f7dd28d8c4d9d85",
           "exception_type": "SETTLEMENT_LEDGER_MISMATCH",
-          "proof_id": "proof_6c01fb955b74445e",
-          "run_id": "run_bf007457ffc0421d",
+          "proof_id": "proof_9078cbfe930c44c6",
+          "run_id": "run_cdf2a346636e445d",
           "state": "OPEN",
           "subject_id": "setl_PC008",
           "subject_type": "SETTLEMENT"
         },
         {
           "amount_paise": 1329560,
-          "created_at": "2026-09-03T09:38:31.954117",
-          "exception_id": "exc_9de9e9e2613a452ba1",
+          "created_at": "2026-09-03T18:41:50.518838",
+          "exception_id": "exc_b2468692e81a4d2882",
           "exception_type": "PAISE_RUPEE_MISMATCH",
-          "proof_id": "proof_aa67bb85a0e74abb",
-          "run_id": "run_bf007457ffc0421d",
+          "proof_id": "proof_291b0b25157c4d80",
+          "run_id": "run_cdf2a346636e445d",
           "state": "OPEN",
           "subject_id": "setl_PC005",
           "subject_type": "SETTLEMENT"
         },
         {
           "amount_paise": 1377784,
-          "created_at": "2026-09-03T09:38:31.954117",
-          "exception_id": "exc_360b086c645a499286",
+          "created_at": "2026-09-03T18:41:50.518838",
+          "exception_id": "exc_4c5b31f235d4432f8f",
           "exception_type": "AMBIGUOUS_MATCH",
-          "proof_id": "proof_c323063a4856456b",
-          "run_id": "run_bf007457ffc0421d",
+          "proof_id": "proof_22c2ddeda30b468f",
+          "run_id": "run_cdf2a346636e445d",
           "state": "OPEN",
           "subject_id": "setl_PC009",
           "subject_type": "SETTLEMENT"
         },
         {
           "amount_paise": 1127174,
-          "created_at": "2026-09-03T09:38:31.954117",
-          "exception_id": "exc_2085e4eef8064a09ba",
+          "created_at": "2026-09-03T18:41:50.518838",
+          "exception_id": "exc_4839ea50900644eb93",
           "exception_type": "MISSING_BANK_CREDIT",
-          "proof_id": "proof_bfd29daeda14460c",
-          "run_id": "run_bf007457ffc0421d",
+          "proof_id": "proof_28e62dddf7ad40dd",
+          "run_id": "run_cdf2a346636e445d",
           "state": "OPEN",
           "subject_id": "setl_PC012",
           "subject_type": "SETTLEMENT"
         },
         {
           "amount_paise": 63360,
-          "created_at": "2026-09-03T09:38:31.954117",
-          "exception_id": "exc_61359d1b154c4f818e",
+          "created_at": "2026-09-03T18:41:50.518838",
+          "exception_id": "exc_e28b46b22e154b9d9b",
           "exception_type": "UNEXPECTED_MULTIPLE_SETTLED_PAYMENTS",
-          "proof_id": "proof_b4207da5b37d4dca",
-          "run_id": "run_bf007457ffc0421d",
+          "proof_id": "proof_85ab8bafd70a402f",
+          "run_id": "run_cdf2a346636e445d",
           "state": "OPEN",
           "subject_id": "order_PC0061",
           "subject_type": "ORDER"
@@ -129,7 +129,7 @@
         "dataset_version": "proofclose-eval/v2",
         "embedding_model_version": null,
         "evaluation_mode": "deterministic_offline",
-        "git_commit": "6164aaeaa331c4e59aa7c159906330a84fdbf70c",
+        "git_commit": "a8aabab259f79e9c2299e93299e1512b4bbacb73",
         "model_name": null,
         "model_provider": null,
         "prompt_version": null,
@@ -140,7 +140,7 @@
           "order_payment_consistency": "1.0",
           "settlement_match": "2.0"
         },
-        "timestamp": "2026-09-03T09:38:32.122295+00:00"
+        "timestamp": "2026-09-03T18:41:50.673270+00:00"
       },
       "metric_counts": {
         "ambiguous_abstentions": 1,
@@ -196,7 +196,7 @@
           "exception_type": null,
           "expected_paise": 1429433,
           "observed_paise": 1429433,
-          "proof_id": "proof_1c096526e8f84f42",
+          "proof_id": "proof_ca69d3ef96894731",
           "reasons": [
             "UTR exact",
             "Amount exact",
@@ -221,7 +221,7 @@
           "exception_type": null,
           "expected_paise": 1396690,
           "observed_paise": 1396690,
-          "proof_id": "proof_3de6c4c41793402b",
+          "proof_id": "proof_a186c67848824597",
           "reasons": [
             "UTR exact",
             "Amount exact",
@@ -246,7 +246,7 @@
           "exception_type": null,
           "expected_paise": 1092080,
           "observed_paise": 1092080,
-          "proof_id": "proof_49ed9bf20973470d",
+          "proof_id": "proof_8c97c64ad666406e",
           "reasons": [
             "UTR exact",
             "Amount exact",
@@ -271,7 +271,7 @@
           "exception_type": null,
           "expected_paise": 1306407,
           "observed_paise": null,
-          "proof_id": "proof_97b79a42a0d642d5",
+          "proof_id": "proof_822c7e0da14b4ec4",
           "reasons": [
             "Settlement is inside the configured bank posting window"
           ],
@@ -293,7 +293,7 @@
           "exception_type": "PAISE_RUPEE_MISMATCH",
           "expected_paise": 1329560,
           "observed_paise": null,
-          "proof_id": "proof_aa67bb85a0e74abb",
+          "proof_id": "proof_291b0b25157c4d80",
           "reasons": [
             "Settlement and reconstructed ledger differ by an exact x100 unit ratio"
           ],
@@ -315,7 +315,7 @@
           "exception_type": null,
           "expected_paise": 1025575,
           "observed_paise": 1025575,
-          "proof_id": "proof_eede5a803db649df",
+          "proof_id": "proof_97ef8eccc4e14364",
           "reasons": [
             "UTR exact",
             "Amount exact",
@@ -340,7 +340,7 @@
           "exception_type": null,
           "expected_paise": 1431351,
           "observed_paise": 1431351,
-          "proof_id": "proof_c07780982aff4f58",
+          "proof_id": "proof_c3c14af46a554486",
           "reasons": [
             "UTR exact",
             "Amount exact",
@@ -365,7 +365,7 @@
           "exception_type": "SETTLEMENT_LEDGER_MISMATCH",
           "expected_paise": 1349836,
           "observed_paise": null,
-          "proof_id": "proof_6c01fb955b74445e",
+          "proof_id": "proof_9078cbfe930c44c6",
           "reasons": [
             "Reconstructed Recon ledger differs from the Settlement entity"
           ],
@@ -387,7 +387,7 @@
           "exception_type": "AMBIGUOUS_MATCH",
           "expected_paise": 1377784,
           "observed_paise": null,
-          "proof_id": "proof_c323063a4856456b",
+          "proof_id": "proof_22c2ddeda30b468f",
           "reasons": [
             "Same-UTR bank evidence is ambiguous across candidate rows or claimants"
           ],
@@ -409,7 +409,7 @@
           "exception_type": null,
           "expected_paise": 1257087,
           "observed_paise": 1257087,
-          "proof_id": "proof_387b4b3fdd874bed",
+          "proof_id": "proof_01e8164186f546f9",
           "reasons": [
             "UTR exact",
             "Amount exact",
@@ -434,7 +434,7 @@
           "exception_type": null,
           "expected_paise": 1301338,
           "observed_paise": 1301338,
-          "proof_id": "proof_973c71a64d834f0a",
+          "proof_id": "proof_c62b9170433940a7",
           "reasons": [
             "UTR exact",
             "Amount exact",
@@ -459,7 +459,7 @@
           "exception_type": "MISSING_BANK_CREDIT",
           "expected_paise": 1127174,
           "observed_paise": null,
-          "proof_id": "proof_bfd29daeda14460c",
+          "proof_id": "proof_28e62dddf7ad40dd",
           "reasons": [
             "Processed settlement is outside the bank posting window",
             "No supported bank candidate"
@@ -478,23 +478,23 @@
       },
       "run": {
         "configuration_version": "2.0",
-        "created_at": "2026-09-03T09:38:31.925474",
+        "created_at": "2026-09-03T18:41:50.489861",
         "expected_paise": 15424315,
         "explained_paise": 8933554,
         "records_processed": 267,
         "rule_version": "2.0",
-        "run_id": "run_bf007457ffc0421d",
+        "run_id": "run_cdf2a346636e445d",
         "source_snapshot_id": "snapshot_2556dbd5c5e11010ec72",
         "state": "SUCCESS",
         "timings": {
           "database_ms": 7,
           "matching_ms": 0,
-          "normalization_ms": 2,
-          "persistence_ms": 15,
+          "normalization_ms": 1,
+          "persistence_ms": 10,
           "proof_generation_ms": 10,
           "settlement_build_ms": 0
         },
-        "total_ms": 40,
+        "total_ms": 34,
         "unresolved_paise": 6490761
       },
       "scenario_assignment": {
@@ -596,55 +596,55 @@
       "detected_exceptions": [
         {
           "amount_paise": 1387237,
-          "created_at": "2026-09-03T09:38:32.599892",
-          "exception_id": "exc_5cfbde1c81d14d96a2",
+          "created_at": "2026-09-03T18:41:51.176665",
+          "exception_id": "exc_29d1025a0d87497191",
           "exception_type": "SETTLEMENT_LEDGER_MISMATCH",
-          "proof_id": "proof_735f808c80ba49e3",
-          "run_id": "run_abd7ee99c1ad460c",
+          "proof_id": "proof_9de30e0a28414926",
+          "run_id": "run_bb701f0274aa4449",
           "state": "OPEN",
           "subject_id": "setl_PC005",
           "subject_type": "SETTLEMENT"
         },
         {
           "amount_paise": 1228317,
-          "created_at": "2026-09-03T09:38:32.599892",
-          "exception_id": "exc_d3dd3c90f9f34b8bb5",
+          "created_at": "2026-09-03T18:41:51.176665",
+          "exception_id": "exc_6d4aaec1a8d44a0eb6",
           "exception_type": "PAISE_RUPEE_MISMATCH",
-          "proof_id": "proof_a51e35f1144d467f",
-          "run_id": "run_abd7ee99c1ad460c",
+          "proof_id": "proof_1c949513a757437f",
+          "run_id": "run_bb701f0274aa4449",
           "state": "OPEN",
           "subject_id": "setl_PC010",
           "subject_type": "SETTLEMENT"
         },
         {
           "amount_paise": 1569995,
-          "created_at": "2026-09-03T09:38:32.599892",
-          "exception_id": "exc_0e47891819b746ada8",
+          "created_at": "2026-09-03T18:41:51.176665",
+          "exception_id": "exc_6669ba2521a54db6a6",
           "exception_type": "AMBIGUOUS_MATCH",
-          "proof_id": "proof_e967c2955cb2451d",
-          "run_id": "run_abd7ee99c1ad460c",
+          "proof_id": "proof_e9352d06d3c546bd",
+          "run_id": "run_bb701f0274aa4449",
           "state": "OPEN",
           "subject_id": "setl_PC009",
           "subject_type": "SETTLEMENT"
         },
         {
           "amount_paise": 1382953,
-          "created_at": "2026-09-03T09:38:32.599892",
-          "exception_id": "exc_d469061319584c9ba6",
+          "created_at": "2026-09-03T18:41:51.176665",
+          "exception_id": "exc_e4e446b81428410196",
           "exception_type": "MISSING_BANK_CREDIT",
-          "proof_id": "proof_4cb59a27a33741c2",
-          "run_id": "run_abd7ee99c1ad460c",
+          "proof_id": "proof_538c017edb164e0e",
+          "run_id": "run_bb701f0274aa4449",
           "state": "OPEN",
           "subject_id": "setl_PC001",
           "subject_type": "SETTLEMENT"
         },
         {
           "amount_paise": 48701,
-          "created_at": "2026-09-03T09:38:32.599892",
-          "exception_id": "exc_6b2db48e6c69451b95",
+          "created_at": "2026-09-03T18:41:51.176665",
+          "exception_id": "exc_fd7d48a0545c407697",
           "exception_type": "UNEXPECTED_MULTIPLE_SETTLED_PAYMENTS",
-          "proof_id": "proof_18ae077b12c746c2",
-          "run_id": "run_abd7ee99c1ad460c",
+          "proof_id": "proof_44f6e4c06b334cac",
+          "run_id": "run_bb701f0274aa4449",
           "state": "OPEN",
           "subject_id": "order_PC0061",
           "subject_type": "ORDER"
@@ -657,7 +657,7 @@
         "dataset_version": "proofclose-eval/v2",
         "embedding_model_version": null,
         "evaluation_mode": "deterministic_offline",
-        "git_commit": "6164aaeaa331c4e59aa7c159906330a84fdbf70c",
+        "git_commit": "a8aabab259f79e9c2299e93299e1512b4bbacb73",
         "model_name": null,
         "model_provider": null,
         "prompt_version": null,
@@ -668,7 +668,7 @@
           "order_payment_consistency": "1.0",
           "settlement_match": "2.0"
         },
-        "timestamp": "2026-09-03T09:38:32.748871+00:00"
+        "timestamp": "2026-09-03T18:41:51.337255+00:00"
       },
       "metric_counts": {
         "ambiguous_abstentions": 1,
@@ -724,7 +724,7 @@
           "exception_type": "MISSING_BANK_CREDIT",
           "expected_paise": 1382953,
           "observed_paise": null,
-          "proof_id": "proof_4cb59a27a33741c2",
+          "proof_id": "proof_538c017edb164e0e",
           "reasons": [
             "Processed settlement is outside the bank posting window",
             "No supported bank candidate"
@@ -747,7 +747,7 @@
           "exception_type": null,
           "expected_paise": 1321340,
           "observed_paise": 1321340,
-          "proof_id": "proof_aaa96a7e076c42f4",
+          "proof_id": "proof_e328cf3db78947de",
           "reasons": [
             "UTR exact",
             "Amount exact",
@@ -772,7 +772,7 @@
           "exception_type": null,
           "expected_paise": 1096541,
           "observed_paise": 1096541,
-          "proof_id": "proof_318fc801608945d9",
+          "proof_id": "proof_0718f2a8cb31461b",
           "reasons": [
             "UTR exact",
             "Amount exact",
@@ -797,7 +797,7 @@
           "exception_type": null,
           "expected_paise": 1318130,
           "observed_paise": 1318130,
-          "proof_id": "proof_c4f569106c984d7d",
+          "proof_id": "proof_46e62959f07f4de4",
           "reasons": [
             "UTR exact",
             "Amount exact",
@@ -822,7 +822,7 @@
           "exception_type": "SETTLEMENT_LEDGER_MISMATCH",
           "expected_paise": 1387237,
           "observed_paise": null,
-          "proof_id": "proof_735f808c80ba49e3",
+          "proof_id": "proof_9de30e0a28414926",
           "reasons": [
             "Reconstructed Recon ledger differs from the Settlement entity"
           ],
@@ -844,7 +844,7 @@
           "exception_type": null,
           "expected_paise": 1217768,
           "observed_paise": 1217768,
-          "proof_id": "proof_baa2d23e55db452c",
+          "proof_id": "proof_dc184c49f2f442d6",
           "reasons": [
             "UTR exact",
             "Amount exact",
@@ -869,7 +869,7 @@
           "exception_type": null,
           "expected_paise": 1378469,
           "observed_paise": 1378469,
-          "proof_id": "proof_43f34e9cc1bc4f0c",
+          "proof_id": "proof_82be9fde74ac4bf7",
           "reasons": [
             "UTR exact",
             "Amount exact",
@@ -894,7 +894,7 @@
           "exception_type": null,
           "expected_paise": 1563556,
           "observed_paise": null,
-          "proof_id": "proof_180efe655a714ae6",
+          "proof_id": "proof_0282853a83164ef2",
           "reasons": [
             "Settlement is inside the configured bank posting window"
           ],
@@ -916,7 +916,7 @@
           "exception_type": "AMBIGUOUS_MATCH",
           "expected_paise": 1569995,
           "observed_paise": null,
-          "proof_id": "proof_e967c2955cb2451d",
+          "proof_id": "proof_e9352d06d3c546bd",
           "reasons": [
             "Same-UTR bank evidence is ambiguous across candidate rows or claimants"
           ],
@@ -938,7 +938,7 @@
           "exception_type": "PAISE_RUPEE_MISMATCH",
           "expected_paise": 1228317,
           "observed_paise": null,
-          "proof_id": "proof_a51e35f1144d467f",
+          "proof_id": "proof_1c949513a757437f",
           "reasons": [
             "Settlement and reconstructed ledger differ by an exact x100 unit ratio"
           ],
@@ -960,7 +960,7 @@
           "exception_type": null,
           "expected_paise": 1340246,
           "observed_paise": 1340246,
-          "proof_id": "proof_abac7f0c05ce4652",
+          "proof_id": "proof_6399122cbbb44175",
           "reasons": [
             "UTR exact",
             "Amount exact",
@@ -985,7 +985,7 @@
           "exception_type": null,
           "expected_paise": 1114744,
           "observed_paise": 1114744,
-          "proof_id": "proof_ae207c914740413a",
+          "proof_id": "proof_63ae0db111314e68",
           "reasons": [
             "UTR exact",
             "Amount exact",
@@ -1006,16 +1006,16 @@
       },
       "run": {
         "configuration_version": "2.0",
-        "created_at": "2026-09-03T09:38:32.580191",
+        "created_at": "2026-09-03T18:41:51.160146",
         "expected_paise": 15919296,
         "explained_paise": 8787238,
         "records_processed": 267,
         "rule_version": "2.0",
-        "run_id": "run_abd7ee99c1ad460c",
+        "run_id": "run_bb701f0274aa4449",
         "source_snapshot_id": "snapshot_30c918316acd490ac095",
         "state": "SUCCESS",
         "timings": {
-          "database_ms": 8,
+          "database_ms": 6,
           "matching_ms": 0,
           "normalization_ms": 1,
           "persistence_ms": 9,
@@ -1124,55 +1124,55 @@
       "detected_exceptions": [
         {
           "amount_paise": 1474643,
-          "created_at": "2026-09-03T09:38:33.279394",
-          "exception_id": "exc_c290e5da66884fc5b9",
+          "created_at": "2026-09-03T18:41:51.849653",
+          "exception_id": "exc_8fc99b0dc5cf4b83b8",
           "exception_type": "SETTLEMENT_LEDGER_MISMATCH",
-          "proof_id": "proof_7aa2f61dfb2d48b2",
-          "run_id": "run_d81fdc5368594d5c",
+          "proof_id": "proof_25dfc68937564470",
+          "run_id": "run_e6bee26a37024e00",
           "state": "OPEN",
           "subject_id": "setl_PC002",
           "subject_type": "SETTLEMENT"
         },
         {
           "amount_paise": 1066657,
-          "created_at": "2026-09-03T09:38:33.279394",
-          "exception_id": "exc_18de15b265d344cd9d",
+          "created_at": "2026-09-03T18:41:51.849653",
+          "exception_id": "exc_38dfcba8bebf42fd9b",
           "exception_type": "PAISE_RUPEE_MISMATCH",
-          "proof_id": "proof_bb51be0004524770",
-          "run_id": "run_d81fdc5368594d5c",
+          "proof_id": "proof_5d0ec19ed4a44d22",
+          "run_id": "run_e6bee26a37024e00",
           "state": "OPEN",
           "subject_id": "setl_PC001",
           "subject_type": "SETTLEMENT"
         },
         {
           "amount_paise": 1230646,
-          "created_at": "2026-09-03T09:38:33.279394",
-          "exception_id": "exc_82ccce9a5211432b89",
+          "created_at": "2026-09-03T18:41:51.849653",
+          "exception_id": "exc_f17007f93142439a83",
           "exception_type": "AMBIGUOUS_MATCH",
-          "proof_id": "proof_c30e1a26b3784d65",
-          "run_id": "run_d81fdc5368594d5c",
+          "proof_id": "proof_0e370297368c4190",
+          "run_id": "run_e6bee26a37024e00",
           "state": "OPEN",
           "subject_id": "setl_PC006",
           "subject_type": "SETTLEMENT"
         },
         {
           "amount_paise": 1350073,
-          "created_at": "2026-09-03T09:38:33.279394",
-          "exception_id": "exc_25c5b714260b4fb0b3",
+          "created_at": "2026-09-03T18:41:51.849653",
+          "exception_id": "exc_3ca3d43c2f7348b985",
           "exception_type": "MISSING_BANK_CREDIT",
-          "proof_id": "proof_ada31b16c1fb4680",
-          "run_id": "run_d81fdc5368594d5c",
+          "proof_id": "proof_0e3dced8ff864261",
+          "run_id": "run_e6bee26a37024e00",
           "state": "OPEN",
           "subject_id": "setl_PC010",
           "subject_type": "SETTLEMENT"
         },
         {
           "amount_paise": 25959,
-          "created_at": "2026-09-03T09:38:33.279394",
-          "exception_id": "exc_acaaddacf4db463898",
+          "created_at": "2026-09-03T18:41:51.849653",
+          "exception_id": "exc_a2a2ea79a99a434ca9",
           "exception_type": "UNEXPECTED_MULTIPLE_SETTLED_PAYMENTS",
-          "proof_id": "proof_8732ddeee8974dc3",
-          "run_id": "run_d81fdc5368594d5c",
+          "proof_id": "proof_547e94d32dc24f35",
+          "run_id": "run_e6bee26a37024e00",
           "state": "OPEN",
           "subject_id": "order_PC0061",
           "subject_type": "ORDER"
@@ -1185,7 +1185,7 @@
         "dataset_version": "proofclose-eval/v2",
         "embedding_model_version": null,
         "evaluation_mode": "deterministic_offline",
-        "git_commit": "6164aaeaa331c4e59aa7c159906330a84fdbf70c",
+        "git_commit": "a8aabab259f79e9c2299e93299e1512b4bbacb73",
         "model_name": null,
         "model_provider": null,
         "prompt_version": null,
@@ -1196,7 +1196,7 @@
           "order_payment_consistency": "1.0",
           "settlement_match": "2.0"
         },
-        "timestamp": "2026-09-03T09:38:33.406499+00:00"
+        "timestamp": "2026-09-03T18:41:52.016633+00:00"
       },
       "metric_counts": {
         "ambiguous_abstentions": 1,
@@ -1252,7 +1252,7 @@
           "exception_type": "PAISE_RUPEE_MISMATCH",
           "expected_paise": 1066657,
           "observed_paise": null,
-          "proof_id": "proof_bb51be0004524770",
+          "proof_id": "proof_5d0ec19ed4a44d22",
           "reasons": [
             "Settlement and reconstructed ledger differ by an exact x100 unit ratio"
           ],
@@ -1274,7 +1274,7 @@
           "exception_type": "SETTLEMENT_LEDGER_MISMATCH",
           "expected_paise": 1474643,
           "observed_paise": null,
-          "proof_id": "proof_7aa2f61dfb2d48b2",
+          "proof_id": "proof_25dfc68937564470",
           "reasons": [
             "Reconstructed Recon ledger differs from the Settlement entity"
           ],
@@ -1296,7 +1296,7 @@
           "exception_type": null,
           "expected_paise": 1128444,
           "observed_paise": 1128444,
-          "proof_id": "proof_14c23965c4a44f7d",
+          "proof_id": "proof_5a561b4d527c468b",
           "reasons": [
             "UTR exact",
             "Amount exact",
@@ -1321,7 +1321,7 @@
           "exception_type": null,
           "expected_paise": 1216535,
           "observed_paise": 1216535,
-          "proof_id": "proof_bdf52c4efdbc48ff",
+          "proof_id": "proof_aa0561867c8e4f27",
           "reasons": [
             "UTR exact",
             "Amount exact",
@@ -1346,7 +1346,7 @@
           "exception_type": null,
           "expected_paise": 1346274,
           "observed_paise": null,
-          "proof_id": "proof_5979ee16e92b4e50",
+          "proof_id": "proof_6d5f628f9a304c31",
           "reasons": [
             "Settlement is inside the configured bank posting window"
           ],
@@ -1368,7 +1368,7 @@
           "exception_type": "AMBIGUOUS_MATCH",
           "expected_paise": 1230646,
           "observed_paise": null,
-          "proof_id": "proof_c30e1a26b3784d65",
+          "proof_id": "proof_0e370297368c4190",
           "reasons": [
             "Same-UTR bank evidence is ambiguous across candidate rows or claimants"
           ],
@@ -1390,7 +1390,7 @@
           "exception_type": null,
           "expected_paise": 846653,
           "observed_paise": 846653,
-          "proof_id": "proof_b4ea3be53f3d4592",
+          "proof_id": "proof_55f1743af21d469d",
           "reasons": [
             "UTR exact",
             "Amount exact",
@@ -1415,7 +1415,7 @@
           "exception_type": null,
           "expected_paise": 1639043,
           "observed_paise": 1639043,
-          "proof_id": "proof_757a653203004dfc",
+          "proof_id": "proof_7a43575fd02a4ced",
           "reasons": [
             "UTR exact",
             "Amount exact",
@@ -1440,7 +1440,7 @@
           "exception_type": null,
           "expected_paise": 1590134,
           "observed_paise": 1590134,
-          "proof_id": "proof_cdb074601f5440b0",
+          "proof_id": "proof_b83a8fb3e9864083",
           "reasons": [
             "UTR exact",
             "Amount exact",
@@ -1465,7 +1465,7 @@
           "exception_type": "MISSING_BANK_CREDIT",
           "expected_paise": 1350073,
           "observed_paise": null,
-          "proof_id": "proof_ada31b16c1fb4680",
+          "proof_id": "proof_0e3dced8ff864261",
           "reasons": [
             "Processed settlement is outside the bank posting window",
             "No supported bank candidate"
@@ -1488,7 +1488,7 @@
           "exception_type": null,
           "expected_paise": 1214695,
           "observed_paise": 1214695,
-          "proof_id": "proof_b139092402624c09",
+          "proof_id": "proof_1755c9efa156486b",
           "reasons": [
             "UTR exact",
             "Amount exact",
@@ -1513,7 +1513,7 @@
           "exception_type": null,
           "expected_paise": 1381346,
           "observed_paise": 1381346,
-          "proof_id": "proof_d968dfc1a74044ba",
+          "proof_id": "proof_d6f9c9f9e3444bce",
           "reasons": [
             "UTR exact",
             "Amount exact",
@@ -1534,23 +1534,23 @@
       },
       "run": {
         "configuration_version": "2.0",
-        "created_at": "2026-09-03T09:38:33.247612",
+        "created_at": "2026-09-03T18:41:51.825556",
         "expected_paise": 15485143,
         "explained_paise": 9016850,
         "records_processed": 267,
         "rule_version": "2.0",
-        "run_id": "run_d81fdc5368594d5c",
+        "run_id": "run_e6bee26a37024e00",
         "source_snapshot_id": "snapshot_c9595325a26daa6abce8",
         "state": "SUCCESS",
         "timings": {
-          "database_ms": 7,
+          "database_ms": 6,
           "matching_ms": 0,
           "normalization_ms": 1,
-          "persistence_ms": 9,
-          "proof_generation_ms": 10,
+          "persistence_ms": 14,
+          "proof_generation_ms": 9,
           "settlement_build_ms": 0
         },
-        "total_ms": 33,
+        "total_ms": 36,
         "unresolved_paise": 6468293
       },
       "scenario_assignment": {
