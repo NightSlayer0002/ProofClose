@@ -109,10 +109,10 @@ export function LandingPage({ onOpenWorkspace }: Props) {
             <p>The product does not hide reconciliation behind a confidence score. It shows what arrived, what matched, which rule ran, and exactly what must be reviewed.</p>
           </div>
           <div className="provenance-steps">
-            <article><span>01</span><Database aria-hidden="true" /><h3>Accept source deliveries</h3><p>CSV rows are validated, quarantined when invalid, hashed, and retained as submitted.</p><code>orders · recon · settlements · bank</code></article>
-            <article><span>02</span><LockKeyhole aria-hidden="true" /><h3>Freeze the evidence</h3><p>An immutable snapshot binds the accepted source IDs and content hashes before rules execute.</p><code>snapshot_hash = sha256(…)</code></article>
-            <article><span>03</span><GitCompareArrows aria-hidden="true" /><h3>Run versioned rules</h3><p>Integer-paise comparisons and explicit predicates decide; an exact UTR and amount still requires one unique bank candidate.</p><code>rule 2.0 · config 2.0</code></article>
-            <article><span>04</span><FileCheck2 aria-hidden="true" /><h3>Seal a proof object</h3><p>The subject, sources, result, reasons, versions, and supersession lineage become tamper-evident evidence.</p><code>artifact_fingerprint</code></article>
+            <article><span>01</span><Database aria-hidden="true" /><h3>Accept source deliveries</h3><p>CSV rows are validated, quarantined when invalid, hashed, and retained as submitted.</p></article>
+            <article><span>02</span><LockKeyhole aria-hidden="true" /><h3>Freeze the evidence</h3><p>An immutable snapshot binds the accepted source IDs and content hashes before rules execute.</p></article>
+            <article><span>03</span><GitCompareArrows aria-hidden="true" /><h3>Run versioned rules</h3><p>Integer-paise comparisons and explicit predicates decide; an exact UTR and amount still requires one unique bank candidate.</p></article>
+            <article><span>04</span><FileCheck2 aria-hidden="true" /><h3>Seal a proof object</h3><p>The subject, sources, result, reasons, versions, and supersession lineage become tamper-evident evidence.</p></article>
           </div>
         </section>
 
