@@ -56,6 +56,9 @@ it('renders a restrained transcript with verified facts and ordered guidance', a
   )
 
   const assistant = screen.getByRole('complementary', { name: 'Evidence Assistant' })
+  const mark = assistant.querySelector('.assistant-icon')
+  expect(mark?.querySelector('.lucide-shield-check')).toBeInTheDocument()
+  expect(mark?.querySelector('.lucide-message-square-text')).not.toBeInTheDocument()
   expect(assistant).toHaveTextContent('Investigating settlement setl_1')
   expect(screen.getByText('Verified + guidance')).toBeVisible()
   expect(screen.getByRole('region', { name: 'Verified facts' })).toHaveTextContent('This is the deterministic evidence result.')

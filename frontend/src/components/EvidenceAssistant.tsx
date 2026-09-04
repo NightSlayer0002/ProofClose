@@ -1,4 +1,4 @@
-import { ArrowRight, ArrowUpRight, ChevronRight, FileCheck2, MessageSquareText, Send, ShieldCheck, X } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, ChevronRight, FileCheck2, Send, ShieldCheck, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from 'react'
 
 import { formatINR } from '../app/formatters'
@@ -148,7 +148,7 @@ export function EvidenceAssistant({
     >
       <header className="assistant-header">
         <div className="assistant-title">
-          <span className="assistant-icon"><MessageSquareText aria-hidden="true" size={16} /></span>
+          <span className="assistant-icon"><ShieldCheck aria-hidden="true" size={18} /></span>
           <div><strong>Evidence Copilot</strong><span>Read-only copilot</span></div>
         </div>
         <div className="assistant-header-actions">

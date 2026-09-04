@@ -17,4 +17,13 @@ it('dramatizes evidence provenance while keeping AI outside the hero', () => {
   expect(screen.getByRole('heading', { name: 'One financial fact. Every source bound.' })).toBeVisible()
   expect(screen.getByRole('heading', { name: 'Measured on synthetic evidence—not marketed as production accuracy.' })).toBeVisible()
   expect(screen.getByText('Read-only Evidence Assistant')).toBeVisible()
+
+  for (const implementationLabel of [
+    'orders · recon · settlements · bank',
+    'snapshot_hash = sha256(…)',
+    'rule 2.0 · config 2.0',
+    'artifact_fingerprint',
+  ]) {
+    expect(screen.queryByText(implementationLabel, { exact: true })).not.toBeInTheDocument()
+  }
 })
