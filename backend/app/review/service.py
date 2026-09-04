@@ -98,6 +98,9 @@ class ReviewService:
     ) -> dict:
         if feedback_type not in {"INCORRECT_MATCH", "INCORRECT_EXCEPTION", "PROOF_UNCLEAR", "OTHER"}:
             raise ValueError("unsupported feedback type")
+        cleaned_comment = comment.strip()
+        if sum(1 for char in cleaned_comment if char.isprintable() and not char.isspace()) < 5:
+            raise ValueError("challenge comment must contain at least five visible characters")
         feedback = FeedbackRecord(
             id=f"feedback_{uuid4().hex[:18]}",
             tenant_id=tenant_id,
@@ -105,11 +108,16 @@ class ReviewService:
             proof_id=proof_id,
             actor_id=actor_id,
             feedback_type=feedback_type,
-            comment=comment.strip(),
+            comment=cleaned_comment,
         )
         with self.database.session() as session:
             session.add(feedback)
-        return {"feedback_id": feedback.id, "status": "RECORDED_FOR_OFFLINE_REVIEW"}
+        return {
+            "feedback_id": feedback.id,
+            "status": "RECORDED_FOR_OFFLINE_REVIEW",
+            "feedback_type": feedback.feedback_type,
+            "comment": feedback.comment,
+        }
 
     def list_audit(self, tenant_id: str, run_id: str) -> list[dict]:
         with self.database.session() as session:

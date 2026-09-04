@@ -1,5 +1,5 @@
 import { formatAge, formatINR, sentenceCase } from '../app/formatters'
-import type { ExceptionItem } from '../app/types'
+import type { ExceptionItem, ReviewAction } from '../app/types'
 import { StatusLabel } from '../components/StatusLabel'
 import { Tooltip } from '../components/Tooltip'
 
@@ -8,7 +8,7 @@ interface Props {
   reviewing: string | null
   onProof: (id: string) => void
   onAskAbout: (item: ExceptionItem) => void
-  onReview: (item: ExceptionItem, action: string) => void
+  onReview: (item: ExceptionItem, action: ReviewAction) => void
 }
 
 export function ExceptionsPage({ items, reviewing, onProof, onAskAbout, onReview }: Props) {

@@ -44,7 +44,7 @@ afterEach(cleanup)
 
 describe('ProofDrawer', () => {
   it('separates historical reproduction from current-rule reevaluation', () => {
-    render(<ProofDrawer proof={proof} busyAction={null} onClose={vi.fn()} onAction={vi.fn()} />)
+    render(<ProofDrawer proof={proof} busyAction={null} onClose={vi.fn()} onAction={vi.fn()} onChallenge={vi.fn()} />)
     expect(screen.getByRole('dialog', { name: 'Financial proof' })).toHaveAttribute('aria-modal', 'true')
     expect(screen.getByText('Historical reproduction')).toBeVisible()
     expect(screen.getByText('Current-rule re-evaluation')).toBeVisible()
@@ -56,7 +56,7 @@ describe('ProofDrawer', () => {
 
   it('closes with Escape', async () => {
     const close = vi.fn()
-    render(<ProofDrawer proof={proof} busyAction={null} onClose={close} onAction={vi.fn()} />)
+    render(<ProofDrawer proof={proof} busyAction={null} onClose={close} onAction={vi.fn()} onChallenge={vi.fn()} />)
     await userEvent.keyboard('{Escape}')
     expect(close).toHaveBeenCalledTimes(1)
   })
@@ -66,7 +66,7 @@ describe('ProofDrawer', () => {
     const { unmount } = render(
       <div className="app-shell">
         <header data-testid="app-header"><button>Underlying navigation</button></header>
-        <ProofDrawer proof={proof} busyAction={null} onClose={vi.fn()} onAction={vi.fn()} />
+        <ProofDrawer proof={proof} busyAction={null} onClose={vi.fn()} onAction={vi.fn()} onChallenge={vi.fn()} />
       </div>,
     )
 
@@ -84,5 +84,14 @@ describe('ProofDrawer', () => {
     unmount()
     expect(header.inert).toBe(false)
     expect(document.body.style.overflow).toBe('')
+  })
+
+  it('wires Flag match to the proof challenge handler', async () => {
+    const onChallenge = vi.fn()
+    render(<ProofDrawer proof={proof} busyAction={null} onClose={vi.fn()} onAction={vi.fn()} onChallenge={onChallenge} />)
+
+    await userEvent.click(screen.getByRole('button', { name: 'Flag match' }))
+
+    expect(onChallenge).toHaveBeenCalledOnce()
   })
 })

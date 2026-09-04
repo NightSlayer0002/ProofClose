@@ -11,11 +11,13 @@ interface Props {
   busyAction: 'reproduce' | 'reevaluate' | null
   onClose: () => void
   onAction: (action: 'reproduce' | 'reevaluate') => void
+  onChallenge: () => void
+  challengeConfirmation?: string | null
 }
 
 const isSettlementEvidence = (evidence: Proof['evidence']): evidence is Evidence => 'candidate_count' in evidence
 
-export function ProofDrawer({ proof, busyAction, onClose, onAction }: Props) {
+export function ProofDrawer({ proof, busyAction, onClose, onAction, onChallenge, challengeConfirmation }: Props) {
   const layer = useRef<HTMLDivElement>(null)
   const drawer = useRef<HTMLElement>(null)
   const closeButton = useRef<HTMLButtonElement>(null)
@@ -158,8 +160,9 @@ export function ProofDrawer({ proof, busyAction, onClose, onAction }: Props) {
 
         <div className="drawer-footer">
           <Tooltip content="View the source rows captured by this proof; nothing is modified."><button className="text-button" onClick={() => setRawOpen((value) => !value)}><Copy aria-hidden="true" size={14} /> {rawOpen ? 'Hide raw evidence' : 'View raw evidence'}</button></Tooltip>
-          <button className="text-button danger"><Flag aria-hidden="true" size={14} /> Flag match</button>
+          <button className="text-button danger" onClick={onChallenge}><Flag aria-hidden="true" size={14} /> Flag match</button>
         </div>
+        {challengeConfirmation && <p className="proof-feedback-confirmation" role="status" aria-label="Proof challenge confirmation"><Check aria-hidden="true" size={14} />{challengeConfirmation}</p>}
         {rawOpen && <pre className="raw-evidence">{JSON.stringify(proof.source_rows, null, 2)}</pre>}
       </aside>
     </div>
