@@ -115,6 +115,28 @@ test('fixed evidence-first browser review', async ({ page }) => {
   await expect(page.getByLabel('Source records flow through a frozen snapshot and versioned rules into an immutable proof')).toBeVisible()
   await expect(page.getByText('Measured on synthetic evidence—not marketed as production accuracy.')).toBeVisible()
   await expectContained(page)
+  const provenanceLayout = await page.locator('.provenance-field').evaluate((field) => {
+    const fieldRect = field.getBoundingClientRect()
+    const sources = [...field.querySelectorAll('.source-chip')].map((source) => source.getBoundingClientRect())
+    const snapshot = field.querySelector('.snapshot-node')!.getBoundingClientRect()
+    const proof = field.querySelector('.proof-object-card')!.getBoundingClientRect()
+    return {
+      sourceTopSpread: Math.max(...sources.map((source) => source.top)) - Math.min(...sources.map((source) => source.top)),
+      sourceBottom: Math.max(...sources.map((source) => source.bottom)),
+      snapshotTop: snapshot.top,
+      snapshotBottom: snapshot.bottom,
+      proofTop: proof.top,
+      fieldCenter: fieldRect.left + fieldRect.width / 2,
+      snapshotCenter: snapshot.left + snapshot.width / 2,
+      proofCenter: proof.left + proof.width / 2,
+    }
+  })
+  expect(provenanceLayout.sourceTopSpread).toBeLessThanOrEqual(2)
+  expect(provenanceLayout.sourceBottom).toBeLessThan(provenanceLayout.snapshotTop)
+  expect(provenanceLayout.snapshotBottom).toBeLessThan(provenanceLayout.proofTop)
+  expect(provenanceLayout.proofTop - provenanceLayout.snapshotBottom).toBeLessThanOrEqual(80)
+  expect(Math.abs(provenanceLayout.snapshotCenter - provenanceLayout.fieldCenter)).toBeLessThanOrEqual(2)
+  expect(Math.abs(provenanceLayout.proofCenter - provenanceLayout.fieldCenter)).toBeLessThanOrEqual(2)
   await screenshot(page, 'landing')
 
   await page.getByRole('link', { name: 'Open evidence workspace' }).first().click()
@@ -307,6 +329,16 @@ test('failure toast clears the sticky header at mobile width', async ({ page }) 
 test('reduced motion keeps proof content immediate and stationary', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await mockEvidenceMode(page)
+  await page.goto('/')
+  const [fieldBox, proofCardBox] = await Promise.all([
+    page.locator('.provenance-field').boundingBox(),
+    page.locator('.proof-object-card').boundingBox(),
+  ])
+  expect(fieldBox).not.toBeNull()
+  expect(proofCardBox).not.toBeNull()
+  expect(proofCardBox!.x).toBeGreaterThanOrEqual(fieldBox!.x)
+  expect(proofCardBox!.x + proofCardBox!.width).toBeLessThanOrEqual(fieldBox!.x + fieldBox!.width)
+
   await page.goto('/workspace')
   await page.getByRole('button', { name: 'Prove it' }).first().click()
   const motion = await page.locator('.proof-drawer').evaluate((element) => {
