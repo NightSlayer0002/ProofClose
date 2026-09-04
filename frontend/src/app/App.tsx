@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { api } from './api'
 import { isWorkspacePath, pageForPath, pathForPage } from './routing'
-import type { AssistantContext, AssistantContextType, AssistantThread, CloseState, ConversationTurn, Diagnostics, ExceptionItem, Page, Proof, ReconciliationRow, RunSummary } from './types'
+import type { AssistantContext, AssistantContextType, AssistantThread, CloseState, ConversationTurn, Diagnostics, ExceptionItem, FeedbackType, Page, Proof, ReconciliationRow, ReviewAction, RunSummary } from './types'
+import { ActionDialog } from '../components/ActionDialog'
 import { AppHeader } from '../components/AppHeader'
 import { EvidenceAssistant } from '../components/EvidenceAssistant'
 import { ProofDrawer } from '../components/ProofDrawer'
@@ -13,6 +14,24 @@ import { ExceptionsPage } from '../pages/ExceptionsPage'
 import { InvestigatePage } from '../pages/InvestigatePage'
 import { LandingPage } from '../pages/LandingPage'
 import { ReconciliationPage } from '../pages/ReconciliationPage'
+
+type OperatorAction =
+  | { kind: 'review'; item: ExceptionItem; action: ReviewAction }
+  | { kind: 'close' }
+  | { kind: 'challenge'; proof: Proof }
+
+const REVIEW_DIALOG_COPY: Record<ReviewAction, { title: string; confirm: string }> = {
+  APPROVE: { title: 'Accept exception finding', confirm: 'Record acceptance' },
+  REJECT: { title: 'Reject exception finding', confirm: 'Record rejection' },
+  LEAVE_UNRESOLVED: { title: 'Record unresolved exception', confirm: 'Record unresolved' },
+}
+
+const FEEDBACK_OPTIONS: ReadonlyArray<{ value: FeedbackType; label: string }> = [
+  { value: 'INCORRECT_MATCH', label: 'Incorrect match' },
+  { value: 'INCORRECT_EXCEPTION', label: 'Incorrect exception' },
+  { value: 'PROOF_UNCLEAR', label: 'Proof unclear' },
+  { value: 'OTHER', label: 'Other' },
+]
 
 function contextType(context: AssistantContext): AssistantContextType {
   if (context.settlement_id) return 'settlement'
@@ -59,6 +78,8 @@ function WorkspaceApp({ pathname, onHome, onPathChange }: WorkspaceAppProps) {
   const [running, setRunning] = useState(false)
   const [reviewing, setReviewing] = useState<string | null>(null)
   const [proofAction, setProofAction] = useState<'reproduce' | 'reevaluate' | null>(null)
+  const [operatorAction, setOperatorAction] = useState<OperatorAction | null>(null)
+  const [challengeConfirmation, setChallengeConfirmation] = useState<string | null>(null)
   const [investigating, setInvestigating] = useState(false)
   const [approving, setApproving] = useState(false)
   const [message, setMessage] = useState('Loading immutable demo evidence…')
@@ -126,7 +147,10 @@ function WorkspaceApp({ pathname, onHome, onPathChange }: WorkspaceAppProps) {
   }
 
   const openProof = async (proofId: string) => {
-    try { setProof(await api.proof(proofId)) } catch (cause) { setError(cause instanceof Error ? cause.message : 'Proof unavailable') }
+    try {
+      setChallengeConfirmation(null)
+      setProof(await api.proof(proofId))
+    } catch (cause) { setError(cause instanceof Error ? cause.message : 'Proof unavailable') }
   }
 
   const actOnProof = async (action: 'reproduce' | 'reevaluate') => {
@@ -138,15 +162,16 @@ function WorkspaceApp({ pathname, onHome, onPathChange }: WorkspaceAppProps) {
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Proof operation failed') } finally { setProofAction(null) }
   }
 
-  const review = async (item: ExceptionItem, action: string) => {
-    if (!run) return
+  const review = async (item: ExceptionItem, action: ReviewAction, reason: string) => {
+    if (!run) throw new Error('The active reconciliation run is unavailable.')
     try {
       setReviewing(item.exception_id)
-      const reason = action === 'LEAVE_UNRESOLVED' ? 'Escalated to bank operations for supporting evidence' : `Operator selected ${action.toLowerCase()} after reviewing the proof`
       await api.review(item.exception_id, action, reason)
       const [exceptionData, closeData] = await Promise.all([api.exceptions(run.run_id), api.close(run.run_id)])
-      setExceptions(exceptionData.items); setCloseState(closeData)
-    } catch (cause) { setError(cause instanceof Error ? cause.message : 'Review failed') } finally { setReviewing(null) }
+      setExceptions(exceptionData.items)
+      setCloseState(closeData)
+      setMessage(`Review recorded for ${item.exception_id}.`)
+    } finally { setReviewing(null) }
   }
 
   const investigate = async (question: string, context: AssistantContext = selectedContext) => {
@@ -199,9 +224,29 @@ function WorkspaceApp({ pathname, onHome, onPathChange }: WorkspaceAppProps) {
     openAssistantForContext({ proof_id: item.proof_id })
   }
 
-  const approve = async () => {
-    if (!run) return
-    try { setApproving(true); setCloseState(await api.approveClose(run.run_id, 'Controller accepts the reviewed and documented exceptions')) } catch (cause) { setError(cause instanceof Error ? cause.message : 'Close approval failed') } finally { setApproving(false) }
+  const approve = async (reason: string) => {
+    if (!run) throw new Error('The active reconciliation run is unavailable.')
+    try {
+      setApproving(true)
+      setCloseState(await api.approveClose(run.run_id, reason))
+      setMessage('Final Close Pack approved with the recorded operator reason.')
+    } finally { setApproving(false) }
+  }
+
+  const submitOperatorAction = async (text: string, option?: string) => {
+    if (!operatorAction) throw new Error('The selected operator action is unavailable.')
+    if (operatorAction.kind === 'review') {
+      await review(operatorAction.item, operatorAction.action, text)
+      return
+    }
+    if (operatorAction.kind === 'close') {
+      await approve(text)
+      return
+    }
+    const feedbackType = FEEDBACK_OPTIONS.find((item) => item.value === option)?.value
+    if (!feedbackType) throw new Error('Select a supported feedback type.')
+    const feedback = await api.challenge(operatorAction.proof.proof_id, feedbackType, text)
+    setChallengeConfirmation(`Recorded ${feedback.feedback_type.replaceAll('_', ' ').toLowerCase()}: ${feedback.comment}`)
   }
 
   if (loading) return <div className="startup"><span className="brand-mark">P</span><h1>ProofClose</h1><p>{message}</p><div className="progress-line" /></div>
@@ -226,8 +271,42 @@ function WorkspaceApp({ pathname, onHome, onPathChange }: WorkspaceAppProps) {
 
   let workspacePage = null
   if (page === 'reconciliation') workspacePage = <ReconciliationPage run={run} rows={rows} onProof={(id) => void openProof(id)} onAskAbout={askAboutSettlement} />
-  if (page === 'exceptions') workspacePage = <ExceptionsPage items={exceptions} reviewing={reviewing} onProof={(id) => void openProof(id)} onAskAbout={askAboutException} onReview={(item, action) => void review(item, action)} />
-  if (page === 'close') workspacePage = <ClosePage state={closeState} approving={approving} onApprove={() => void approve()} />
+  if (page === 'exceptions') workspacePage = <ExceptionsPage items={exceptions} reviewing={reviewing} onProof={(id) => void openProof(id)} onAskAbout={askAboutException} onReview={(item, action) => setOperatorAction({ kind: 'review', item, action })} />
+  if (page === 'close') workspacePage = <ClosePage state={closeState} approving={approving} onApprove={() => setOperatorAction({ kind: 'close' })} />
+
+  let actionDialog = null
+  if (operatorAction?.kind === 'review') {
+    const copy = REVIEW_DIALOG_COPY[operatorAction.action]
+    actionDialog = <ActionDialog
+      title={copy.title}
+      description={`Record the reason for ${operatorAction.item.exception_type.replaceAll('_', ' ').toLowerCase()} (${operatorAction.item.exception_id}). The exact text becomes part of the audit trail.`}
+      fieldLabel="Operator reason"
+      confirmLabel={copy.confirm}
+      onClose={() => setOperatorAction(null)}
+      onSubmit={submitOperatorAction}
+    />
+  } else if (operatorAction?.kind === 'close') {
+    actionDialog = <ActionDialog
+      title="Approve final close"
+      description={`Record why this ${closeState.state === 'READY' ? 'clean close' : 'close with reviewed exceptions'} is approved. The exact text is bound into the immutable Final Close Pack.`}
+      fieldLabel="Approval reason"
+      confirmLabel="Approve final close"
+      onClose={() => setOperatorAction(null)}
+      onSubmit={submitOperatorAction}
+    />
+  } else if (operatorAction?.kind === 'challenge') {
+    actionDialog = <ActionDialog
+      title="Challenge financial proof"
+      description={`Record append-only feedback for ${operatorAction.proof.subject.subject_id}. This does not change the proof, decision, rule, configuration, or close state.`}
+      fieldLabel="Operator comment"
+      confirmLabel="Submit challenge"
+      optionLabel="Feedback type"
+      options={FEEDBACK_OPTIONS}
+      initialOption="INCORRECT_MATCH"
+      onClose={() => setOperatorAction(null)}
+      onSubmit={submitOperatorAction}
+    />
+  }
 
   return (
     <div className="app-shell">
@@ -237,7 +316,8 @@ function WorkspaceApp({ pathname, onHome, onPathChange }: WorkspaceAppProps) {
       {workspacePage && <WorkspaceLayout assistantOpen={assistantOpen} onOpenAssistant={() => setAssistantOpen(true)} onCloseAssistant={() => setAssistantOpen(false)} assistant={(modal) => assistant(false, modal)}>{workspacePage}</WorkspaceLayout>}
       {page === 'investigate' && <InvestigatePage assistant={assistant(true)} />}
       {page === 'diagnostics' && <DiagnosticsPage data={diagnostics} />}
-      {proof && <ProofDrawer proof={proof} busyAction={proofAction} onClose={() => setProof(null)} onAction={(action) => void actOnProof(action)} />}
+      {proof && <ProofDrawer proof={proof} busyAction={proofAction} challengeConfirmation={challengeConfirmation} onClose={() => setProof(null)} onAction={(action) => void actOnProof(action)} onChallenge={() => setOperatorAction({ kind: 'challenge', proof })} />}
+      {actionDialog}
     </div>
   )
 }

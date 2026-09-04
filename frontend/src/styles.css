@@ -335,6 +335,25 @@ code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; fo
 .text-button { min-height: 28px; padding: 0 7px; border: 0; background: transparent; color: var(--primary-dark); font-size: 11px; }
 .text-button.danger { color: var(--danger); }
 .raw-evidence { margin: 0 20px 20px; padding: 13px; max-height: 260px; overflow: auto; border: 1px solid #2e394a; border-radius: var(--radius); background: #172033; color: #d8e2f0; font-size: 10px; }
+.proof-feedback-confirmation { margin: 0 20px 18px; padding: 10px 11px; border: 1px solid #bdd9c9; border-radius: var(--radius); display: flex; align-items: flex-start; gap: 7px; color: var(--verified); background: var(--verified-bg); font-size: 10px; line-height: 1.5; }
+.proof-feedback-confirmation svg { flex: 0 0 auto; margin-top: 1px; }
+
+.action-dialog-layer { position: fixed; z-index: 130; inset: 0; padding: 12px; display: grid; place-items: center; overflow-y: auto; background: rgba(23, 32, 51, 0.46); animation: backdrop-in 160ms ease-out both; }
+.action-dialog { position: relative; z-index: 140; width: min(520px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow-y: auto; border: 1px solid var(--border-strong); border-radius: 12px; background: var(--surface); box-shadow: 0 24px 70px rgba(23, 32, 51, 0.22); animation: message-enter 180ms ease-out both; overscroll-behavior: contain; }
+.action-dialog > header { min-height: 78px; padding: 17px 18px 13px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+.action-dialog h2 { margin: 5px 0 0; font-size: 19px; letter-spacing: -0.025em; }
+.action-dialog-description { margin: 0; padding: 14px 18px 0; color: var(--text-secondary); line-height: 1.55; }
+.action-dialog form { padding: 15px 18px 18px; }
+.action-dialog-field { display: grid; gap: 7px; }
+.action-dialog-field + .action-dialog-field { margin-top: 14px; }
+.action-dialog-field > span { color: var(--text); font-size: 10px; font-weight: 700; }
+.action-dialog select, .action-dialog textarea { width: 100%; border: 1px solid var(--border-strong); border-radius: var(--radius); color: var(--text); background: var(--surface); }
+.action-dialog select { min-height: 38px; padding: 0 10px; }
+.action-dialog textarea { min-height: 112px; padding: 10px 11px; resize: vertical; line-height: 1.5; }
+.action-dialog select:focus, .action-dialog textarea:focus { border-color: #8da7df; box-shadow: 0 0 0 3px rgba(40, 89, 197, 0.1); outline: 0; }
+.action-dialog-guidance { margin-top: 6px; display: flex; justify-content: space-between; gap: 12px; color: var(--text-muted); font-size: 9px; }
+.action-dialog-error { margin: 12px 0 0; padding: 9px 10px; border: 1px solid #edb9b4; border-radius: var(--radius); color: var(--danger); background: var(--danger-bg); font-size: 10px; line-height: 1.45; }
+.action-dialog footer { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
 
 .toast { position: fixed; z-index: 60; top: 72px; right: 16px; max-width: 420px; min-height: 38px; padding: 8px 9px 8px 12px; border: 1px solid #b9c8dc; border-radius: var(--radius); display: flex; align-items: center; gap: 12px; background: var(--pending-bg); color: var(--pending); }
 .toast button { border: 0; background: transparent; color: inherit; cursor: pointer; font-weight: 700; }
@@ -615,6 +634,10 @@ code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; fo
   .close-ledger { grid-template-columns: 1fr 1fr; }
   .close-ledger > div:nth-child(odd) { border-left: 0; }
   .close-policy, .close-actions { flex-direction: column; align-items: stretch; }
+  .action-dialog-layer { padding: 10px; place-items: end center; }
+  .action-dialog { width: min(100%, 520px); max-height: calc(100dvh - 20px); border-radius: 12px; }
+  .action-dialog > header, .action-dialog-description, .action-dialog form { padding-right: 14px; padding-left: 14px; }
+  .action-dialog footer { display: grid; grid-template-columns: 1fr 1fr; }
   .diagnostic-strip { grid-template-columns: repeat(2, 1fr); }
   .diagnostic-strip > div:nth-child(odd) { border-left: 0; }
   .report-lines button { grid-template-columns: 100px 1fr 18px; }

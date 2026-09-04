@@ -1,13 +1,16 @@
 import type {
+  ChallengeResponse,
   CloseState,
   Diagnostics,
   ExceptionItem,
+  FeedbackType,
   InvestigationReport,
   AssistantContext,
   ConversationTurn,
   HealthStatus,
   Proof,
   ReconciliationRow,
+  ReviewAction,
   RunSummary,
 } from './types'
 
@@ -37,10 +40,15 @@ export const api = {
   proof: (proofId: string) => request<Proof>(`/api/proofs/${proofId}`),
   proofAction: (proofId: string, action: 'reproduce' | 'reevaluate') =>
     request<Record<string, unknown>>(`/api/proofs/${proofId}/${action}`, { method: 'POST' }),
-  review: (exceptionId: string, action: string, reason: string) =>
+  review: (exceptionId: string, action: ReviewAction, reason: string) =>
     request(`/api/exceptions/${exceptionId}/review`, {
       method: 'POST',
       body: JSON.stringify({ action, reason }),
+    }),
+  challenge: (proofId: string, feedbackType: FeedbackType, comment: string) =>
+    request<ChallengeResponse>(`/api/proofs/${proofId}/challenge`, {
+      method: 'POST',
+      body: JSON.stringify({ feedback_type: feedbackType, comment }),
     }),
   investigate: (runId: string, question: string, context: AssistantContext = {}, page?: string, history: ConversationTurn[] = []) =>
     request<InvestigationReport>('/api/investigations/query', {

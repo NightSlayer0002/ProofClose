@@ -15,6 +15,7 @@ const apiMock = vi.hoisted(() => ({
   diagnostics: vi.fn(),
   proof: vi.fn(),
   proofAction: vi.fn(),
+  challenge: vi.fn(),
   review: vi.fn(),
   investigate: vi.fn(),
   approveClose: vi.fn(),
@@ -23,11 +24,36 @@ const apiMock = vi.hoisted(() => ({
 vi.mock('../app/api', () => ({ api: apiMock }))
 
 import App from '../app/App'
+import type { ExceptionItem, Proof } from '../app/types'
+
+const openException: ExceptionItem = {
+  exception_id: 'exception_008', run_id: 'run_saved', proof_id: 'proof_008',
+  exception_type: 'MISSING_BANK_CREDIT', amount_paise: 1349836, state: 'OPEN',
+  created_at: '2026-08-26T00:00:00Z',
+}
+
+const proof: Proof = {
+  schema_version: 'proof-object/v2', proof_id: 'proof_008', tenant_id: 'demo_merchant',
+  run_id: 'run_saved', source_snapshot_id: 'snapshot_saved', status: 'REVIEW_REQUIRED',
+  source_rows: [{ table: 'settlements', id: 'raw_settlement_008', raw_hash: 'sha256:abc' }],
+  subject: { subject_type: 'SETTLEMENT', subject_id: 'setl_PC008' },
+  rule_name: 'settlement_match', rule_version: '2.0',
+  configuration: { version: '2.0', values: { pending_hours: 3 } },
+  evidence_inputs: { settlement: { settlement_id: 'setl_PC008', utr: 'UTR008' } },
+  evaluated_at: '2026-08-26T12:00:00Z', formula: 'sum(credit_paise) - sum(debit_paise)',
+  result: { expected_paise: 1349836, observed_paise: null, delta_paise: null },
+  evidence: { utr_exact: false, amount_exact: false, settlement_ledger_consistent: true, temporal_consistency: true, candidate_count: 0, amount_delta_paise: 1349836 },
+  decision_score: 45, decision_reasons: ['Missing bank credit'], classification: 'unresolved',
+  exception_type: 'MISSING_BANK_CREDIT', unresolved_reason: 'No bank credit',
+  decision_fingerprint: 'sha256:decision', artifact_fingerprint: 'sha256:artifact',
+  supersedes_proof_id: null, created_at: '2026-08-26T12:00:00Z',
+}
 
 afterEach(cleanup)
 
 beforeEach(() => {
   vi.clearAllMocks()
+  Object.defineProperty(window, 'scrollTo', { configurable: true, value: vi.fn() })
   window.history.replaceState({}, '', '/workspace')
   const run = {
     run_id: 'run_saved',
@@ -208,4 +234,64 @@ it('discards an old-run assistant response that finishes after a rerun', async (
 
   expect(screen.queryByText('Old-run answer must never reappear')).not.toBeInTheDocument()
   expect(apiMock.diagnostics).toHaveBeenCalledTimes(diagnosticsCallsAfterRerun)
+})
+
+it('submits the exact typed exception review reason and selected action', async () => {
+  apiMock.exceptions.mockReset()
+  apiMock.exceptions
+    .mockResolvedValueOnce({ items: [openException] })
+    .mockResolvedValue({ items: [{ ...openException, state: 'APPROVED' }] })
+  apiMock.review.mockResolvedValue({ previous_state: 'OPEN', new_state: 'APPROVED' })
+
+  render(<App />)
+  await screen.findByRole('heading', { name: 'Settlement reconciliation' })
+  await userEvent.click(screen.getByRole('button', { name: 'Exceptions' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Accept finding' }))
+
+  expect(screen.getByRole('dialog', { name: 'Accept exception finding' })).toHaveTextContent('exception_008')
+  await userEvent.type(screen.getByRole('textbox', { name: 'Operator reason' }), '  Matched against controller evidence.  ')
+  await userEvent.click(screen.getByRole('button', { name: 'Record acceptance' }))
+
+  await waitFor(() => expect(apiMock.review).toHaveBeenCalledWith(
+    'exception_008', 'APPROVE', 'Matched against controller evidence.',
+  ))
+  expect(screen.queryByRole('dialog', { name: 'Accept exception finding' })).not.toBeInTheDocument()
+})
+
+it('submits the exact typed close approval reason', async () => {
+  apiMock.approveClose.mockResolvedValue({
+    ...(await apiMock.close()), state: 'APPROVED_CLEAN', reason: 'Controller verified the final pack.',
+  })
+  render(<App />)
+  await screen.findByRole('heading', { name: 'Settlement reconciliation' })
+  await userEvent.click(screen.getByRole('button', { name: 'Close' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Approve clean close' }))
+
+  await userEvent.type(screen.getByRole('textbox', { name: 'Approval reason' }), '  Controller verified the final pack.  ')
+  await userEvent.click(screen.getByRole('button', { name: 'Approve final close' }))
+
+  await waitFor(() => expect(apiMock.approveClose).toHaveBeenCalledWith(
+    'run_saved', 'Controller verified the final pack.',
+  ))
+})
+
+it('submits an allowlisted proof challenge and shows the persisted comment', async () => {
+  apiMock.proof.mockResolvedValue(proof)
+  apiMock.challenge.mockResolvedValue({
+    feedback_id: 'feedback_1', status: 'RECORDED_FOR_OFFLINE_REVIEW',
+    feedback_type: 'INCORRECT_EXCEPTION', comment: 'The exception classification needs review.',
+  })
+  render(<App />)
+  await screen.findByRole('heading', { name: 'Settlement reconciliation' })
+  await userEvent.click(screen.getAllByRole('button', { name: 'Prove it' })[0])
+  await userEvent.click(await screen.findByRole('button', { name: 'Flag match' }))
+
+  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Feedback type' }), 'INCORRECT_EXCEPTION')
+  await userEvent.type(screen.getByRole('textbox', { name: 'Operator comment' }), '  The exception classification needs review.  ')
+  await userEvent.click(screen.getByRole('button', { name: 'Submit challenge' }))
+
+  await waitFor(() => expect(apiMock.challenge).toHaveBeenCalledWith(
+    'proof_008', 'INCORRECT_EXCEPTION', 'The exception classification needs review.',
+  ))
+  expect(screen.getByRole('status', { name: 'Proof challenge confirmation' })).toHaveTextContent('The exception classification needs review.')
 })

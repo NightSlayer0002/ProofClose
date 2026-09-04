@@ -62,7 +62,7 @@ class ChallengeRequest(StrictRequest):
     @field_validator("comment")
     @classmethod
     def visible_comment(cls, value: str) -> str:
-        return visible_text(value, "comment")
+        return visible_text(value, "comment", minimum=5)
 
 
 class CloseApprovalRequest(StrictRequest):

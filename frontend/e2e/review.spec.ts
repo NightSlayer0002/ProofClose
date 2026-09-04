@@ -1,10 +1,10 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
 
 const screenshot = async (page: Page, name: string) => {
-  await page.locator('.page, .assistant-dock, .drawer-layer, .proof-drawer').evaluateAll(async (elements) => {
+  await page.locator('.page, .assistant-dock, .drawer-layer, .proof-drawer, .action-dialog-layer, .action-dialog').evaluateAll(async (elements) => {
     await Promise.all(elements.flatMap((element) => element.getAnimations()).map((animation) => animation.finished))
   })
-  const overlayVisible = await page.locator('.assistant-modal, .drawer-layer').last().isVisible().catch(() => false)
+  const overlayVisible = await page.locator('.assistant-modal, .drawer-layer, .action-dialog-layer').last().isVisible().catch(() => false)
   await page.screenshot({ path: `../docs/screenshots/${name}.png`, fullPage: !overlayVisible })
 }
 
@@ -56,6 +56,56 @@ const expectDisjoint = async (first: Locator, second: Locator) => {
 const openFirstCitedProof = async (page: Page) => {
   await page.getByText('Sources', { exact: true }).last().click()
   await page.getByRole('button', { name: /^Open proof proof_/ }).first().click()
+}
+
+const startFreshDemoRun = async (page: Page) => {
+  const response = await page.request.post('/api/runs', { data: {} })
+  expect(response.ok()).toBe(true)
+  const run = await response.json() as { run_id: string }
+  await page.goto('/workspace')
+  await expect(page.getByRole('heading', { name: 'Settlement reconciliation' })).toBeVisible()
+  await expect(page.locator('.run-meta')).toContainText(run.run_id)
+  return run
+}
+
+const createReviewableRun = async (page: Page) => {
+  const settlementEpoch = Math.floor(Date.parse('2026-08-26T08:00:00Z') / 1000)
+  const paymentEpoch = Math.floor(Date.parse('2026-08-26T05:00:00Z') / 1000)
+  const sources = [
+    {
+      type: 'merchant_orders', name: 'operator_orders.csv',
+      content: 'order_id,amount_paise,amount_paid_paise,amount_due_paise,currency,status,partial_payment,attempts,created_at\norder_OPERATOR_1,10000,10000,0,INR,paid,false,1,2026-08-26T04:00:00+00:00\n',
+    },
+    {
+      type: 'razorpay_recon', name: 'operator_recon.csv',
+      content: `entity_id,type,debit,credit,amount,currency,fee,tax,on_hold,settled,created_at,settled_at,settlement_id,payment_id,settlement_utr,order_id,order_receipt\npay_OPERATOR_1,payment,0,10000,10000,INR,0,0,false,true,${paymentEpoch},${settlementEpoch},setl_OPERATOR_1,,UTR_OPERATOR_1,order_OPERATOR_1,receipt_OPERATOR_1\n`,
+    },
+    {
+      type: 'settlements', name: 'operator_settlements.csv',
+      content: `id,amount,status,fees,tax,utr,created_at\nsetl_OPERATOR_1,10000,processed,0,0,UTR_OPERATOR_1,${settlementEpoch}\n`,
+    },
+    {
+      type: 'bank_statement', name: 'operator_bank.csv',
+      content: 'bank_ref,utr,credit_amount_paise,value_date,narration\nbank_OPERATOR_1,UTR_OPERATOR_1,9000,2026-08-26T10:00:00+00:00,RAZORPAY SETTLEMENT setl_OPERATOR_1\n',
+    },
+  ]
+  const sourceIds: string[] = []
+  for (const source of sources) {
+    const response = await page.request.post('/api/sources/upload', {
+      multipart: {
+        source_type: source.type,
+        file: { name: source.name, mimeType: 'text/csv', buffer: Buffer.from(source.content) },
+      },
+    })
+    expect(response.ok()).toBe(true)
+    sourceIds.push((await response.json() as { source_id: string }).source_id)
+  }
+  const snapshotResponse = await page.request.post('/api/snapshots', { data: { source_ids: sourceIds } })
+  expect(snapshotResponse.ok()).toBe(true)
+  const snapshot = await snapshotResponse.json() as { snapshot_id: string }
+  const runResponse = await page.request.post('/api/runs', { data: { snapshot_id: snapshot.snapshot_id } })
+  expect(runResponse.ok()).toBe(true)
+  return await runResponse.json() as { run_id: string }
 }
 
 test('fixed evidence-first browser review', async ({ page }) => {
@@ -268,4 +318,102 @@ test('reduced motion keeps proof content immediate and stationary', async ({ pag
     : Number.parseFloat(motion.animationDuration)
   expect(animationSeconds).toBeLessThanOrEqual(0.00001)
   expect(motion.transform).toBe('none')
+})
+
+test('accountable exception review records the typed operator reason', async ({ page }) => {
+  await mockEvidenceMode(page)
+  const run = await startFreshDemoRun(page)
+  await page.getByRole('button', { name: 'Exceptions', exact: true }).click()
+  const row = page.locator('tbody tr[data-state="open"]').first()
+  const exceptionId = (await row.locator('code').textContent())!.trim()
+  await row.getByRole('button', { name: 'Accept finding' }).click()
+
+  const dialog = page.getByRole('dialog', { name: 'Accept exception finding' })
+  await expect(dialog).toBeVisible()
+  await expectInsideViewport(page, dialog)
+  await expectContained(page)
+  await screenshot(page, 'operator-review-dialog')
+  const reason = 'Controller matched the exception to source evidence.'
+  await dialog.getByRole('textbox', { name: 'Operator reason' }).fill(`  ${reason}  `)
+  const responsePromise = page.waitForResponse((response) => response.url().includes(`/api/exceptions/${exceptionId}/review`) && response.request().method() === 'POST')
+  await dialog.getByRole('button', { name: 'Record acceptance' }).click()
+  const response = await responsePromise
+
+  expect(response.ok()).toBe(true)
+  expect(response.request().postDataJSON()).toEqual({ action: 'APPROVE', reason })
+  await expect(dialog).toBeHidden()
+  const audit = await (await page.request.get(`/api/audit?run_id=${run.run_id}`)).json() as { items: Array<{ object_id: string; reason: string }> }
+  expect(audit.items).toContainEqual(expect.objectContaining({ object_id: exceptionId, reason }))
+})
+
+test('accountable proof challenge records allowlisted append-only feedback at mobile width', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 800 })
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await mockEvidenceMode(page)
+  const run = await startFreshDemoRun(page)
+  await page.getByRole('button', { name: 'Prove it' }).first().click()
+  const proofId = (await page.locator('.drawer-header code').textContent())!.trim()
+  const proofBefore = await (await page.request.get(`/api/proofs/${proofId}`)).json() as { artifact_fingerprint: string; status: string }
+  const closeBefore = await (await page.request.get(`/api/close?run_id=${run.run_id}`)).json()
+  await page.getByRole('button', { name: 'Flag match' }).click()
+
+  const dialog = page.getByRole('dialog', { name: 'Challenge financial proof' })
+  await expect(dialog).toBeVisible()
+  await expectInsideViewport(page, dialog)
+  await expectContained(page)
+  const dialogMotion = await dialog.evaluate((element) => getComputedStyle(element).animationDuration)
+  const dialogAnimationSeconds = dialogMotion.endsWith('ms') ? Number.parseFloat(dialogMotion) / 1000 : Number.parseFloat(dialogMotion)
+  expect(dialogAnimationSeconds).toBeLessThanOrEqual(0.00001)
+  await screenshot(page, 'operator-challenge-dialog-mobile')
+  const comment = 'The exception classification needs another review.'
+  await dialog.getByRole('combobox', { name: 'Feedback type' }).selectOption('INCORRECT_EXCEPTION')
+  await dialog.getByRole('textbox', { name: 'Operator comment' }).fill(`  ${comment}  `)
+  const responsePromise = page.waitForResponse((response) => response.url().endsWith(`/api/proofs/${proofId}/challenge`) && response.request().method() === 'POST')
+  await dialog.getByRole('button', { name: 'Submit challenge' }).click()
+  const response = await responsePromise
+
+  expect(response.ok()).toBe(true)
+  expect(response.request().postDataJSON()).toEqual({ feedback_type: 'INCORRECT_EXCEPTION', comment })
+  expect(await response.json()).toEqual(expect.objectContaining({ feedback_type: 'INCORRECT_EXCEPTION', comment }))
+  await expect(page.getByRole('status', { name: 'Proof challenge confirmation' })).toContainText(comment)
+  const proofAfter = await (await page.request.get(`/api/proofs/${proofId}`)).json() as { artifact_fingerprint: string; status: string }
+  const closeAfter = await (await page.request.get(`/api/close?run_id=${run.run_id}`)).json()
+  expect(proofAfter.artifact_fingerprint).toBe(proofBefore.artifact_fingerprint)
+  expect(proofAfter.status).toBe(proofBefore.status)
+  expect(closeAfter).toEqual(closeBefore)
+})
+
+test('accountable close approval records the typed reason in the immutable final pack', async ({ page }) => {
+  await mockEvidenceMode(page)
+  const run = await createReviewableRun(page)
+  const exceptions = await (await page.request.get(`/api/exceptions?run_id=${run.run_id}`)).json() as { items: Array<{ exception_id: string }> }
+  expect(exceptions.items.length).toBeGreaterThan(0)
+  for (const item of exceptions.items) {
+    const reviewResponse = await page.request.post(`/api/exceptions/${item.exception_id}/review`, {
+      data: { action: 'LEAVE_UNRESOLVED', reason: 'Reviewed during close approval setup.' },
+    })
+    expect(reviewResponse.ok()).toBe(true)
+  }
+
+  await page.goto('/workspace/close')
+  await expect(page.getByRole('heading', { name: 'Daily close' })).toBeVisible()
+  const approveButton = page.getByRole('button', { name: 'Approve close with reviewed exceptions' })
+  await expect(approveButton).toBeEnabled()
+  await approveButton.click()
+  const dialog = page.getByRole('dialog', { name: 'Approve final close' })
+  await expect(dialog).toBeVisible()
+  await expectInsideViewport(page, dialog)
+  await screenshot(page, 'operator-close-dialog')
+  const reason = 'Controller accepts the reviewed variance for close.'
+  await dialog.getByRole('textbox', { name: 'Approval reason' }).fill(`  ${reason}  `)
+  const responsePromise = page.waitForResponse((response) => response.url().endsWith('/api/close/approve') && response.request().method() === 'POST')
+  await dialog.getByRole('button', { name: 'Approve final close' }).click()
+  const response = await responsePromise
+
+  expect(response.ok()).toBe(true)
+  expect(response.request().postDataJSON()).toEqual({ run_id: run.run_id, reason })
+  expect(await response.json()).toEqual(expect.objectContaining({ reason }))
+  const pack = await (await page.request.get(`/api/close/export?run_id=${run.run_id}`)).json() as { approval: { reason: string }; immutable: boolean }
+  expect(pack.approval.reason).toBe(reason)
+  expect(pack.immutable).toBe(true)
 })

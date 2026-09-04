@@ -97,6 +97,17 @@ export interface ExceptionItem {
   created_at: string
 }
 
+export type ReviewAction = 'APPROVE' | 'REJECT' | 'LEAVE_UNRESOLVED'
+
+export type FeedbackType = 'INCORRECT_MATCH' | 'INCORRECT_EXCEPTION' | 'PROOF_UNCLEAR' | 'OTHER'
+
+export interface ChallengeResponse {
+  feedback_id: string
+  status: 'RECORDED_FOR_OFFLINE_REVIEW'
+  feedback_type: FeedbackType
+  comment: string
+}
+
 export interface InvestigationLine {
   amount_paise: number
   label: string

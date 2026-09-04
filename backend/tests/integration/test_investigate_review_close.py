@@ -100,6 +100,37 @@ def test_exception_review_is_audited_and_does_not_delete_original(tmp_path) -> N
         client.__exit__(None, None, None)
 
 
+def test_proof_challenge_requires_meaningful_comment_and_returns_the_recorded_feedback(tmp_path) -> None:
+    """Append-only feedback must preserve the proof and return the exact persisted operator text."""
+    client = initialized_client(tmp_path)
+    try:
+        row = client.get(f"/api/runs/{client.run_id}/settlements").json()["items"][0]
+        proof_before = client.get(f"/api/proofs/{row['proof_id']}").json()
+        close_before = client.get(f"/api/close?run_id={client.run_id}").json()
+
+        for comment in ("   ", "abcd"):
+            rejected = client.post(
+                f"/api/proofs/{row['proof_id']}/challenge",
+                json={"feedback_type": "PROOF_UNCLEAR", "comment": comment},
+            )
+            assert rejected.status_code == 422
+
+        response = client.post(
+            f"/api/proofs/{row['proof_id']}/challenge",
+            json={"feedback_type": "PROOF_UNCLEAR", "comment": "  Source link needs clarification.  "},
+        )
+        assert response.status_code == 200
+        assert response.json()["feedback_type"] == "PROOF_UNCLEAR"
+        assert response.json()["comment"] == "Source link needs clarification."
+
+        proof_after = client.get(f"/api/proofs/{row['proof_id']}").json()
+        close_after = client.get(f"/api/close?run_id={client.run_id}").json()
+        assert proof_after == proof_before
+        assert close_after == close_before
+    finally:
+        client.__exit__(None, None, None)
+
+
 def test_close_requires_review_then_explicit_approval_with_exceptions(tmp_path) -> None:
     """The locked v2 configuration keeps a still-pending settlement blocked."""
     client = initialized_client(tmp_path, pending_hours=1)
