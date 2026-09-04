@@ -399,22 +399,24 @@ code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; fo
 .landing-assurance { margin-top: 27px; display: flex; flex-wrap: wrap; gap: 9px 18px; color: #667385; font-size: 9px; font-weight: 650; letter-spacing: 0.02em; }
 .landing-assurance span { display: inline-flex; align-items: center; gap: 5px; }
 .landing-assurance svg { color: #217451; }
-.provenance-field { position: relative; min-height: 522px; padding: 27px; border: 1px solid rgba(180, 190, 201, 0.72); border-radius: 18px; background: rgba(250, 251, 249, 0.73); box-shadow: 0 34px 80px rgba(33, 47, 67, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.82); backdrop-filter: blur(18px); }
+.provenance-field { position: relative; min-height: 480px; padding: 27px; border: 1px solid rgba(180, 190, 201, 0.72); border-radius: 18px; background: rgba(250, 251, 249, 0.73); box-shadow: 0 34px 80px rgba(33, 47, 67, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.82); backdrop-filter: blur(18px); }
 .provenance-field::before { content: ""; position: absolute; inset: 14px; border: 1px solid rgba(178, 189, 202, 0.26); border-radius: 11px; pointer-events: none; }
 .provenance-field::after { content: ""; position: absolute; top: 50%; left: 22%; width: 58%; height: 1px; opacity: 0.56; background: linear-gradient(90deg, transparent, #6d8cc7 28%, #5d856f 70%, transparent); animation: evidence-scan 8s ease-in-out infinite; }
-.provenance-source-stack { position: absolute; z-index: 2; top: 46px; left: 35px; width: 200px; display: grid; gap: 9px; }
-.provenance-caption { margin-bottom: 2px; color: #8290a1; font-size: 8px; font-weight: 760; letter-spacing: 0.12em; text-transform: uppercase; }
+.provenance-source-stack { position: absolute; z-index: 2; top: 38px; right: 35px; left: 35px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.provenance-caption { grid-column: 1 / -1; margin-bottom: 2px; color: #8290a1; font-size: 8px; font-weight: 760; letter-spacing: 0.12em; text-transform: uppercase; }
 .source-chip { min-height: 54px; padding: 9px 11px; border: 1px solid #d9dfe7; border-radius: 8px; display: grid; grid-template-columns: 23px 1fr; align-items: center; color: #314157; background: rgba(255, 255, 255, 0.88); box-shadow: 0 6px 16px rgba(28, 40, 58, 0.045); animation: source-breathe 7s ease-in-out infinite; }
 .source-chip:nth-of-type(3) { animation-delay: -2.3s; }
 .source-chip:nth-of-type(4) { animation-delay: -4.6s; }
 .source-chip svg { grid-row: 1 / span 2; color: #416bb5; }
 .source-chip span { font-size: 10px; font-weight: 700; }
 .source-chip code { color: #8791a0; font-size: 8px; }
-.provenance-rail { position: absolute; z-index: 1; top: 101px; left: 236px; width: 51px; height: 137px; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; }
-.provenance-rail::after { content: ""; position: absolute; top: 8px; right: 0; bottom: 8px; width: 1px; background: #bdc9d9; }
+.provenance-rail { position: absolute; z-index: 1; top: 120px; left: 50%; width: 1px; height: 31px; transform: translateX(-50%); }
+.provenance-rail::after { content: ""; position: absolute; inset: 0; width: 1px; background: linear-gradient(#6f8abb, #bdc9d9); }
 .provenance-rail span { width: 100%; height: 1px; display: block; background: linear-gradient(90deg, #bdc9d9, #6f8abb); }
 .provenance-rail i { position: relative; z-index: 2; width: 5px; height: 5px; margin-right: -2px; border-radius: 50%; background: #5575ad; box-shadow: 0 0 0 4px rgba(85, 117, 173, 0.1); }
-.provenance-core { position: absolute; z-index: 2; top: 184px; left: 286px; right: 30px; display: grid; gap: 10px; }
+.provenance-rail span, .provenance-rail i { display: none; }
+.provenance-core { position: absolute; z-index: 2; top: 158px; right: 35px; left: 35px; display: grid; gap: 10px; }
+.provenance-core::after { content: ""; position: absolute; top: 100%; left: 50%; height: 31px; border-left: 1px solid #aebed2; }
 .provenance-node { min-height: 59px; padding: 10px 11px; border: 1px solid #d3dbe5; border-radius: 9px; display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 9px; background: rgba(255, 255, 255, 0.91); box-shadow: 0 8px 20px rgba(27, 42, 62, 0.05); }
 .provenance-node .node-icon { width: 30px; height: 30px; border-radius: 7px; display: grid; place-items: center; color: #315da9; background: #eef3fb; }
 .provenance-node small, .provenance-node strong { display: block; }
@@ -425,8 +427,8 @@ code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; fo
 .rule-connector span { padding: 3px 5px; border: 1px solid #d7dde5; border-radius: 4px; background: #f8f9f7; }
 .proof-node { border-color: #b9c9bb; background: rgba(248, 252, 248, 0.94); }
 .proof-node .node-icon { color: #217451; background: #eaf5ee; }
-.proof-object-card { position: absolute; z-index: 3; right: 28px; bottom: 28px; width: 315px; overflow: hidden; border: 1px solid #b9c5d4; border-radius: 10px; color: #dce6f3; background: #172236; box-shadow: 0 18px 36px rgba(19, 30, 48, 0.2); transform: rotate(-1deg); transition: transform 260ms ease, box-shadow 260ms ease; }
-.provenance-field:hover .proof-object-card { transform: rotate(0) translateY(-3px); box-shadow: 0 23px 44px rgba(19, 30, 48, 0.24); }
+.proof-object-card { position: absolute; z-index: 3; top: 282px; right: 0; left: 0; width: calc(100% - 70px); max-width: 400px; margin-inline: auto; overflow: hidden; border: 1px solid #b9c5d4; border-radius: 10px; color: #dce6f3; background: #172236; box-shadow: 0 18px 36px rgba(19, 30, 48, 0.2); transition: transform 260ms ease, box-shadow 260ms ease; }
+.provenance-field:hover .proof-object-card { transform: translateY(-3px); box-shadow: 0 23px 44px rgba(19, 30, 48, 0.24); }
 .proof-object-card header, .proof-object-card footer { min-height: 38px; padding: 0 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #9bacbf; font-size: 7px; font-weight: 730; letter-spacing: 0.08em; }
 .proof-object-card header { text-transform: uppercase; }
 .proof-object-card header { border-bottom: 1px solid #2b3950; }
@@ -523,9 +525,6 @@ code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; fo
 
 @media (max-width: 1080px) {
   .landing-hero { grid-template-columns: minmax(0, 0.8fr) minmax(500px, 1.2fr); gap: 36px; }
-  .provenance-source-stack { width: 170px; }
-  .provenance-rail { left: 206px; }
-  .provenance-core { left: 256px; }
   .trust-section { gap: 42px; }
   .app-header { gap: 14px; padding-inline: 16px; }
   .workspace-layout { display: block; }
@@ -588,13 +587,13 @@ code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; fo
   .landing-lede { font-size: 14px; }
   .landing-hero-actions { align-items: stretch; flex-direction: column; }
   .landing-assurance { display: grid; }
-  .provenance-field { min-height: 610px; padding: 20px; }
-  .provenance-source-stack { top: 32px; right: 27px; left: 27px; width: auto; }
-  .provenance-rail { top: 213px; left: 50%; width: 1px; height: 38px; }
-  .provenance-rail::after { display: none; }
-  .provenance-rail span, .provenance-rail i { display: none; }
-  .provenance-core { top: 262px; right: 27px; left: 27px; }
-  .proof-object-card { right: 27px; bottom: 27px; left: 27px; width: auto; transform: none; }
+  .provenance-field { min-height: 620px; padding: 20px; }
+  .provenance-source-stack { top: 32px; right: 27px; left: 27px; grid-template-columns: 1fr; gap: 9px; }
+  .provenance-rail { top: 236px; left: 50%; width: 1px; height: 35px; }
+  .provenance-core { top: 280px; right: 27px; left: 27px; }
+  .provenance-core::after { height: 38px; }
+  .proof-object-card { top: auto; right: 27px; bottom: 27px; left: 27px; width: auto; max-width: none; margin-inline: 0; transform: none; }
+  .provenance-field:hover .proof-object-card { transform: translateY(-3px); }
   .landing-statement { width: calc(100% - 28px); padding: 50px 8px; grid-template-columns: 1fr; gap: 20px; }
   .landing-statement > span { grid-column: auto; }
   .landing-section { width: calc(100% - 28px); padding: 78px 0; }
