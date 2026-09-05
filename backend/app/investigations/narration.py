@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 import re
+import json
 
 from app.investigations.contracts import (
     ANSWER_LABELS,
@@ -25,6 +26,7 @@ from app.investigations.tools import FinanceTools
 from app.observability.store import ObservabilityStore
 from app.presentation.currency import format_inr_paise
 from app.investigations.guidance import guidance_for
+from app.investigations.resolution import build_resolution_brief, explanation_options
 
 
 ALLOWED_PROVIDER_TOOLS = (
@@ -107,23 +109,37 @@ def _deterministic_message(tool_name: str, canonical: dict) -> str:
         observed = canonical.get("observed_paise")
         difference = canonical.get("difference_paise")
         decision = canonical.get("decision")
-        if isinstance(expected, int) and isinstance(difference, int):
+        if isinstance(expected, int):
             expected_text = format_inr_paise(expected)
-            difference_text = format_inr_paise(difference)
+            reasons = canonical.get("reasons", [])
+            explanation = "\n\n" + " ".join(str(reason) for reason in reasons) if reasons else ""
+            decision_text = str(decision).replace("_", " ").lower()
             if isinstance(observed, int):
-                return f"This settlement expects {expected_text}; the verified bank credit is {format_inr_paise(observed)}, a difference of {difference_text}. Decision: {decision}."
-            return f"No verified bank credit is linked to this settlement. Expected: {expected_text}; not-auto-verified difference: {difference_text}. Decision: {decision}."
+                difference_text = format_inr_paise(difference) if isinstance(difference, int) else "unavailable"
+                return f"This settlement expects {expected_text}. The linked bank credit is {format_inr_paise(observed)}; the recorded difference is {difference_text}. The decision is {decision_text}." + explanation
+            return f"This settlement expects {expected_text}, but no single verified bank credit is linked. The decision is {decision_text}.\n\nThat does not prove the money was lost. The selected evidence has not established a safe match." + explanation
         if canonical.get("status"):
             return f"The verified proof status is {canonical['status']}."
     if "unresolved_paise" in canonical and tool_name == "close_summary":
-        return f"{format_inr_paise(canonical['unresolved_paise'])} is not auto-verified in the current run."
+        return f"{format_inr_paise(canonical['unresolved_paise'])} is not auto-verified in the current run.\n\nThis is expected settlement money not covered by an automatic match, not a confirmed loss. Review completion is a separate measure: accepting an exception finding does not turn its amount into an auto-verified credit."
     if "unresolved_paise" in canonical and tool_name == "close_blockers":
         return f"{format_inr_paise(canonical['unresolved_paise'])} is not auto-verified in the current run."
     if tool_name == "proof_explanation":
         proof_id = canonical.get("proof_id", "the selected proof")
         rule = canonical.get("rule_name")
         version = canonical.get("rule_version")
-        return f"{proof_id} records the verified decision using {rule}@{version}. Its formula and evidence are shown below."
+        result = canonical.get("result", {})
+        expected = result.get("expected_paise")
+        observed = result.get("observed_paise")
+        summary = f"The recorded decision is {str(canonical.get('status', 'unavailable')).replace('_', ' ').lower()}, using {rule}@{version}."
+        if isinstance(expected, int):
+            summary += f" Expected: {format_inr_paise(expected)}."
+        if isinstance(observed, int):
+            summary += f" Observed: {format_inr_paise(observed)}."
+        reasons = canonical.get("decision_reasons", [])
+        if reasons:
+            summary += "\n\n" + " ".join(str(reason) for reason in reasons)
+        return summary + f"\n\nProof reference: {proof_id}. Open Sources below to inspect the original evidence and calculation."
     messages = {
         "close_summary": "The current run summary is calculated from persisted reconciliation results.",
         "close_blockers": "Open review items, unreviewable results, system errors, and integrity failures determine whether the current close can proceed.",
@@ -248,7 +264,9 @@ class InvestigationService:
                 narration_status = "provider_unavailable"
         if content is None:
             normalized = " ".join(question.lower().split())
-            if normalized in {"hi", "hello", "hey", "good morning", "good afternoon", "good evening"}:
+            if any(phrase in normalized for phrase in ("upload", "import", "csv format")):
+                content = "Open Data sources in the workspace. Download the column templates, prepare a CSV for each source role, and upload them there. Choose the exact accepted file for each role before creating a snapshot and running reconciliation. Uploading alone does not change an existing run.\n\nAll monetary fields use whole INR paise, even fields named amount, debit or credit. Different bank headers need an explicit adapter; do not guess units or rename fields without checking their meaning. Existing proofs keep their original evidence."
+            elif normalized in {"hi", "hello", "hey", "good morning", "good afternoon", "good evening"}:
                 content = "Hi — I’m the ProofClose Evidence Copilot. I can explain reconciliation, UTRs, proofs, exceptions, and what to check next."
             elif "utr" in normalized:
                 content = "A UTR is a bank reference used to trace a payment. ProofClose compares it with the settlement evidence and keeps the result tied to its source proof."
@@ -261,7 +279,7 @@ class InvestigationService:
             elif "exception" in normalized:
                 content = "An exception is an item that deterministic checks could not safely close automatically. It stays visible for evidence review and a human decision."
             elif "reconciliation" in normalized:
-                content = "Reconciliation compares expected settlement records with bank evidence, allocates each bank credit once, and records a versioned result."
+                content = "Reconciliation means checking that records telling the same money story agree. An order says what the customer owes; a payment ledger records payments and refunds; a settlement says what the provider sends; a bank credit shows what arrived.\n\nProofClose compares those records using explicit rules. It will not guess a match when the evidence is ambiguous. A proof records the inputs and rule behind the result; an exception tells an operator where more evidence or review is needed."
             elif "close" in normalized:
                 content = "Close readiness is a policy decision based on the verified run, open review items, and close blockers. The assistant can explain it but cannot approve the close."
             elif "settlement" in normalized:
@@ -368,7 +386,7 @@ class InvestigationService:
                 detail="The assistant is read-only and does not forecast, expose raw source data, or change settlement state.",
                 technical_details={"route": "REFUSE", "reason": intent.reason},
             ).model_dump(mode="json")
-        if intent.mode == "EVIDENCE_GUIDANCE" and not (settlement_id or proof_id):
+        if intent.mode == "EVIDENCE_GUIDANCE" and not (settlement_id or proof_id) and route_question(question, context).name == "REFUSE":
             actions = guidance_for({})
             return AssistantAnswer(
                 status="ANSWERED",
@@ -502,7 +520,32 @@ class InvestigationService:
         narration: str | None = None
         narration_status = "not_requested"
         unsupported_count = 0
-        if planner_used and self.provider is not None:
+        brief = build_resolution_brief(canonical, result["proof_ids"])
+        options = explanation_options(canonical, brief)
+        if options and self.provider is not None and callable(getattr(self.provider, "explain", None)):
+            try:
+                explained = self.provider.explain(question, options, attempt_guard=lambda: self.budget.consume(tenant_id, run_id))
+                self._record_provider_call(tenant_id, run_id, "narration", result=explained)
+                payload = json.loads(explained.content)
+                sections = payload.get("sections") if isinstance(payload, dict) else None
+                valid_structure = isinstance(payload, dict) and set(payload) == {"sections"} and isinstance(sections, list) and 1 <= len(sections) <= 3 and all(isinstance(key, str) for key in sections)
+                if valid_structure:
+                    unsupported_count = sum(key not in options for key in sections) + len(sections) - len(set(sections))
+                else:
+                    unsupported_count = 1
+                if unsupported_count == 0:
+                    narration = "\n\n".join(options[key] for key in sections)
+                    narration_status = "accepted"
+                else:
+                    narration_status = "rejected_unsupported_claims"
+            except (ValueError, TypeError):
+                unsupported_count = 1
+                narration_status = "rejected_unsupported_claims"
+            except ProviderFailure as failure:
+                if failure.category != "provider_budget_exhausted" or failure.result is not None:
+                    self._record_provider_call(tenant_id, run_id, "narration", result=failure.result, failure=failure)
+                narration_status = "provider_budget_exhausted" if failure.category == "provider_budget_exhausted" else "provider_unavailable"
+        elif planner_used and self.provider is not None:
             try:
                 narrated = self.provider.narrate(
                     question,
@@ -563,6 +606,7 @@ class InvestigationService:
             answer_label=ANSWER_LABELS[answer_mode],
             detail=guidance_detail if answer_mode == "EVIDENCE_GUIDANCE" else None,
             recommended_actions=guidance_for(canonical) if answer_mode == "EVIDENCE_GUIDANCE" else (),
+            resolution_brief=brief,
             technical_details={
                 "route": "PLANNER_TOOL" if planner_used else "DIRECT_TOOL",
                 "tool_name": selection.name,

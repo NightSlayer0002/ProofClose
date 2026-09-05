@@ -7,6 +7,7 @@ interface Props {
   active: Page
   identityMode: string
   running: boolean
+  canRun?: boolean
   onHome: () => void
   onNavigate: (page: Page) => void
   onRun: () => void
@@ -17,9 +18,10 @@ const primary: Array<{ id: Page; label: string }> = [
   { id: 'exceptions', label: 'Exceptions' },
   { id: 'investigate', label: 'Assistant' },
   { id: 'close', label: 'Close' },
+  { id: 'sources', label: 'Data sources' },
 ]
 
-export function AppHeader({ active, identityMode, running, onHome, onNavigate, onRun }: Props) {
+export function AppHeader({ active, identityMode, running, canRun = true, onHome, onNavigate, onRun }: Props) {
   return (
     <header className="app-header">
       <button className="brand" onClick={onHome} aria-label="ProofClose home">
@@ -54,7 +56,7 @@ export function AppHeader({ active, identityMode, running, onHome, onNavigate, o
             <Activity aria-hidden="true" size={15} /> <span className="diagnostics-label">Diagnostics</span>
           </button>
         </Tooltip>
-        <button className={`primary-action run-action ${running ? 'is-running' : ''}`} onClick={onRun} disabled={running}>
+        <button className={`primary-action run-action ${running ? 'is-running' : ''}`} onClick={onRun} disabled={running || !canRun}>
           <Play aria-hidden="true" size={14} fill="currentColor" /> <span className="run-label">{running ? 'Reconciling…' : 'Run reconciliation'}</span>
         </button>
       </div>

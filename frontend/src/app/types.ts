@@ -1,4 +1,24 @@
-export type Page = 'reconciliation' | 'exceptions' | 'investigate' | 'close' | 'diagnostics'
+export type Page = 'reconciliation' | 'exceptions' | 'investigate' | 'close' | 'diagnostics' | 'sources'
+
+export interface SourceFile {
+  source_id: string
+  source_type: string
+  filename: string
+  state: string
+  row_count: number
+  content_hash: string
+  created_at: string
+  error: string | null
+}
+
+export interface SourceCatalog {
+  normalization_version: string
+  currency: string
+  money_unit: string
+  max_bytes: number
+  max_rows: number
+  sources: Array<{ source_type: string; label: string; required_columns: string[]; optional_columns: string[]; money_columns: string[]; template_csv: string }>
+}
 
 export type Decision =
   | 'AUTO_VERIFIED'
@@ -137,6 +157,7 @@ export interface ConversationTurn {
 }
 
 export interface InvestigationReport {
+  resolution_brief?: { version: string; checks_needed: Array<{ predicate: string; label: string; detail: string }>; uncertainty: string; recheck_condition: string; handoff_text: string } | null
   status: string
   route: string
   tool_name?: string | null

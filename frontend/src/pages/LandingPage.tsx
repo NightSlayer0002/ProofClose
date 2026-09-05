@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   ArrowRight,
   Banknote,
@@ -8,10 +9,13 @@ import {
   Fingerprint,
   GitCompareArrows,
   LockKeyhole,
+  Pause,
+  Play,
   ScanLine,
   ShieldCheck,
   Waypoints,
 } from 'lucide-react'
+import { LandingBackdrop } from '../components/LandingBackdrop'
 
 interface Props {
   onOpenWorkspace?: () => void
@@ -34,6 +38,7 @@ function ProvenanceField() {
         <span className="provenance-caption">Source records</span>
         <div className="source-chip source-orders"><Database aria-hidden="true" size={15} /><span>Merchant orders</span><code>ord_0042</code></div>
         <div className="source-chip source-recon"><ScanLine aria-hidden="true" size={15} /><span>Razorpay recon</span><code>pay_0188</code></div>
+        <div className="source-chip"><FileCheck2 aria-hidden="true" size={15} /><span>Settlements</span><code>provider delivery</code></div>
         <div className="source-chip source-bank"><Banknote aria-hidden="true" size={15} /><span>Bank credits</span><code>UTR…208</code></div>
       </div>
 
@@ -45,7 +50,7 @@ function ProvenanceField() {
           <div><small>Frozen snapshot</small><strong>snap_7f3a</strong></div>
           <span className="node-state"><Check aria-hidden="true" size={12} /> hashed</span>
         </div>
-        <div className="rule-connector"><span>normalize</span><span>bind</span><span>evaluate</span></div>
+        <div className="rule-connector"><span>Versioned rules check the evidence</span></div>
       </div>
 
       <div className="proof-object-card">
@@ -59,22 +64,36 @@ function ProvenanceField() {
         </dl>
         <footer><Fingerprint aria-hidden="true" size={12} /><code>sha256:d64a19…c445d</code></footer>
       </div>
+      <p className="provenance-example">Illustrative example · workspace results come from your selected data</p>
     </div>
   )
 }
 
 export function LandingPage({ onOpenWorkspace }: Props) {
+  const [motionPaused, setMotionPaused] = useState(false)
   const openWorkspace = workspaceLink(onOpenWorkspace)
   return (
-    <div className="landing-shell">
-      <div className="landing-ambient" aria-hidden="true"><span /><span /><span /></div>
+    <div className="landing-shell" data-motion-paused={motionPaused}>
+      <LandingBackdrop paused={motionPaused} />
       <header className="landing-nav">
         <a className="landing-brand" href="#top" aria-label="ProofClose landing page">
           <span className="brand-mark"><ShieldCheck aria-hidden="true" size={17} /></span>
           <span>ProofClose</span>
         </a>
         <nav aria-label="Landing page"><a href="#provenance">Provenance</a><a href="#controls">Controls</a><a href="#evaluation">Evaluation</a></nav>
-        <a className="landing-nav-cta" {...openWorkspace}>Open workspace <ArrowRight aria-hidden="true" size={14} /></a>
+        <div className="landing-nav-actions">
+          <button
+            className="landing-motion-toggle"
+            type="button"
+            aria-label={motionPaused ? 'Resume background animation' : 'Pause background animation'}
+            aria-pressed={motionPaused}
+            title={motionPaused ? 'Resume background animation' : 'Pause background animation'}
+            onClick={() => setMotionPaused((value) => !value)}
+          >
+            {motionPaused ? <Play aria-hidden="true" size={14} /> : <Pause aria-hidden="true" size={14} />}
+          </button>
+          <a className="landing-nav-cta" {...openWorkspace}>Open workspace <ArrowRight aria-hidden="true" size={14} /></a>
+        </div>
       </header>
 
       <main id="top">
@@ -92,6 +111,7 @@ export function LandingPage({ onOpenWorkspace }: Props) {
               <span><Check aria-hidden="true" size={13} /> human-controlled close</span>
               <span><Check aria-hidden="true" size={13} /> tamper-evident proof</span>
             </div>
+            <a className="landing-data-link" href="/workspace/sources">Bring your own CSV data <ArrowRight aria-hidden="true" size={14} /></a>
           </div>
           <ProvenanceField />
         </section>
@@ -99,7 +119,7 @@ export function LandingPage({ onOpenWorkspace }: Props) {
         <section className="landing-statement" id="provenance">
           <p>THE OPERATING PRINCIPLE</p>
           <h2>Evidence moves. Proof stays.</h2>
-          <span>Every decision is reproducible from the source snapshot, rule version, configuration, and bound evidence that created it.</span>
+          <span>Trace a decision to its original evidence. Then turn failed checks into a resolution brief: what is unknown, what to request, and what to recheck.</span>
         </section>
 
         <section className="landing-section provenance-section">
@@ -171,7 +191,7 @@ export function LandingPage({ onOpenWorkspace }: Props) {
 
         <section className="landing-section honest-section">
           <div><p className="landing-kicker"><span /> Honest POC boundary</p><h2>Built to prove the control model.</h2></div>
-          <p>This build uses synthetic CSV sources, SQLite, and clearly labelled demo identity context. Production adoption would add authenticated tenant identity, RBAC, encrypted managed storage, live source connectors, durable queues, key management, and operational monitoring. The POC does not pretend those controls already exist.</p>
+          <p>The bundled example is synthetic; your own data follows an explicit INR input contract. This POC uses SQLite and clearly labelled demo identity context. Production adoption still needs authenticated tenant identity, RBAC, encrypted managed storage, live connectors, durable queues, key management, and operational monitoring.</p>
         </section>
 
         <section className="landing-cta">

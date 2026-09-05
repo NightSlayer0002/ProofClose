@@ -6,6 +6,7 @@ const paths: Record<Page, string> = {
   investigate: '/workspace/assistant',
   close: '/workspace/close',
   diagnostics: '/workspace/ops',
+  sources: '/workspace/sources',
 }
 
 export function isWorkspacePath(pathname: string): boolean {

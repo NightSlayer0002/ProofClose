@@ -27,7 +27,6 @@ from app.runs.service import RunService, evaluate_order_payment_v1, evaluate_pro
 from app.review.service import ReviewService
 from app.storage.database import DatabaseManager
 from app.storage.repositories import ProofArtifactRepository, SnapshotRepository, SourceRepository
-from scripts.generate_demo import DEMO_NOW
 
 
 def create_app(settings: Settings | None = None, assistant_provider: AssistantProvider | None = None) -> FastAPI:
@@ -55,7 +54,7 @@ def create_app(settings: Settings | None = None, assistant_provider: AssistantPr
     configurations.register(CONFIGURATION_BUNDLE_V2)
     configurations.set_current("2.0")
     proof_service = ProofService(registry, configurations=configurations, store=proof_artifacts)
-    now = (lambda: DEMO_NOW) if settings.demo_mode else (lambda: datetime.now(timezone.utc))
+    now = lambda: datetime.now(timezone.utc)
     run_service = RunService(database, sources, snapshots, proof_service, observability, configurations, now)
     review_service = ReviewService(database)
     close_service = CloseService(database, configuration_registry=configurations)

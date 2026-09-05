@@ -8,6 +8,49 @@ The rule of the product is simple:
 
 The complete demo is deterministic and works offline. AI credentials are optional and never control arithmetic, matching, reviews, or close approval. The docked Hybrid Evidence Copilot can talk naturally about concepts, but every statement about the current run is freshly fetched through allowlisted read-only tools. Conversation history helps wording; it is never a source of financial truth.
 
+## Product tour
+
+These are screenshots of the running POC with synthetic demonstration data. Workspace captures use deterministic offline assistance; they are not evidence of live-provider availability. The landing has a continuously rotating CSS 3D evidence background with mouse-responsive tilt, a pause control and reduced-motion support; the image below is a still frame.
+
+### Evidence-first landing
+
+![ProofClose landing: source records become a frozen snapshot and a versioned proof](docs/screenshots/landing.png)
+
+### Reconciliation workspace
+
+Expected money, observed credits, conservative decisions and drill-down proofs in one workspace.
+
+![Settlement reconciliation with expected amounts, bank credits and review decisions](docs/screenshots/reconciliation.png)
+
+<details>
+<summary>Explore CSV ingestion, proofs, the Copilot and human-controlled close</summary>
+
+### Bring your own CSV data
+
+Validate each source delivery, select the four input roles and create a new immutable snapshot.
+
+![Data sources screen with CSV validation and explicit snapshot selection](docs/screenshots/data-sources.png)
+
+### Inspect the original evidence
+
+Historical reproduction and current-rule re-evaluation are separate operations.
+
+![Proof drawer showing bound evidence and separate verification operations](docs/screenshots/proof-drawer.png)
+
+### From an exception to an evidence request
+
+The read-only Copilot explains the recorded finding, suggests evidence to request and links supporting proofs. A downloadable brief supports a human handoff.
+
+![Evidence Copilot explaining a selected settlement and offering a resolution brief](docs/screenshots/resolution-brief.png)
+
+### Human-controlled close
+
+Review status and close blockers stay distinct from the amount that was not automatically verified.
+
+![Close workspace with policy checks, review status and approval controls](docs/screenshots/close.png)
+
+</details>
+
 ## Razorpay Buildathon Track 04 fit
 
 The [AI Finance Controller track](https://razorpay.com/buildathon/) asks builders to close a finance-operations loop across more than 50 synthetic records, measure matching, and report the exceptions the system does not resolve. ProofClose completes that loop across merchant orders, Razorpay reconciliation rows, settlement entities, and bank credits:
@@ -89,6 +132,12 @@ Open `http://127.0.0.1:5173` for the provenance-first landing page, then choose 
 5. Evidence Copilot: click **Ask assistant** on two different settlements and notice the visible context divider and separate thread for each one. Ask a general question such as “What is a UTR?”, then ask “What amount is not auto-verified in this run?” The first is general guidance; the second must fetch fresh canonical evidence. Ask “What should I do?” on an exception to see verified facts separated from server-owned read-only guidance.
 6. Close: distinguish the **Not auto-verified amount** from **Total close blockers**, then show how reviewed exceptions remain auditable.
 7. Diagnostics: inspect measured stage timings, truthful configured/reachable provider states, actual call/token counts, and `unavailable` cost when no versioned pricing configuration exists.
+
+## Bring your own data and resolve an exception
+
+Use **Data sources** in the workspace (or **Bring your own CSV data** on the landing page). Download templates, upload and validate each delivery, choose one file for each role, optionally set a historical evaluation time, then create a new snapshot and run. New data never rewrites old proofs. [Exact input contract and live-integration path](docs/INPUT_CONTRACT.md).
+
+The Copilot now turns failed checks into a **resolution brief**: what is known, what is uncertain, what evidence to request and what must be rechecked. Download the brief for a human handoff; inspect supporting proofs at the bottom of the answer. [How the brief and bounded AI explanations work](docs/RESOLUTION_BRIEFS.md).
 
 ## Trust invariants
 

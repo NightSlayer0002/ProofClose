@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     nvidia_model: str = Field(default="nvidia/llama-3.3-nemotron-super-49b-v1", alias="NVIDIA_MODEL")
     llm_timeout_seconds: int = Field(default=15, alias="LLM_TIMEOUT_SECONDS", ge=1, le=120)
     llm_max_retries: int = Field(default=1, alias="LLM_MAX_RETRIES", ge=0, le=3)
-    provider_call_budget: int = Field(default=2, alias="PROOFCLOSE_PROVIDER_CALL_BUDGET", ge=0, le=100)
+    provider_call_budget: int = Field(default=20, alias="PROOFCLOSE_PROVIDER_CALL_BUDGET", ge=0, le=100)
     pricing_version: str | None = Field(default=None, alias="PROOFCLOSE_PRICING_VERSION")
     pricing_input_per_1k: Decimal | None = Field(default=None, alias="PROOFCLOSE_PRICING_INPUT_PER_1K")
     pricing_output_per_1k: Decimal | None = Field(default=None, alias="PROOFCLOSE_PRICING_OUTPUT_PER_1K")

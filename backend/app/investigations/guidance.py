@@ -79,6 +79,15 @@ _PLAYBOOKS: dict[str, tuple[RecommendedAction, ...]] = {
 
 def guidance_for(canonical: dict[str, object]) -> tuple[RecommendedAction, ...]:
     """Return a fixed playbook chosen only from verified canonical facts."""
+    if canonical.get("decision", canonical.get("status")) == "AUTO_VERIFIED":
+        return ()
+    if "total_close_blockers" in canonical:
+        if canonical["total_close_blockers"] == 0:
+            return ()
+        return (
+            RecommendedAction(code="CHECK_CLOSE_POLICY", label="Start with non-reviewable blockers", detail="Check integrity and system-error blockers before ordinary exceptions. An operator review cannot clear a proof integrity failure."),
+            RecommendedAction(code="REVIEW_EXCEPTION_EVIDENCE", label="Work through the review queue", detail="Open each exception, compare its proof with the source evidence and record a reasoned disposition. Financial matching and review completion are separate."),
+        )
     if not canonical:
         return (
             RecommendedAction(code="SELECT_EVIDENCE", label="Select an exception", detail="Select a settlement or exception so ProofClose can read its current evidence."),

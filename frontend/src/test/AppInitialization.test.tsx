@@ -5,6 +5,7 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 const apiMock = vi.hoisted(() => ({
   health: vi.fn(),
   sources: vi.fn(),
+  sourceSchema: vi.fn(),
   seedDemo: vi.fn(),
   resetDemo: vi.fn(),
   latestRun: vi.fn(),
@@ -53,6 +54,7 @@ afterEach(cleanup)
 
 beforeEach(() => {
   vi.clearAllMocks()
+  apiMock.sourceSchema.mockResolvedValue({ currency: 'INR', normalization_version: '1.0', money_unit: 'paise', max_bytes: 5242880, max_rows: 5000, sources: [] })
   Object.defineProperty(window, 'scrollTo', { configurable: true, value: vi.fn() })
   window.history.replaceState({}, '', '/workspace')
   const run = {
@@ -138,20 +140,14 @@ it('reuses persisted evidence and the latest run instead of resetting on mount',
   expect(screen.getByText('Read-only copilot')).toBeVisible()
 })
 
-it('seeds a compatible snapshot before running when accepted evidence has no latest run', async () => {
+it('requires explicit source selection when accepted evidence has no completed run', async () => {
   apiMock.latestRun.mockRejectedValueOnce(new Error('No completed run exists'))
-  apiMock.seedDemo.mockResolvedValueOnce({ snapshot_id: 'snapshot_existing', record_count: 2 })
-  apiMock.run.mockResolvedValueOnce({
-    run_id: 'run_seeded', state: 'SUCCESS', source_snapshot_id: 'snapshot_existing', rule_version: '2.0',
-    configuration_version: '2.0', records_processed: 2, expected_paise: 100, explained_paise: 100,
-    unresolved_paise: 0, total_ms: 2, timings: {}, created_at: '2026-08-26T00:00:00Z',
-  })
 
   render(<App />)
 
-  expect(await screen.findByRole('heading', { name: 'Settlement reconciliation' })).toBeVisible()
-  expect(apiMock.seedDemo).toHaveBeenCalledOnce()
-  expect(apiMock.run).toHaveBeenCalledWith('snapshot_existing')
+  expect(await screen.findByRole('heading', { name: 'Choose what this close is built on.' })).toBeVisible()
+  expect(apiMock.seedDemo).not.toHaveBeenCalled()
+  expect(apiMock.run).not.toHaveBeenCalled()
   expect(apiMock.resetDemo).not.toHaveBeenCalled()
 })
 

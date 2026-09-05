@@ -5,7 +5,7 @@ _GENERAL_PATTERNS = (
     "hi", "hello", "hey", "what is a utr", "what's a utr", "why does proofclose",
     "why use integer paise", "what are paise", "what can you help", "how does proofclose work",
     "what is reconciliation", "what is a proof", "what is an exception", "how do i use proofclose",
-    "what are proofs", "explain proof", "explain proofs", "what are exceptions", "explain exception",
+    "what are proofs", "explain proof", "explain proofs", "what are exceptions", "explain exception", "explain exceptions",
     "what does reconciliation mean", "explain reconciliation", "what is close readiness", "what is close state",
     "explain close", "explain settlement reconciliation", "what are settlements",
 )
@@ -24,6 +24,9 @@ _UNSAFE_PATTERNS = (
 
 def classify_copilot_intent(question: str, context: AssistantContext) -> CopilotIntent:
     normalized = " ".join(question.lower().split())
+    # Explain the ingestion workflow without giving the assistant a write tool.
+    if normalized.startswith(("how do i upload", "how can i upload", "how to upload", "what csv format", "how do i import")) and not any(signal in normalized for signal in ("secret", "prompt", "ignore", "raw", "source data")):
+        return CopilotIntent(mode="GENERAL_HELP", reason="The user asks for input-format instructions, not an upload action")
     if any(pattern in normalized for pattern in _UNSAFE_PATTERNS):
         # A question phrased as a policy check remains useful guidance; an
         # imperative approval request is an attempted state mutation.
@@ -37,11 +40,11 @@ def classify_copilot_intent(question: str, context: AssistantContext) -> Copilot
         phrase in normalized
         for phrase in ("this settlement", "this run", "current run", "selected settlement", "active run", "relate to this")
     )
-    if has_live_binding and any(signal in normalized for signal in _CURRENT_PATTERNS):
-        return CopilotIntent(mode="CURRENT_FACT", reason="The question binds a domain concept to selected current evidence")
     if any(signal in normalized for signal in ("what should i do", "what do i do", "next step", "can i approve", "may i approve", "should i approve")):
         return CopilotIntent(mode="EVIDENCE_GUIDANCE", reason="The question asks for operational next steps")
-    if normalized in _GENERAL_PATTERNS or any(normalized.startswith(pattern) for pattern in _GENERAL_PATTERNS):
+    if has_live_binding and any(signal in normalized for signal in _CURRENT_PATTERNS):
+        return CopilotIntent(mode="CURRENT_FACT", reason="The question binds a domain concept to selected current evidence")
+    if normalized in _GENERAL_PATTERNS or any(normalized.startswith(pattern + " ") or normalized.startswith(pattern + "?") for pattern in _GENERAL_PATTERNS):
         return CopilotIntent(mode="GENERAL_HELP", reason="The question asks for domain or product guidance")
     if any(pattern in normalized for pattern in _CURRENT_PATTERNS) or context.settlement_id or context.proof_id:
         return CopilotIntent(mode="CURRENT_FACT", reason="The question may contain a current run or selected evidence fact")
@@ -57,7 +60,12 @@ def route_question(question: str, context: AssistantContext | None = None) -> To
     active = context or AssistantContext(run_id="unselected")
     has_selected = bool(active.settlement_id or active.proof_id)
     run_summary_question = any(signal in normalized for signal in ("today", "close summary", "total unresolved", "run summary"))
-    if (not has_selected or run_summary_question) and ("unresolved" in normalized or any(signal in normalized for signal in ("close summary", "money is missing", "how much is missing", "has it changed", "current status", "how much unresolved", "total unresolved"))):
+    next_steps = any(signal in normalized for signal in ("what should i do", "what do i do", "next step", "can i approve", "should i approve", "may i approve", "recommend", "resolution brief"))
+    if not has_selected and next_steps:
+        return ToolSelection(name="close_blockers", arguments={"run_id": active.run_id})
+    if has_selected and not run_summary_question and (next_steps or "this blocked" in normalized or "evidence is missing" in normalized):
+        return ToolSelection(name="settlement_lookup", arguments={"run_id": active.run_id, "settlement_id": active.settlement_id}) if active.settlement_id else ToolSelection(name="proof_explanation", arguments={"run_id": active.run_id, "proof_id": active.proof_id})
+    if (not has_selected or run_summary_question) and ("unresolved" in normalized or any(signal in normalized for signal in ("not auto-verified", "not auto verified", "close summary", "money is missing", "how much is missing", "has it changed", "current status", "how much unresolved", "total unresolved"))):
         return ToolSelection(name="close_summary", arguments={"run_id": active.run_id})
     if any(signal in normalized for signal in ("prevents today's close", "prevent today's close", "blocks close", "blocking exceptions", "how many blockers", "blocker count", "is this blocked", "why is this blocked")):
         return ToolSelection(name="close_blockers", arguments={"run_id": active.run_id})

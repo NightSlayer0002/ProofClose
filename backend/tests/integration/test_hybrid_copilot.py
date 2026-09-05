@@ -241,7 +241,7 @@ def test_null_credit_answer_leads_with_expected_and_unresolved_inr() -> None:
 
     answer = InvestigationService(NullCreditTools()).answer("tenant", "run_demo", "What is the credit amount?", settlement_id="setl_PC008")
     assert answer["answer_mode"] == "CURRENT_FACT"
-    assert answer["message"].startswith("No verified bank credit is linked to this settlement. Expected: ₹13,498.36")
+    assert "no single verified bank credit is linked" in answer["message"]
     assert "₹13,498.36" in answer["message"]
 
 
@@ -269,7 +269,8 @@ def test_run_residual_money_is_named_not_auto_verified_in_assistant_copy() -> No
         },
     )
 
-    assert summary == "₹4,750.00 is not auto-verified in the current run."
+    assert summary.startswith("₹4,750.00 is not auto-verified in the current run.")
+    assert "not a confirmed loss" in summary
     assert "4 total close blockers" in blockers
     assert "3 open review items" in blockers
     assert "1 pending settlement" in blockers

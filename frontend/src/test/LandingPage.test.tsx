@@ -1,7 +1,9 @@
-import { render, screen } from '@testing-library/react'
-import { expect, it } from 'vitest'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { afterEach, expect, it } from 'vitest'
 
 import { LandingPage } from '../pages/LandingPage'
+
+afterEach(cleanup)
 
 it('dramatizes evidence provenance while keeping AI outside the hero', () => {
   render(<LandingPage />)
@@ -26,4 +28,13 @@ it('dramatizes evidence provenance while keeping AI outside the hero', () => {
   ]) {
     expect(screen.queryByText(implementationLabel, { exact: true })).not.toBeInTheDocument()
   }
+})
+
+it('lets the visitor pause and resume decorative background motion', () => {
+  const { container } = render(<LandingPage />)
+  fireEvent.click(screen.getByRole('button', { name: 'Pause background animation' }))
+  expect(container.querySelector('.landing-shell')).toHaveAttribute('data-motion-paused', 'true')
+  expect(screen.getByRole('button', { name: 'Resume background animation' })).toHaveAttribute('aria-pressed', 'true')
+  fireEvent.click(screen.getByRole('button', { name: 'Resume background animation' }))
+  expect(container.querySelector('.landing-shell')).toHaveAttribute('data-motion-paused', 'false')
 })

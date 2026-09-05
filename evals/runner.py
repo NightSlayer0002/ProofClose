@@ -21,6 +21,7 @@ from app.reconciliation.rules import (
     SETTLEMENT_RULE_NAME,
 )
 from evals.generator import build_demo_files, scenario_manifest
+from scripts.generate_demo import DEMO_NOW
 from evals.metrics import calculate_metric_counts, metrics_from_counts, sum_metric_counts
 
 
@@ -220,7 +221,7 @@ def run_evaluation(seed: int, output_dir: Path, *, write_artifacts: bool = True)
                 source_ids.append(result.source_id)
                 record_count += result.accepted_rows
             snapshot = app.state.snapshots.create(tenant_id, source_ids)
-            run = app.state.run_service.run_snapshot(tenant_id, snapshot.snapshot_id)
+            run = app.state.run_service.run_snapshot(tenant_id, snapshot.snapshot_id, evaluated_at=DEMO_NOW)
             rows = app.state.run_service.list_results(tenant_id, run["run_id"])
             raw_exceptions = app.state.review_service.list_exceptions(tenant_id, run["run_id"])
             exceptions = _annotate_exceptions(app, tenant_id, run["run_id"], raw_exceptions)

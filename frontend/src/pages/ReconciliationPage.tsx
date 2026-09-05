@@ -18,14 +18,14 @@ export function ReconciliationPage({ run, rows, onProof, onAskAbout }: { run: Ru
   return (
     <main className="page" aria-labelledby="reconciliation-title">
       <div className="page-heading">
-        <div><p className="eyebrow">Daily control / 26 Aug 2026</p><h1 id="reconciliation-title">Settlement reconciliation</h1><p>Trace each expected settlement to immutable Razorpay, merchant, and bank evidence.</p></div>
+        <div><p className="eyebrow">Selected source snapshot</p><h1 id="reconciliation-title">Settlement reconciliation</h1><p>Trace each expected settlement to immutable Razorpay, merchant, and bank evidence.</p></div>
         <div className="run-meta"><span>{run.records_processed} source rows</span><span>Run {run.total_ms}ms</span><code>{run.run_id}</code></div>
       </div>
       <SummaryStrip run={run} rows={rows} />
       <div className="table-toolbar">
         <label className="search-control"><Search aria-hidden="true" size={14} /><span className="sr-only">Search settlements</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search settlement or UTR" /></label>
         <label className="filter-control"><SlidersHorizontal aria-hidden="true" size={14} /><span className="sr-only">Filter decision</span><select value={decision} onChange={(event) => setDecision(event.target.value)}><option value="ALL">All decisions</option><option value="AUTO_VERIFIED">Verified</option><option value="REVIEW_REQUIRED">Review required</option><option value="REFUSED">Refused</option><option value="UNRESOLVED">Unresolved decision</option><option value="PENDING">Pending</option></select></label>
-        <span className="result-count">{filtered.length} settlements</span>
+        <span className="result-count">{filtered.length} settlement{filtered.length === 1 ? '' : 's'}</span>
       </div>
       <div className="data-table-wrap">
         <table className="data-table">

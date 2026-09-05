@@ -1,4 +1,6 @@
 import json
+from hashlib import sha256
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import Response
@@ -14,17 +16,19 @@ from app.api.schemas import (
     SnapshotRequest,
 )
 from app.ingestion.security import UploadValidationError
+from app.ingestion.catalog import source_catalog
+from app.normalization.adapters import REQUIRED_COLUMNS
 from app.proofs.fingerprint import ProofIntegrityError
 from app.proofs.legacy import LegacyProofSchemaUnavailable
 from app.proofs.service import ProofOperationResult
 from app.close.integrity import ClosePackIntegrityError
 from app.storage.schema import Base, ProofRecord, SourceRecord
-from scripts.generate_demo import build_demo_files
+from scripts.generate_demo import build_demo_files, DEMO_NOW
 
 
 router = APIRouter(prefix="/api")
 
-DEMO_SOURCE_TYPES = frozenset(build_demo_files())
+SOURCE_TYPES = frozenset(REQUIRED_COLUMNS)
 
 
 def _seed_demo(request: Request, context: RequestContext) -> dict:
@@ -112,10 +116,17 @@ def list_sources(request: Request, context: RequestContext = Depends(demo_contex
                 "row_count": item.row_count,
                 "content_hash": item.content_hash,
                 "created_at": item.created_at.isoformat(),
+                "error": item.error,
             }
             for item in items
         ],
     }
+
+
+@router.get("/sources/schema")
+def get_source_schema(request: Request, context: RequestContext = Depends(demo_context)) -> dict:
+    limits = request.app.state.ingestion.limits
+    return source_catalog(limits.max_bytes, limits.max_rows)
 
 
 @router.post("/sources/upload")
@@ -125,7 +136,7 @@ async def upload_source(
     file: UploadFile = File(...),
     context: RequestContext = Depends(demo_context),
 ) -> dict:
-    if source_type not in DEMO_SOURCE_TYPES:
+    if source_type not in SOURCE_TYPES:
         raise HTTPException(status_code=422, detail={"code": "INVALID_SOURCE_TYPE", "message": "Unsupported source type."})
     if file.content_type not in {"text/csv", "application/csv", "application/vnd.ms-excel"}:
         raise HTTPException(status_code=400, detail={"code": "UPLOAD_REJECTED", "message": "Only CSV uploads are accepted."})
@@ -155,7 +166,20 @@ def create_run(body: RunRequest, request: Request, context: RequestContext = Dep
         snapshot_id = latest.snapshot_id if latest else None
     if snapshot_id is None:
         raise HTTPException(status_code=409, detail={"code": "NO_SOURCE_SNAPSHOT", "message": "Load sources before running reconciliation."})
-    return request.app.state.run_service.run_snapshot(context.tenant_id, snapshot_id)
+    snapshot = request.app.state.snapshots.get(context.tenant_id, snapshot_id)
+    if snapshot is None:
+        raise HTTPException(status_code=404, detail={"code": "SNAPSHOT_NOT_FOUND"})
+    selected = set(json.loads(snapshot.source_ids_json))
+    sources = [item for item in request.app.state.sources.list(context.tenant_id) if item.id in selected]
+    missing_roles = SOURCE_TYPES - {item.source_type for item in sources}
+    if missing_roles:
+        raise HTTPException(status_code=422, detail={"code": "INCOMPLETE_SOURCE_SET", "message": "Select one accepted file for each source role. Missing: " + ", ".join(sorted(missing_roles))})
+    # The example alone gets a frozen clock. Never classify a custom delivery
+    # relative to the demonstration date. Content hashes, not row IDs, identify it.
+    demo_hashes = {role: sha256(content).hexdigest() for role, (_filename, content) in build_demo_files().items()}
+    unchanged_demo = request.app.state.settings.demo_mode and len(sources) == len(demo_hashes) and {item.source_type: item.content_hash for item in sources} == demo_hashes
+    evaluated_at = body.evaluated_at or (DEMO_NOW if unchanged_demo else datetime.now(timezone.utc))
+    return request.app.state.run_service.run_snapshot(context.tenant_id, snapshot_id, evaluated_at=evaluated_at)
 
 
 @router.post("/snapshots")

@@ -1,4 +1,5 @@
 from typing import Literal
+from datetime import datetime, timezone
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -18,6 +19,14 @@ def visible_text(value: str, field_name: str, minimum: int = 1) -> str:
 
 class RunRequest(StrictRequest):
     snapshot_id: str | None = Field(default=None, min_length=1, max_length=64)
+    evaluated_at: datetime | None = None
+
+    @field_validator("evaluated_at")
+    @classmethod
+    def aware_evaluation_time(cls, value: datetime | None) -> datetime | None:
+        if value is not None and (value.tzinfo is None or value.utcoffset() is None):
+            raise ValueError("evaluated_at requires a timezone offset")
+        return value.astimezone(timezone.utc) if value is not None else None
 
 
 class SnapshotRequest(StrictRequest):

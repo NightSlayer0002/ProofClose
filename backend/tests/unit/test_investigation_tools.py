@@ -14,12 +14,12 @@ def evidence_context(tmp_path: Path):
     app = create_app(Settings(PROOFCLOSE_ENV="demo", PROOFCLOSE_DATA_DIR=tmp_path))
     tenant_id = app.state.settings.demo_tenant_id
     source_ids = []
-    from scripts.generate_demo import build_demo_files
+    from scripts.generate_demo import build_demo_files, DEMO_NOW
 
     for source_type, (filename, content) in build_demo_files().items():
         source_ids.append(app.state.ingestion.ingest_csv(tenant_id, source_type, filename, content).source_id)
     snapshot = app.state.snapshots.create(tenant_id, source_ids)
-    run = app.state.run_service.run_snapshot(tenant_id, snapshot.snapshot_id)
+    run = app.state.run_service.run_snapshot(tenant_id, snapshot.snapshot_id, evaluated_at=DEMO_NOW)
     yield app, tenant_id, run
     app.state.database.dispose()
     app.state.observability.dispose()
