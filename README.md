@@ -6,11 +6,11 @@ The rule of the product is simple:
 
 > AI proposes. Code computes. Evidence proves. Policy decides. Humans control review and close.
 
-The complete demo is deterministic and works offline. AI credentials are optional and never control arithmetic, matching, reviews, or close approval. The docked Hybrid Evidence Copilot can talk naturally about concepts, but every statement about the current run is freshly fetched through allowlisted read-only tools. Conversation history helps wording; it is never a source of financial truth.
+The complete demo is deterministic and works offline. AI credentials are optional and never control arithmetic, matching, reviews, or close approval. The docked Hybrid Evidence Copilot uses built-in routing and explanations offline; with an available provider it can answer conceptual questions and help select validated explanations. Current-run facts come from allowlisted read-only tools, not conversation memory. This is a bounded operational assistant, not an unrestricted general-purpose chatbot.
 
 ## Product tour
 
-These are screenshots of the running POC with synthetic demonstration data. Workspace captures use deterministic offline assistance; they are not evidence of live-provider availability. The dark navy-and-mint landing features a rotating 3D proof core, orbiting lights and a mouse-responsive geometric background. The visible motion control pauses or resumes the scene; reduced-motion preferences default to a static view, with an explicit option to enable animation. The image below is a still frame.
+These are screenshots of the running POC with synthetic demonstration data. Workspace captures use deterministic offline assistance; they are not evidence of live-provider availability. The light editorial landing uses an illustrative audit trace and actual product captures. Continuous parallax is confined to subtle background planes; the financial artifact stays stationary. The motion control pauses or resumes the background, defaulting to static for reduced-motion preferences. The image below is a still frame.
 
 ### Evidence-first landing
 
@@ -101,12 +101,14 @@ An LLM is deliberately not the matcher. A language model can produce plausible b
 Prerequisites: Python 3.12 and Node.js 20 or newer.
 
 ```powershell
-python -m venv .venv
+py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e ".[dev]"
 Set-Location frontend
 npm.cmd install
 Set-Location ..
 ```
+
+Run setup once from the repository root. On Windows, check `py -3.12 --version` first; the generic `python` command may select a different installed version. Daily startup only needs the two server commands below. `npm.cmd` avoids PowerShell's `npm.ps1` execution-policy issue.
 
 Start the API:
 

@@ -38,3 +38,12 @@ it('lets the visitor pause and resume decorative background motion', () => {
   fireEvent.click(screen.getByRole('button', { name: 'Resume background animation' }))
   expect(container.querySelector('.landing-shell')).toHaveAttribute('data-motion-paused', 'false')
 })
+
+it('shows a real product capture with an explicit synthetic-data label before technical detail', () => {
+  render(<LandingPage />)
+  const preview = screen.getByRole('region', { name: 'From settlement to proof.' })
+  expect(preview.querySelector('img')).toHaveAttribute('alt', expect.stringMatching(/reconciliation workspace/i))
+  expect(preview).toHaveTextContent(/synthetic/i)
+  expect(preview).toHaveTextContent(/offline/i)
+  expect(screen.getByRole('table', { name: 'Synthetic regression results' })).toHaveTextContent('21 / 21')
+})

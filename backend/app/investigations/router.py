@@ -1,3 +1,5 @@
+import re
+
 from app.investigations.contracts import AssistantContext, CopilotIntent, ToolSelection
 
 
@@ -22,15 +24,24 @@ _UNSAFE_PATTERNS = (
 )
 
 
+def is_review_choice_question(question: str) -> bool:
+    """A request for decision criteria, never permission to perform a review."""
+    normalized = " ".join(question.lower().split())
+    return bool(re.match(r"^(?:so[, ]+)?(?:should|can|may|do|would) i\b", normalized)
+                and re.search(r"\b(?:accept|reject|approve|leave|mark)\b", normalized))
+
+
 def classify_copilot_intent(question: str, context: AssistantContext) -> CopilotIntent:
     normalized = " ".join(question.lower().split())
     # Explain the ingestion workflow without giving the assistant a write tool.
     if normalized.startswith(("how do i upload", "how can i upload", "how to upload", "what csv format", "how do i import")) and not any(signal in normalized for signal in ("secret", "prompt", "ignore", "raw", "source data")):
         return CopilotIntent(mode="GENERAL_HELP", reason="The user asks for input-format instructions, not an upload action")
-    if any(pattern in normalized for pattern in _UNSAFE_PATTERNS):
+    review_choice = is_review_choice_question(question)
+    unsafe_matches = [pattern for pattern in _UNSAFE_PATTERNS if pattern in normalized]
+    if unsafe_matches:
         # A question phrased as a policy check remains useful guidance; an
         # imperative approval request is an attempted state mutation.
-        if normalized.startswith(("can i approve", "may i approve", "should i approve")):
+        if review_choice and all(pattern in {"reject this", "approve this settlement"} for pattern in unsafe_matches):
             return CopilotIntent(mode="EVIDENCE_GUIDANCE", reason="Approval policy can be explained without changing state")
         return CopilotIntent(mode="UNABLE_TO_VERIFY", reason="The request is outside the read-only evidence boundary")
     # A conceptual question is general help only until it explicitly binds
@@ -40,7 +51,7 @@ def classify_copilot_intent(question: str, context: AssistantContext) -> Copilot
         phrase in normalized
         for phrase in ("this settlement", "this run", "current run", "selected settlement", "active run", "relate to this")
     )
-    if any(signal in normalized for signal in ("what should i do", "what do i do", "next step", "can i approve", "may i approve", "should i approve")):
+    if review_choice or any(signal in normalized for signal in ("what should i do", "what do i do", "next step", "can i approve", "may i approve", "should i approve")):
         return CopilotIntent(mode="EVIDENCE_GUIDANCE", reason="The question asks for operational next steps")
     if has_live_binding and any(signal in normalized for signal in _CURRENT_PATTERNS):
         return CopilotIntent(mode="CURRENT_FACT", reason="The question binds a domain concept to selected current evidence")
@@ -60,7 +71,7 @@ def route_question(question: str, context: AssistantContext | None = None) -> To
     active = context or AssistantContext(run_id="unselected")
     has_selected = bool(active.settlement_id or active.proof_id)
     run_summary_question = any(signal in normalized for signal in ("today", "close summary", "total unresolved", "run summary"))
-    next_steps = any(signal in normalized for signal in ("what should i do", "what do i do", "next step", "can i approve", "should i approve", "may i approve", "recommend", "resolution brief"))
+    next_steps = is_review_choice_question(question) or any(signal in normalized for signal in ("what should i do", "what do i do", "next step", "can i approve", "should i approve", "may i approve", "recommend", "resolution brief"))
     if not has_selected and next_steps:
         return ToolSelection(name="close_blockers", arguments={"run_id": active.run_id})
     if has_selected and not run_summary_question and (next_steps or "this blocked" in normalized or "evidence is missing" in normalized):
@@ -85,6 +96,8 @@ def route_question(question: str, context: AssistantContext | None = None) -> To
             arguments={"run_id": active.run_id, "proof_id": active.proof_id},
             reason="Selected proof supplies exact lineage context",
         )
+    if active.proof_id and any(signal in normalized for signal in ("tell me more", "explain it", "explain that", "what does that mean", "why did that happen")):
+        return ToolSelection(name="proof_explanation", arguments={"run_id": active.run_id, "proof_id": active.proof_id})
     if active.settlement_id:
         return ToolSelection(
             name="settlement_lookup",

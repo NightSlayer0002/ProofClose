@@ -1,8 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-const faces = ['front', 'back', 'left', 'right', 'top', 'bottom'] as const
-
-/** Decorative CSS 3D scene: no network, financial data or continuous JS render loop. */
+/** Background-only parallax: CSS loops; pointer updates are capped to one browser frame. */
 export function LandingBackdrop({ paused }: { paused: boolean }) {
   const backdrop = useRef<HTMLDivElement>(null)
 
@@ -16,8 +14,8 @@ export function LandingBackdrop({ paused }: { paused: boolean }) {
 
     const paintPointer = () => {
       frame = 0
-      element.style.setProperty('--pointer-x', `${pointerX.toFixed(2)}deg`)
-      element.style.setProperty('--pointer-y', `${pointerY.toFixed(2)}deg`)
+      element.style.setProperty('--pointer-x', `${pointerX.toFixed(2)}px`)
+      element.style.setProperty('--pointer-y', `${pointerY.toFixed(2)}px`)
     }
     const updatePointer = (event: PointerEvent) => {
       if (!active || event.pointerType === 'touch') return
@@ -51,18 +49,7 @@ export function LandingBackdrop({ paused }: { paused: boolean }) {
 
   return (
     <div className="landing-backdrop" ref={backdrop} aria-hidden="true">
-      <div className="landing-ambient"><span /><span /><span /></div>
-      {['primary', 'secondary', 'distant'].map((position) => (
-        <div className={`evidence-orbit evidence-orbit-${position}`} key={position}>
-          <div className="evidence-tilt">
-            <div className="evidence-cube">
-              {faces.map((face) => <span className={`evidence-face evidence-face-${face}`} key={face} />)}
-            </div>
-            <div className="evidence-orbit-ring"><i /></div>
-            <div className="evidence-orbit-ring evidence-orbit-ring-cross"><i /></div>
-          </div>
-        </div>
-      ))}
+      <div className="pc-parallax"><div className="pc-background-plane pc-plane-near" /><div className="pc-background-plane pc-plane-far" /></div>
     </div>
   )
 }

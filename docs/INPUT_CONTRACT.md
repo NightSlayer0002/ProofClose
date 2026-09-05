@@ -15,6 +15,10 @@ This is an explicit INR settlement contract, not a universal bank-file parser. N
 
 The live schema at `GET /api/sources/schema` lists required/optional/money columns and is derived from the ingestion validator. The UI downloads required-column templates. Headers must match exactly. Unknown columns and duplicate headers are rejected. A blank template is not an example dataset.
 
+All four roles must be represented when you run reconciliation. You can reuse previously accepted deliveries and replace only the changed role; the UI does not require four new uploads every time. Filenames are arbitrary. If a replacement upload fails, that role's old selection is cleared to prevent reconciling an unintended file; you may explicitly reselect the old accepted delivery.
+
+“Paise fields” is a unit list, not another required-column list. For example, merchant `amount_due_paise` is optional even though it appears in the money-field list. The ledger's **linked template** includes optional `order_id` because order/payment checks need that relationship. Required-only ledger columns describe settlement reconciliation, not complete order attribution.
+
 - All monetary fields, including `amount`, `credit`, `debit`, `fee`, `fees` and `tax`, are non-negative whole INR paise. ₹125.50 becomes `12550`. No comma separators, currency symbols, decimal amounts or guessed conversion.
 - Recon `type`: `payment` or `refund`. Only one of credit/debit may be positive per row, and at least one must be positive.
 - Settlement status: `created`, `pending`, `processed`, `failed`, `cancelled` or `reversed`. Orders: `created`, `attempted`, `paid`, `partially_paid` or `cancelled`.
