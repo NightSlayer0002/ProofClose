@@ -10,7 +10,7 @@ The complete demo is deterministic and works offline. AI credentials are optiona
 
 ## Product tour
 
-These are screenshots of the running POC with synthetic demonstration data. Workspace captures use deterministic offline assistance; they are not evidence of live-provider availability. The landing has a continuously rotating CSS 3D evidence background with mouse-responsive tilt, a pause control and reduced-motion support; the image below is a still frame.
+These are screenshots of the running POC with synthetic demonstration data. Workspace captures use deterministic offline assistance; they are not evidence of live-provider availability. The dark navy-and-mint landing features a rotating 3D proof core, orbiting lights and a mouse-responsive geometric background. The visible motion control pauses or resumes the scene; reduced-motion preferences default to a static view, with an explicit option to enable animation. The image below is a still frame.
 
 ### Evidence-first landing
 

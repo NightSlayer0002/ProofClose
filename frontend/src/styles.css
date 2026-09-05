@@ -723,6 +723,9 @@ code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; fo
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .evidence-orbit, .landing-motion-toggle { display: none; }
-  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; transform: none !important; }
+  /* Landing motion has its own OS-aware pause control and explicit opt-in.
+     Everything outside it continues to respect reduced motion unconditionally. */
+  :not(.landing-shell, .landing-shell *), :not(.landing-shell, .landing-shell *)::before, :not(.landing-shell, .landing-shell *)::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; transform: none !important; }
+  .landing-shell[data-motion-paused='true'] .evidence-orbit { display: none; }
+  .landing-shell[data-motion-paused='true'] *, .landing-shell[data-motion-paused='true'] *::before, .landing-shell[data-motion-paused='true'] *::after { animation-play-state: paused !important; transition-duration: 0.01ms !important; }
 }

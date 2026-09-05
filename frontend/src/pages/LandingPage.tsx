@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useSyncExternalStore } from 'react'
 import {
   ArrowRight,
   Banknote,
@@ -21,6 +21,14 @@ interface Props {
   onOpenWorkspace?: () => void
 }
 
+const motionQuery = '(prefers-reduced-motion: reduce)'
+const prefersReducedMotion = () => window.matchMedia?.(motionQuery).matches ?? false
+const subscribeMotion = (listener: () => void) => {
+  const query = window.matchMedia?.(motionQuery)
+  query?.addEventListener('change', listener)
+  return () => query?.removeEventListener('change', listener)
+}
+
 const workspaceLink = (onOpenWorkspace?: () => void) => ({
   href: '/workspace',
   onClick: onOpenWorkspace
@@ -34,6 +42,19 @@ const workspaceLink = (onOpenWorkspace?: () => void) => ({
 function ProvenanceField() {
   return (
     <div className="provenance-field" aria-label="Source records flow through a frozen snapshot and versioned rules into an immutable proof">
+      <div className="proof-engine" aria-hidden="true">
+        <div className="engine-aura" />
+        <div className="engine-gyroscope">
+          <span className="engine-ring engine-ring-one"><i /></span>
+          <span className="engine-ring engine-ring-two"><i /></span>
+          <span className="engine-ring engine-ring-three"><i /></span>
+          <span className="engine-ring engine-ring-four" />
+        </div>
+        <div className="engine-seal"><Fingerprint size={38} strokeWidth={1.1} /></div>
+        <span className="engine-satellite satellite-orders"><Database size={15} /></span>
+        <span className="engine-satellite satellite-bank"><Banknote size={15} /></span>
+        <span className="engine-satellite satellite-proof"><FileCheck2 size={15} /></span>
+      </div>
       <div className="provenance-source-stack">
         <span className="provenance-caption">Source records</span>
         <div className="source-chip source-orders"><Database aria-hidden="true" size={15} /><span>Merchant orders</span><code>ord_0042</code></div>
@@ -70,7 +91,9 @@ function ProvenanceField() {
 }
 
 export function LandingPage({ onOpenWorkspace }: Props) {
-  const [motionPaused, setMotionPaused] = useState(false)
+  const reducedMotion = useSyncExternalStore(subscribeMotion, prefersReducedMotion, () => true)
+  const [motionOverride, setMotionOverride] = useState<boolean | null>(null)
+  const motionPaused = motionOverride ?? reducedMotion
   const openWorkspace = workspaceLink(onOpenWorkspace)
   return (
     <div className="landing-shell" data-motion-paused={motionPaused}>
@@ -88,9 +111,10 @@ export function LandingPage({ onOpenWorkspace }: Props) {
             aria-label={motionPaused ? 'Resume background animation' : 'Pause background animation'}
             aria-pressed={motionPaused}
             title={motionPaused ? 'Resume background animation' : 'Pause background animation'}
-            onClick={() => setMotionPaused((value) => !value)}
+            onClick={() => setMotionOverride(!motionPaused)}
           >
             {motionPaused ? <Play aria-hidden="true" size={14} /> : <Pause aria-hidden="true" size={14} />}
+            <span className="motion-control-label">Motion {motionPaused ? 'off' : 'on'}</span>
           </button>
           <a className="landing-nav-cta" {...openWorkspace}>Open workspace <ArrowRight aria-hidden="true" size={14} /></a>
         </div>
@@ -100,7 +124,7 @@ export function LandingPage({ onOpenWorkspace }: Props) {
         <section className="landing-hero" aria-label="Evidence-first settlement close">
           <div className="landing-hero-copy">
             <p className="landing-kicker"><span /> Evidence-first finance operations</p>
-            <h1>Close every settlement with proof.</h1>
+            <h1>Close every settlement <span>with proof.</span></h1>
             <p className="landing-lede">ProofClose traces merchant orders, Razorpay reconciliation records, settlements, and bank credits into versioned proof objects—then routes every exception into auditable human review.</p>
             <div className="landing-hero-actions">
               <a className="landing-primary" {...openWorkspace}>Open evidence workspace <ArrowRight aria-hidden="true" size={16} /></a>
@@ -115,6 +139,16 @@ export function LandingPage({ onOpenWorkspace }: Props) {
           </div>
           <ProvenanceField />
         </section>
+
+        <div className="landing-sequence" aria-label="Evidence workflow">
+          <span><Database size={15} aria-hidden="true" /> Collect the records</span>
+          <ArrowRight size={15} aria-hidden="true" />
+          <span><LockKeyhole size={15} aria-hidden="true" /> Freeze the evidence</span>
+          <ArrowRight size={15} aria-hidden="true" />
+          <span><Fingerprint size={15} aria-hidden="true" /> Prove the decision</span>
+          <ArrowRight size={15} aria-hidden="true" />
+          <span><ShieldCheck size={15} aria-hidden="true" /> Close with control</span>
+        </div>
 
         <section className="landing-statement" id="provenance">
           <p>THE OPERATING PRINCIPLE</p>
