@@ -510,7 +510,7 @@ def test_rejected_provider_output_still_records_observed_usage(tmp_path) -> None
         ).json()
         diagnostics = client.get(f"/api/ops/diagnostics?run_id={run['run_id']}").json()
 
-    assert answer["narration_status"] == "provider_unavailable"
+    assert answer["narration_status"] == "rejected_unsupported_claims"
     assert answer["narration"] is None
     assert diagnostics["llm_calls"] == 2
     assert diagnostics["llm_input_tokens"] == 24

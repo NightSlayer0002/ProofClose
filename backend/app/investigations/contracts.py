@@ -143,4 +143,5 @@ class AssistantAnswer(BaseModel):
     answer_label: str = "Verified from evidence"
     detail: str | None = None
     recommended_actions: tuple[RecommendedAction, ...] = ()
+    resolution_brief: dict[str, Any] | None = None
     technical_details: dict[str, Any] = Field(default_factory=dict)

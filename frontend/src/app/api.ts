@@ -12,12 +12,14 @@ import type {
   ReconciliationRow,
   ReviewAction,
   RunSummary,
+  SourceFile,
+  SourceCatalog,
 } from './types'
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(path, {
     ...init,
-    headers: { 'Content-Type': 'application/json', ...init?.headers },
+    headers: { ...(init?.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }), ...init?.headers },
   })
   if (!response.ok) {
     const error = await response.json().catch(() => ({ detail: { message: response.statusText } }))
@@ -28,13 +30,21 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   health: () => request<HealthStatus>('/api/health'),
-  sources: () => request<{ items: Array<{ state: string }> }>('/api/sources'),
+  sources: () => request<{ items: SourceFile[] }>('/api/sources'),
+  sourceSchema: () => request<SourceCatalog>('/api/sources/schema'),
+  uploadSource: (sourceType: string, file: File) => {
+    const body = new FormData()
+    body.append('source_type', sourceType)
+    body.append('file', file)
+    return request<{ source_id: string; accepted_rows: number; duplicate_rows: number }>('/api/sources/upload', { method: 'POST', body })
+  },
+  snapshot: (sourceIds: string[]) => request<{ snapshot_id: string }>('/api/snapshots', { method: 'POST', body: JSON.stringify({ source_ids: sourceIds }) }),
   seedDemo: () => request<{ snapshot_id: string; record_count: number }>('/api/demo/seed', { method: 'POST' }),
   /** Explicitly destructive and intentionally unused during startup. */
   resetDemo: () => request<{ snapshot_id: string; record_count: number }>('/api/demo/reset', { method: 'POST' }),
   latestRun: () => request<RunSummary>('/api/runs/latest'),
-  run: (snapshotId?: string) =>
-    request<RunSummary>('/api/runs', { method: 'POST', body: JSON.stringify({ snapshot_id: snapshotId ?? null }) }),
+  run: (snapshotId?: string, evaluatedAt?: string) =>
+    request<RunSummary>('/api/runs', { method: 'POST', body: JSON.stringify({ snapshot_id: snapshotId ?? null, evaluated_at: evaluatedAt ?? null }) }),
   rows: (runId: string) => request<{ items: ReconciliationRow[] }>(`/api/runs/${runId}/settlements`),
   exceptions: (runId: string) => request<{ items: ExceptionItem[] }>(`/api/exceptions?run_id=${runId}`),
   proof: (proofId: string) => request<Proof>(`/api/proofs/${proofId}`),

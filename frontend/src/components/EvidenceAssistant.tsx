@@ -1,4 +1,4 @@
-import { ArrowRight, ArrowUpRight, ChevronRight, FileCheck2, Send, ShieldCheck, X } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, ChevronRight, Download, FileCheck2, Send, ShieldCheck, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from 'react'
 
 import { formatINR } from '../app/formatters'
@@ -62,6 +62,13 @@ function plural(value: number, singular: string): string {
   return `${value} ${singular}${value === 1 ? '' : 's'}`
 }
 
+function downloadBrief(content: string) {
+  const url = URL.createObjectURL(new Blob([content], { type: 'text/plain;charset=utf-8' }))
+  const link = document.createElement('a')
+  link.href = url; link.download = 'proofclose-resolution-brief.txt'; link.click()
+  URL.revokeObjectURL(url)
+}
+
 export function EvidenceAssistant({
   runId,
   mode,
@@ -104,7 +111,8 @@ export function EvidenceAssistant({
 
   useEffect(() => {
     if (messages.length === 0 && !loading) return
-    logEndRef.current?.scrollIntoView?.({ block: 'end', behavior: 'smooth' })
+    const target = loading ? logEndRef.current : logEndRef.current?.parentElement?.querySelector('.assistant-turn:last-of-type')
+    target?.scrollIntoView?.({ block: loading ? 'end' : 'start', behavior: 'smooth' })
   }, [loading, messages.length])
 
   const trapModalFocus = (event: ReactKeyboardEvent<HTMLElement>) => {
@@ -200,7 +208,9 @@ export function EvidenceAssistant({
                 {report.status === 'ANSWERED' && (report.explained_paise !== null || report.unresolved_paise !== null) && <dl>{report.explained_paise !== null && <div><dt>Auto-verified amount</dt><dd>{formatINR(report.explained_paise)}</dd></div>}{report.unresolved_paise !== null && <div><dt>Not auto-verified amount</dt><dd>{formatINR(report.unresolved_paise)}</dd></div>}</dl>}
               </section>
               {report.detail && <p className="assistant-detail" style={{ whiteSpace: 'pre-line' }}>{report.detail}</p>}
-              {report.narration && <section className="assistant-additional"><span>Additional context</span><p style={{ whiteSpace: 'pre-line' }}>{report.narration}</p></section>}
+              {report.narration && <section className="assistant-additional"><span>Additional context</span><p style={{ whiteSpace: 'pre-line' }}>{report.narration}</p><small>AI-selected, server-validated explanation.</small></section>}
+              {report.resolution_brief && <section className="resolution-brief" aria-label="Resolution brief"><h3>What would move this forward?</h3><p>{report.resolution_brief.uncertainty}</p>{report.resolution_brief.checks_needed.length > 0 && <details><summary>Evidence to request ({report.resolution_brief.checks_needed.length})</summary><ul>{report.resolution_brief.checks_needed.map((check) => <li key={check.predicate}><strong>{check.label}</strong><p>{check.detail}</p></li>)}</ul></details>}<p>{report.resolution_brief.recheck_condition}</p><button className="text-action" onClick={() => downloadBrief(report.resolution_brief!.handoff_text)}><Download aria-hidden="true" size={14} /> Download resolution brief</button></section>}
+              {['provider_budget_exhausted', 'provider_unavailable'].includes(report.narration_status) && report.status === 'ANSWERED' && <p className="assistant-detail">{report.narration_status === 'provider_budget_exhausted' ? 'AI call allowance reached for this run.' : 'AI is unavailable right now.'} The answer above uses the built-in explanation and evidence checks.</p>}
               {report.recommended_actions.length > 0 && <section className="assistant-next-actions" aria-label="Recommended next steps"><h3>Recommended next steps</h3><ol>{report.recommended_actions.map((action) => <li key={action.code}><span>{action.label}</span><p>{action.detail}</p></li>)}</ol><small>Guidance only. The assistant did not change any financial state.</small></section>}
 
               {hasSources && <div className="assistant-support">

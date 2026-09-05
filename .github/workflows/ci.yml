@@ -19,9 +19,16 @@ jobs:
       - name: Backend tests
         run: python -m pytest backend/tests -q
       - name: Dependency audit
-        run: python -m pip_audit --strict
+        # pip-audit 2.9 treats an editable skip as an error under --strict.
+        # Export ALL installed third-party pins (including transitive packages),
+        # excluding only editable source projects, and audit that complete list.
+        run: |
+          python -m pip freeze --exclude-editable > "$RUNNER_TEMP/proofclose-audit.txt"
+          python -m pip_audit --strict --no-deps --disable-pip -r "$RUNNER_TEMP/proofclose-audit.txt"
       - name: Secret scan
         run: python scripts/scan_secrets.py
+      - name: Verify checked-in screenshots
+        run: python scripts/verify_screenshots.py
       - uses: actions/setup-node@v4
         with:
           node-version: "22.14.0"

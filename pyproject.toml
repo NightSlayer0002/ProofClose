@@ -8,18 +8,19 @@ version = "0.1.0"
 description = "Evidence-first finance reconciliation for Razorpay merchants"
 requires-python = ">=3.12"
 dependencies = [
-  "fastapi==0.116.1",
+  "fastapi==0.141.1",
+  "starlette==1.6.0",
   "pydantic==2.11.7",
   "pydantic-settings==2.10.1",
   "sqlalchemy==2.0.43",
   "uvicorn[standard]==0.35.0",
-  "python-multipart==0.0.20",
+  "python-multipart==0.0.32",
   "httpx==0.28.1",
 ]
 
 [project.optional-dependencies]
 dev = [
-  "pytest==8.4.1",
+  "pytest==9.1.1",
   "pytest-cov==6.2.1",
 ]
 
@@ -30,4 +31,3 @@ where = ["backend"]
 pythonpath = ["backend", "."]
 testpaths = ["backend/tests"]
 addopts = "--strict-markers"
-

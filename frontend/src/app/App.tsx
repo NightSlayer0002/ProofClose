@@ -14,6 +14,7 @@ import { ExceptionsPage } from '../pages/ExceptionsPage'
 import { InvestigatePage } from '../pages/InvestigatePage'
 import { LandingPage } from '../pages/LandingPage'
 import { ReconciliationPage } from '../pages/ReconciliationPage'
+import { SourcesPage } from '../pages/SourcesPage'
 
 type OperatorAction =
   | { kind: 'review'; item: ExceptionItem; action: ReviewAction }
@@ -63,6 +64,7 @@ interface WorkspaceAppProps {
 
 function WorkspaceApp({ pathname, onHome, onPathChange }: WorkspaceAppProps) {
   const page = pageForPath(pathname)
+  const initialSourcesPage = useRef(page === 'sources')
   const [run, setRun] = useState<RunSummary | null>(null)
   const [rows, setRows] = useState<ReconciliationRow[]>([])
   const [exceptions, setExceptions] = useState<ExceptionItem[]>([])
@@ -105,6 +107,7 @@ function WorkspaceApp({ pathname, onHome, onPathChange }: WorkspaceAppProps) {
       setMessage('Loading immutable finance evidence…')
       const [health, sources] = await Promise.all([api.health(), api.sources()])
       setAssistantMode(health.ai_assistance === 'ai_assisted_evidence_mode' ? 'AI-assisted evidence mode' : 'Evidence mode')
+      if (initialSourcesPage.current) { setMessage(''); return }
       let summary: RunSummary
       if (!sources.items.some((source) => source.state === 'ACCEPTED')) {
         const demo = await api.seedDemo()
@@ -114,9 +117,9 @@ function WorkspaceApp({ pathname, onHome, onPathChange }: WorkspaceAppProps) {
         try {
           summary = await api.latestRun()
         } catch {
-          const demo = await api.seedDemo()
-          setMessage(`Using ${demo.record_count} accepted records to create a source snapshot…`)
-          summary = await api.run(demo.snapshot_id)
+          onPathChange(pathForPage('sources'))
+          setMessage('Choose your accepted source files before creating a run.')
+          return
         }
       }
       await refreshRunData(summary)
@@ -126,7 +129,7 @@ function WorkspaceApp({ pathname, onHome, onPathChange }: WorkspaceAppProps) {
     } finally {
       setLoading(false)
     }
-  }, [refreshRunData])
+  }, [refreshRunData, onPathChange])
 
   useEffect(() => { void initialize() }, [initialize])
 
@@ -144,6 +147,20 @@ function WorkspaceApp({ pathname, onHome, onPathChange }: WorkspaceAppProps) {
       setAssistantThreads({})
       setSelectedContext({})
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Run failed') } finally { setRunning(false) }
+  }
+
+  const runSelectedSources = async (sourceIds: string[], evaluatedAt?: string) => {
+    setRunning(true)
+    investigationSequenceRef.current += 1
+    setInvestigating(false)
+    try {
+      const snapshot = await api.snapshot(sourceIds)
+      const summary = await api.run(snapshot.snapshot_id, evaluatedAt)
+      await refreshRunData(summary)
+      setAssistantThreads({}); setSelectedContext({}); setProof(null); setError(null)
+      setMessage('New run created from your selected source files. Previous evidence is preserved.')
+      navigate('reconciliation')
+    } finally { setRunning(false) }
   }
 
   const openProof = async (proofId: string) => {
@@ -250,8 +267,9 @@ function WorkspaceApp({ pathname, onHome, onPathChange }: WorkspaceAppProps) {
   }
 
   if (loading) return <div className="startup"><span className="brand-mark">P</span><h1>ProofClose</h1><p>{message}</p><div className="progress-line" /></div>
+  if (page === 'sources') return <div className="app-shell"><AppHeader active={page} identityMode="INSECURE_DEMO_CONTEXT" running={running} canRun={Boolean(run)} onHome={onHome} onNavigate={navigate} onRun={() => void rerun()} /><SourcesPage onRun={runSelectedSources} running={running} /></div>
   if (error && !run) return <div className="startup error-state"><h1>ProofClose could not start</h1><p>{error}</p><button className="primary-action" onClick={() => void initialize()}>Retry initialization</button></div>
-  if (!run || !closeState || !diagnostics) return null
+  if (!run || !closeState || !diagnostics) return <div className="startup"><h1>No reconciliation run selected</h1><p>Select source files to create your first run.</p><button className="primary-action" onClick={() => navigate('sources')}>Open Data sources</button></div>
 
   const selectedThread = assistantThreads[assistantContextKey(run.run_id, selectedContext)]
   const assistant = (expanded = false, modal = false) => <EvidenceAssistant

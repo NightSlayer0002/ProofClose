@@ -3,6 +3,9 @@ import { defineConfig } from '@playwright/test'
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: false,
+  // Browser scenarios share one local demo backend and must not swap each
+  // other's selected snapshots while another scenario is still running.
+  workers: 1,
   retries: 0,
   reporter: 'line',
   use: {

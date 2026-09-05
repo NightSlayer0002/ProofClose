@@ -6,6 +6,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SCREENSHOT_DIR = ROOT / "docs" / "screenshots"
 REQUIRED_SCREENSHOTS = (
+    "data-sources.png",
+    "resolution-brief.png",
     "landing.png",
     "landing-mobile.png",
     "reconciliation.png",

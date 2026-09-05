@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import defaultdict
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 from time import perf_counter
 from uuid import uuid4
@@ -300,7 +300,11 @@ class RunService:
         self.configurations = configurations
         self.now = now
 
-    def run_snapshot(self, tenant_id: str, snapshot_id: str) -> dict:
+    def run_snapshot(self, tenant_id: str, snapshot_id: str, *, evaluated_at: datetime | None = None) -> dict:
+        if evaluated_at is not None:
+            if evaluated_at.tzinfo is None or evaluated_at.utcoffset() is None:
+                raise ValueError("evaluation time requires a timezone offset")
+            evaluated_at = evaluated_at.astimezone(timezone.utc)
         started = perf_counter()
         run_id = f"run_{uuid4().hex[:16]}"
         snapshot = self.snapshots.get(tenant_id, snapshot_id)
@@ -327,7 +331,7 @@ class RunService:
                 )
             )
         try:
-            return self._execute_snapshot(tenant_id, snapshot_id, snapshot.source_ids_json, run_id, started, configuration)
+            return self._execute_snapshot(tenant_id, snapshot_id, snapshot.source_ids_json, run_id, started, configuration, evaluated_at)
         except Exception as exc:
             total_ms = max(0, round((perf_counter() - started) * 1000))
             with self.database.session() as session:
@@ -355,6 +359,7 @@ class RunService:
         run_id: str,
         started: float,
         configuration: ConfigurationBundle,
+        evaluated_at: datetime | None = None,
     ) -> dict:
         source_ids = json.loads(source_ids_json)
         timings: dict[str, int] = {}
@@ -383,7 +388,7 @@ class RunService:
                 for settlement_id, rows in grouped_settlement_rows.items()
             }
 
-        now = self.now()
+        now = evaluated_at or self.now()
         context = EvaluationContext(configuration=configuration, evaluated_at=now)
         decisions_by_settlement: dict[str, ReconciliationDecision] = {}
         with measured(timings, "matching_ms"):

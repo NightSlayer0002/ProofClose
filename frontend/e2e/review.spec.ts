@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
+import { readFileSync } from 'node:fs'
 
 const screenshot = async (page: Page, name: string) => {
   await page.locator('.page, .assistant-dock, .drawer-layer, .proof-drawer, .action-dialog-layer, .action-dialog').evaluateAll(async (elements) => {
@@ -109,6 +110,18 @@ const createReviewableRun = async (page: Page) => {
 }
 
 test('fixed evidence-first browser review', async ({ page }) => {
+  // Select this scenario's evidence explicitly, even after a previous review
+  // left custom files in the isolated test backend. Never reset shared data.
+  const sourceIds: string[] = []
+  for (const [role, file] of Object.entries({ merchant_orders: 'merchant_orders.csv', razorpay_recon: 'razorpay_recon.csv', settlements: 'razorpay_settlements.csv', bank_statement: 'bank_statement.csv' })) {
+    const uploaded = await page.request.post('/api/sources/upload', { multipart: { source_type: role, file: { name: file, mimeType: 'text/csv', buffer: readFileSync(`../data/demo/${file}`) } } })
+    expect(uploaded.ok()).toBe(true)
+    sourceIds.push((await uploaded.json()).source_id)
+  }
+  const selected = await page.request.post('/api/snapshots', { data: { source_ids: sourceIds } })
+  expect(selected.ok()).toBe(true)
+  const initialized = await page.request.post('/api/runs', { data: { snapshot_id: (await selected.json()).snapshot_id } })
+  expect(initialized.ok()).toBe(true)
   await mockEvidenceMode(page)
   await page.goto('/')
   await expect(page.getByRole('heading', { name: 'Close every settlement with proof.' })).toBeVisible()
@@ -121,7 +134,7 @@ test('fixed evidence-first browser review', async ({ page }) => {
     const snapshot = field.querySelector('.snapshot-node')!.getBoundingClientRect()
     const proof = field.querySelector('.proof-object-card')!.getBoundingClientRect()
     return {
-      sourceTopSpread: Math.max(...sources.map((source) => source.top)) - Math.min(...sources.map((source) => source.top)),
+      cardsContained: [...sources, snapshot, proof].every((box) => box.left >= fieldRect.left && box.right <= fieldRect.right && box.top >= fieldRect.top && box.bottom <= fieldRect.bottom),
       sourceBottom: Math.max(...sources.map((source) => source.bottom)),
       snapshotTop: snapshot.top,
       snapshotBottom: snapshot.bottom,
@@ -131,7 +144,7 @@ test('fixed evidence-first browser review', async ({ page }) => {
       proofCenter: proof.left + proof.width / 2,
     }
   })
-  expect(provenanceLayout.sourceTopSpread).toBeLessThanOrEqual(2)
+  expect(provenanceLayout.cardsContained).toBe(true)
   expect(provenanceLayout.sourceBottom).toBeLessThan(provenanceLayout.snapshotTop)
   expect(provenanceLayout.snapshotBottom).toBeLessThan(provenanceLayout.proofTop)
   expect(provenanceLayout.proofTop - provenanceLayout.snapshotBottom).toBeLessThanOrEqual(80)
