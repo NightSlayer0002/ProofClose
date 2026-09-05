@@ -9,7 +9,6 @@ export function LandingBackdrop({ paused }: { paused: boolean }) {
   useEffect(() => {
     const element = backdrop.current
     if (!element) return
-    const motion = window.matchMedia?.('(prefers-reduced-motion: reduce)')
     let frame = 0
     let active = false
     let pointerX = 0
@@ -33,7 +32,8 @@ export function LandingBackdrop({ paused }: { paused: boolean }) {
       element.style.removeProperty('--pointer-y')
     }
     const updateMotion = () => {
-      active = !paused && !motion?.matches && !document.hidden
+      // The page owns the OS preference and an explicit visitor opt-in.
+      active = !paused && !document.hidden
       element.dataset.motion = active ? 'running' : 'paused'
       if (!active) resetPointer()
     }
@@ -41,13 +41,11 @@ export function LandingBackdrop({ paused }: { paused: boolean }) {
     window.addEventListener('pointermove', updatePointer, { passive: true })
     document.documentElement.addEventListener('pointerleave', resetPointer)
     document.addEventListener('visibilitychange', updateMotion)
-    motion?.addEventListener('change', updateMotion)
     return () => {
       resetPointer()
       window.removeEventListener('pointermove', updatePointer)
       document.documentElement.removeEventListener('pointerleave', resetPointer)
       document.removeEventListener('visibilitychange', updateMotion)
-      motion?.removeEventListener('change', updateMotion)
     }
   }, [paused])
 

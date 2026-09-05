@@ -40,6 +40,20 @@ test('reduced-motion visitors get a static background, including after preferenc
   await expect(page.locator('.evidence-orbit').first()).toBeVisible()
 })
 
+test('a reduced-motion visitor can explicitly enable and stop the scene', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/')
+  const enable = page.getByRole('button', { name: 'Resume background animation' })
+  await expect(enable).toBeVisible()
+  await enable.click()
+  const cube = page.locator('.evidence-cube').first()
+  await expect(page.locator('.landing-backdrop')).toHaveAttribute('data-motion', 'running')
+  const initial = await cube.evaluate((element) => getComputedStyle(element).transform)
+  await expect.poll(() => cube.evaluate((element) => getComputedStyle(element).transform)).not.toBe(initial)
+  await page.getByRole('button', { name: 'Pause background animation' }).click()
+  await expect(cube).toHaveCSS('animation-play-state', 'paused')
+})
+
 test('animated landing stays contained on desktop, tablet and narrow mobile', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   await page.goto('/')
