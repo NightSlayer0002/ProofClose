@@ -33,3 +33,13 @@ it('shows validation errors without selecting rejected evidence or starting a ru
   expect(screen.getByLabelText('Select settlements')).toHaveValue('')
   expect(onRun).not.toHaveBeenCalled()
 })
+
+it('clears the old selection when its replacement is rejected', async () => {
+  mock.uploadSource.mockRejectedValue(new Error('Row 2: invalid amount'))
+  render(<SourcesPage onRun={vi.fn()} running={false} />)
+  for (const role of roles) await userEvent.selectOptions(await screen.findByLabelText(`Select ${role}`), `${role}-new`)
+  await userEvent.upload(screen.getByLabelText('Upload settlements'), new File(['bad'], 'replacement.csv', { type: 'text/csv' }))
+  expect(await screen.findByRole('alert')).toHaveTextContent('invalid amount')
+  expect(screen.getByLabelText('Select settlements')).toHaveValue('')
+  expect(screen.getByRole('button', { name: 'Create snapshot & reconcile' })).toBeDisabled()
+})

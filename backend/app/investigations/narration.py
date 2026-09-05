@@ -20,12 +20,12 @@ from app.investigations.provider import (
     ProviderFailure,
     validate_narration,
 )
-from app.investigations.router import route_question
+from app.investigations.router import route_question, is_review_choice_question
 from app.investigations.router import classify_copilot_intent
 from app.investigations.tools import FinanceTools
 from app.observability.store import ObservabilityStore
 from app.presentation.currency import format_inr_paise
-from app.investigations.guidance import guidance_for
+from app.investigations.guidance import guidance_for, review_choice_guidance
 from app.investigations.resolution import build_resolution_brief, explanation_options
 
 
@@ -581,7 +581,7 @@ class InvestigationService:
 
         answer_mode = "EVIDENCE_GUIDANCE" if intent.mode == "EVIDENCE_GUIDANCE" else "CURRENT_FACT"
         canonical_message = _deterministic_message(selection.name, canonical)
-        guidance_detail = "No settlement, proof, review, or close state was changed."
+        guidance_detail = review_choice_guidance(canonical) if is_review_choice_question(question) else "No settlement, proof, review, or close state was changed."
         return AssistantAnswer(
             status="ANSWERED",
             route="PLANNER_TOOL" if planner_used else "DIRECT_TOOL",

@@ -2,6 +2,11 @@ import { expect, test, type Locator, type Page } from '@playwright/test'
 import { readFileSync } from 'node:fs'
 
 const screenshot = async (page: Page, name: string) => {
+  if (name.startsWith('landing')) {
+    await page.locator('.pc-product-frame img').last().scrollIntoViewIfNeeded()
+    await expect.poll(() => page.locator('.pc-product-frame img').evaluateAll((images) => images.every((image) => (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth > 0))).toBe(true)
+    await page.evaluate(() => window.scrollTo(0, 0))
+  }
   await page.locator('.page, .assistant-dock, .drawer-layer, .proof-drawer, .action-dialog-layer, .action-dialog').evaluateAll(async (elements) => {
     await Promise.all(elements.flatMap((element) => element.getAnimations()).map((animation) => animation.finished))
   })
@@ -125,14 +130,14 @@ test('fixed evidence-first browser review', async ({ page }) => {
   await mockEvidenceMode(page)
   await page.goto('/')
   await expect(page.getByRole('heading', { name: 'Close every settlement with proof.' })).toBeVisible()
-  await expect(page.getByLabel('Source records flow through a frozen snapshot and versioned rules into an immutable proof')).toBeVisible()
+  await expect(page.getByLabel('Illustrative evidence provenance')).toBeVisible()
   await expect(page.getByText('Measured on synthetic evidence—not marketed as production accuracy.')).toBeVisible()
   await expectContained(page)
-  const provenanceLayout = await page.locator('.provenance-field').evaluate((field) => {
+  const provenanceLayout = await page.locator('.pc-artifact').evaluate((field) => {
     const fieldRect = field.getBoundingClientRect()
-    const sources = [...field.querySelectorAll('.source-chip')].map((source) => source.getBoundingClientRect())
-    const snapshot = field.querySelector('.snapshot-node')!.getBoundingClientRect()
-    const proof = field.querySelector('.proof-object-card')!.getBoundingClientRect()
+    const sources = [...field.querySelectorAll('.pc-source-list > span')].map((source) => source.getBoundingClientRect())
+    const snapshot = field.querySelector('.pc-trace-stage')!.getBoundingClientRect()
+    const proof = field.querySelector('.pc-proof-object')!.getBoundingClientRect()
     return {
       cardsContained: [...sources, snapshot, proof].every((box) => box.left >= fieldRect.left && box.right <= fieldRect.right && box.top >= fieldRect.top && box.bottom <= fieldRect.bottom),
       sourceBottom: Math.max(...sources.map((source) => source.bottom)),
@@ -344,8 +349,8 @@ test('reduced motion keeps proof content immediate and stationary', async ({ pag
   await mockEvidenceMode(page)
   await page.goto('/')
   const [fieldBox, proofCardBox] = await Promise.all([
-    page.locator('.provenance-field').boundingBox(),
-    page.locator('.proof-object-card').boundingBox(),
+    page.locator('.pc-artifact').boundingBox(),
+    page.locator('.pc-proof-object').boundingBox(),
   ])
   expect(fieldBox).not.toBeNull()
   expect(proofCardBox).not.toBeNull()

@@ -3,6 +3,24 @@
 from app.investigations.contracts import RecommendedAction
 
 
+def review_choice_guidance(canonical: dict[str, object]) -> str:
+    """Explain review policy separately from the immutable financial facts."""
+    decision = canonical.get("decision", canonical.get("status"))
+    if decision == "AUTO_VERIFIED":
+        return "This proof is auto-verified; it does not by itself indicate an exception to accept or reject. Check the review queue and overall close policy separately. I have not changed any state."
+    if decision == "SYSTEM_ERROR":
+        return "Do not use an exception review to clear a system error. Inspect Diagnostics, correct the underlying technical failure and create a new run. A human review cannot substitute for a successful rule execution. I have not changed any state."
+    intro = "I would check the finding against its proof before choosing a review action."
+    if canonical.get("exception_type") == "SETTLEMENT_LEDGER_MISMATCH":
+        intro = "For this ledger mismatch, first compare the provider settlement amount with the net payment/refund ledger in the proof. The mismatch is recorded, but its business cause is not established just by that label."
+    return intro + (
+        "\n\nAccept finding: use this when you have checked the evidence and agree that the reported discrepancy is real. You are accepting the exception finding, not confirming that money arrived."
+        "\n\nReject finding: use this only when contrary evidence shows the finding is incorrect, and record that evidence in your reason. Do not reject merely to remove a warning."
+        "\n\nRecord unresolved: use this when your investigation cannot yet establish the answer; record what is missing. If you have not investigated, leave the item open."
+        "\n\nAll three submitted dispositions complete the review item under this POC's policy; none changes the financial match or its proof. I can explain the choice, but only you can record it. No state was changed."
+    )
+
+
 _PLAYBOOKS: dict[str, tuple[RecommendedAction, ...]] = {
     "MISSING_BANK_CREDIT": (
         RecommendedAction(code="CHECK_STATEMENT_WINDOW", label="Check the statement window", detail="Confirm the bank statement covers the settlement posting window."),
