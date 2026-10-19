@@ -125,16 +125,6 @@ npm.cmd run dev -- --host 127.0.0.1
 
 Open `http://127.0.0.1:5173` for the provenance-first landing page, then choose **Open evidence workspace**. The operational UI at `/workspace` loads 267 seeded source rows through the same ingestion path as an uploaded file and creates a real run. No account or API key is required.
 
-## What to show a reviewer
-
-1. Landing: follow the visible chain from source records to a frozen snapshot, a versioned Proof Object, and human close.
-2. Reconciliation: inspect the settlement table and open a proof.
-3. In the proof drawer, compare **Reproduce historical proof** with **Evaluate with current rules**. They are separate operations.
-4. Exceptions: show an ambiguous bank match that refuses to guess, plus the planted ledger, missing-credit, multiple-payment, and paise/rupee anomalies. Point out that a settlement exception, a review item, and a total close blocker are deliberately different counts.
-5. Evidence Copilot: click **Ask assistant** on two different settlements and notice the visible context divider and separate thread for each one. Ask a general question such as “What is a UTR?”, then ask “What amount is not auto-verified in this run?” The first is general guidance; the second must fetch fresh canonical evidence. Ask “What should I do?” on an exception to see verified facts separated from server-owned read-only guidance.
-6. Close: distinguish the **Not auto-verified amount** from **Total close blockers**, then show how reviewed exceptions remain auditable.
-7. Diagnostics: inspect measured stage timings, truthful configured/reachable provider states, actual call/token counts, and `unavailable` cost when no versioned pricing configuration exists.
-
 ## Bring your own data and resolve an exception
 
 Use **Data sources** in the workspace (or **Bring your own CSV data** on the landing page). Download templates, upload and validate each delivery, choose one file for each role, optionally set a historical evaluation time, then create a new snapshot and run. New data never rewrites old proofs. [Exact input contract and live-integration path](docs/INPUT_CONTRACT.md).
